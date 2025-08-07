@@ -1,1 +1,2 @@
+print("✅ Codex is working!")
 
