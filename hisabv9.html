@@ -388,6 +388,51 @@ img{max-width:100%;height:auto}
 .mt8{margin-top:8px}.mt12{margin-top:12px}
 .mb8{margin-bottom:8px}.mb12{margin-bottom:12px}.mb16{margin-bottom:16px}
 
+/* ── P&L ROW ── */
+.plrow{display:grid;grid-template-columns:repeat(3,1fr);gap:8px;margin-bottom:14px}
+.plcard{border-radius:var(--r-md);padding:10px 8px;text-align:center;border:1.5px solid}
+.plcard.income{background:#f0fdf4;border-color:#86efac;color:#15803d}
+.plcard.expense{background:#fef2f2;border-color:#fca5a5;color:#dc2626}
+.plcard.profit{background:#eff6ff;border-color:#bfdbfe;color:#1d4ed8}
+.plcard .pli{font-size:9px;font-weight:700;opacity:.8;margin-bottom:4px;text-transform:uppercase}
+.plcard .plv{font-size:16px;font-weight:900;line-height:1}
+
+/* ── 7-DAY CHART ── */
+.wkchart{display:flex;align-items:flex-end;gap:3px;height:60px;padding:0 2px;margin-bottom:14px}
+.wkday{flex:1;display:flex;flex-direction:column;align-items:center;gap:2px}
+.wkbar{width:100%;background:linear-gradient(to top,var(--blue),#93c5fd);border-radius:4px 4px 0 0;min-height:3px;transition:height .3s}
+.wkbar.today{background:linear-gradient(to top,var(--green),#4ade80)}
+.wkbar.zero{background:#e2e8f0;min-height:3px}
+.wklbl{font-size:9px;color:var(--text-3);font-weight:700}
+.wkamt{font-size:8px;color:var(--text-3);white-space:nowrap;overflow:hidden;max-width:100%;text-align:center}
+
+/* ── QUICK SERVICE TILES ── */
+.qsgrid{display:grid;grid-template-columns:repeat(4,1fr);gap:6px;margin-bottom:14px}
+.qstile{background:#fff;border-radius:var(--r-md);padding:8px 4px;display:flex;flex-direction:column;align-items:center;gap:2px;border:1.5px solid var(--border);cursor:pointer;min-height:66px;justify-content:center;width:100%;transition:all .12s}
+.qstile:active{transform:scale(.92);border-color:var(--blue);background:var(--blue-l)}
+.qstile .qsi{font-size:22px;line-height:1}
+.qstile .qsn{font-size:9px;font-weight:700;color:#374151;text-align:center;line-height:1.2}
+.qstile .qsr{font-size:9px;color:var(--text-3)}
+
+/* ── FILTER CHIPS ── */
+.fchips{display:flex;gap:5px;margin-bottom:8px;overflow-x:auto;scrollbar-width:none;-webkit-overflow-scrolling:touch}
+.fchips::-webkit-scrollbar{display:none}
+.fchip{flex-shrink:0;font-size:11px;font-weight:700;padding:5px 10px;border-radius:20px;background:#fff;border:1.5px solid var(--border);color:var(--text-2);cursor:pointer;white-space:nowrap}
+.fchip.active{background:var(--blue);color:#fff;border-color:var(--blue)}
+
+/* ── ATTENDANCE GRID ── */
+.atgrid{display:grid;gap:2px;overflow-x:auto}
+.atcell{width:22px;height:22px;border-radius:4px;font-size:8px;display:flex;align-items:center;justify-content:center;font-weight:700;flex-shrink:0}
+.atcell.p{background:#dcfce7;color:#15803d}
+.atcell.a{background:#fef2f2;color:#dc2626}
+.atcell.lv{background:#fef9c3;color:#b45309}
+
+/* ── CLOSING BANNER ── */
+.close-banner{background:linear-gradient(135deg,#fef2f2,#fff7ed);border:2px solid #fca5a5;border-radius:var(--r-md);padding:11px 13px;display:flex;align-items:center;justify-content:space-between;margin-bottom:14px;gap:8px}
+
+/* ── ENTRY CANCELLED ── */
+.ecard.cancelled{opacity:.4;text-decoration:line-through}
+
 /* ── FOCUS STYLES ── */
 :focus-visible{outline:2px solid var(--blue);outline-offset:2px;border-radius:4px}
 @keyframes spin{to{transform:rotate(360deg)}}
@@ -558,6 +603,7 @@ body.embed .main{margin-left:0!important;padding-left:14px!important;padding-rig
     <div class="hactions">
       <span class="rbadge" id="roleBadge">👑 Owner</span>
       <button class="hibtn" onclick="App.settings()" aria-label="Settings">⚙️</button>
+      <button class="hibtn" onclick="App._logout()" aria-label="Logout" title="Logout">🚪</button>
     </div>
   </header>
   <main class="main" id="main" role="main"><div id="appLoader" style="display:flex;flex-direction:column;align-items:center;justify-content:center;height:180px;gap:12px;color:#64748b;font-size:13px"><div style="width:32px;height:32px;border:3px solid #e2e8f0;border-top-color:#2563eb;border-radius:50%;animation:spin .7s linear infinite"></div>Loading…</div></main>
@@ -601,13 +647,19 @@ const C = {
     {id:'scholar',name:'Scholarship',rate:50,cat:'Forms'},
     {id:'exam',name:'Exam Form',rate:50,cat:'Forms'},
     {id:'job',name:'Job Form',rate:50,cat:'Forms'},
+    {id:'bijli',name:'Light Bill',rate:20,cat:'CSC'},
+    {id:'aeps_svc',name:'AEPS Withdrawal',rate:20,cat:'CSC'},
     {id:'print_bw',name:'Print B/W',rate:5,cat:'Print'},
     {id:'print_col',name:'Print Color',rate:15,cat:'Print'},
+    {id:'colour_print',name:'Colour Print',rate:15,cat:'Print'},
     {id:'copy',name:'Photocopy',rate:3,cat:'Print'},
     {id:'lami',name:'Lamination',rate:20,cat:'Print'},
     {id:'photo',name:'Passport Photo',rate:50,cat:'Print'},
     {id:'scan',name:'Scan',rate:10,cat:'Print'},
     {id:'typing',name:'Typing Work',rate:50,cat:'Print'},
+    {id:'spiral',name:'Spiral Binding',rate:30,cat:'Print'},
+    {id:'pvc',name:'PVC Card Print',rate:80,cat:'Print'},
+    {id:'online_form',name:'Online Form Fill',rate:50,cat:'Forms'},
     {id:'other',name:'Other',rate:0,cat:'Other'},
   ],
   prods: [
@@ -645,18 +697,20 @@ const DB = {
     a.push(item); this.s(k,a); return item;
   },
   del(k,id){this.s(k,this.l(k).filter(x=>x.id!==id))},
+  upd(k,id,changes){const a=this.l(k);const i=a.findIndex(x=>x.id===id);if(i!==-1){Object.assign(a[i],changes);this.s(k,a)}},
   today(){const d=new Date();return d.getFullYear()+'-'+String(d.getMonth()+1).padStart(2,'0')+'-'+String(d.getDate()).padStart(2,'0')},
   dateOf(iso){try{const d=new Date(iso);return d.getFullYear()+'-'+String(d.getMonth()+1).padStart(2,'0')+'-'+String(d.getDate()).padStart(2,'0')}catch{return ''}},
 };
 
 /* ── MIGRATION ── */
 const Migration = {
-  V: 3, // Increment this when schema changes — NEVER change rc8_ prefix
+  V: 4, // Increment this when schema changes — NEVER change rc8_ prefix
   run(){
     const v = DB.g('db_v')||0;
     if(v < 1) this._v1();
     if(v < 2) this._v2();
     if(v < 3) this._v3();
+    if(v < 4) this._v4();
     DB.s('db_v', this.V);
   },
   _v1(){
@@ -676,6 +730,24 @@ const Migration = {
   _v3(){
     // Copy biz name/subtitle to new keys if set on old keys
     // (future-proof placeholder)
+  },
+  _v4(){
+    // Convert old at_YYYY-MM-DD attendance format to punch-in/out format
+    const now=new Date();
+    for(let i=0;i<90;i++){
+      const d=new Date(now);d.setDate(d.getDate()-i);
+      const key='at_'+d.getFullYear()+'-'+String(d.getMonth()+1).padStart(2,'0')+'-'+String(d.getDate()).padStart(2,'0');
+      const val=DB.g(key);
+      if(!val||typeof val!=='object')continue;
+      let changed=false;
+      Object.entries(val).forEach(([name,v])=>{
+        if(typeof v==='string'||v===true){
+          val[name]={present:true,punchIn:typeof v==='string'?v:null,punchOut:null};
+          changed=true;
+        }
+      });
+      if(changed)DB.s(key,val);
+    }
   },
 };
 
@@ -1124,6 +1196,33 @@ const Entry = {
     },300);
   },
 
+  showPreset(svcId){
+    this.show();
+    requestAnimationFrame(()=>setTimeout(()=>this._pickSvcById(svcId),150));
+  },
+  _pickSvcById(svcId){
+    const s=C.svcs.find(x=>x.id===svcId);if(!s)return;
+    const el=document.querySelector(`.sc[data-id="${svcId}"]`);
+    if(el){this._ps(el);return}
+    document.getElementById('sid').value=s.id;
+    document.getElementById('sname').value=s.name;
+    document.getElementById('srate').value=s.rate||0;
+    const badge=document.getElementById('svcBadge');
+    const badgeName=document.getElementById('svcBadgeName');
+    if(badge&&badgeName){badgeName.textContent=s.name+(s.rate>0?' · ₹'+s.rate:'');badge.classList.add('show')}
+    const printIds=new Set(['print_bw','print_col','colour_print','copy','lami','scan','spiral']);
+    const qtyFg=document.getElementById('qtyFg');
+    const isPrint=printIds.has(s.id);
+    if(qtyFg)qtyFg.style.display=isPrint?'block':'none';
+    if(isPrint){
+      const ri=document.getElementById('rate');if(ri)ri.value=s.rate||'';
+      Entry._calcAmt();
+    }
+    const ssInput=document.getElementById('ss');
+    if(ssInput){ssInput.value=s.name;document.getElementById('sgrps')?.querySelectorAll('.sg').forEach(g=>g.style.display='none')}
+    setTimeout(()=>document.getElementById('amt')?.focus(),80);
+  },
+
   showSale(){this.cart=[];this._psq='';this._rm()},
   _psq:'',
 
@@ -1309,10 +1408,13 @@ const Entry = {
           <div style="margin-top:10px;font-size:10px;color:#94a3b8;">By: ${e.who||'—'} (${e.role||''})${e.editedAt?' · ✏️ edited':''}</div>
         </div>
         ${e.phone?`<button class="btn ghost mb8" style="background:#f0fdf4;color:#16a34a;" onclick="Entry._sendWA('${e.id}')">💬 WhatsApp Receipt</button>`:''}
-        ${Auth.isOwner()?`
-          <button class="btn ghost mb8" style="background:#eff6ff;color:#2563eb;" onclick="Entry._edit('${e.id}')">✏️ Edit Entry</button>
-          <button class="btn red" onclick="Entry._del('${e.id}')">🗑️ Delete Entry</button>
-        `:''}
+        ${(()=>{
+          if(Auth.isOwner()) return `<button class="btn ghost mb8" style="background:#eff6ff;color:#2563eb;" onclick="Entry._edit('${e.id}')">✏️ Edit Entry</button><button class="btn red" onclick="Entry._del('${e.id}')">🗑️ Delete Entry</button>`;
+          const age=Date.now()-new Date(e.at).getTime();
+          const secsLeft=Math.max(0,Math.ceil((2*60*1000-age)/1000));
+          if(e.who===Auth.user()?.name&&age<2*60*1000) return `<button class="btn ghost mb8" style="background:#fef2f2;color:#dc2626;" onclick="Entry._del('${e.id}')">🗑️ Delete (${secsLeft}s left)</button>`;
+          return '';
+        })()}
       </div>
     `);
   },
@@ -1331,7 +1433,15 @@ const Entry = {
   },
 
   _del(id){
-    if(!Auth.isOwner())return;
+    const e=DB.l('entries').find(x=>x.id===id);if(!e)return;
+    if(!Auth.isOwner()){
+      const age=Date.now()-new Date(e.at).getTime();
+      if(e.who!==Auth.user()?.name||age>2*60*1000)return Toast.show('⚠️ Delete allowed only within 2 minutes');
+      if(!confirm('Entry hatao?'))return;
+      DB.upd('entries',id,{cancelled:true,cancelledBy:Auth.user().name,cancelledAt:new Date().toISOString()});
+      Modal.close();Toast.show('✅ Entry hatai gai');Router.go(Router.cur);
+      return;
+    }
     if(!confirm('Delete this entry?'))return;
     DB.del('entries',id);Modal.close();Toast.show('✅ Deleted');Router.go(Router.cur);
   },
@@ -1748,6 +1858,164 @@ const Udhar = {
   },
 };
 
+/* ── BIJLI BILL ── */
+const BijliBill = {
+  show(){
+    Modal.open(`
+      <div class="mhead">
+        <div><div class="mt">💡 Light Bill Payment</div><div class="ms">Customer ka bijli bill jama karo</div></div>
+        <button class="mclose" onclick="Modal.close()" aria-label="Close">✕</button>
+      </div>
+      <div class="mbody">
+        <div class="fg">
+          <p class="flabel"><span class="fnum">1</span> Bill Amount (Customer ka)</p>
+          <div class="amtwrap">
+            <input type="number" class="inp big" id="blBill" inputmode="decimal" placeholder="0" oninput="BijliBill._calc()">
+          </div>
+          <div style="font-size:11px;color:#94a3b8;margin-top:4px;">Yeh portal wallet se katega</div>
+        </div>
+        <div class="divider"></div>
+        <div class="fg">
+          <p class="flabel"><span class="fnum">2</span> Aapka Charge (Service Fee)</p>
+          <div class="amtwrap">
+            <input type="number" class="inp big" id="blCharge" inputmode="decimal" value="20" oninput="BijliBill._calc()">
+          </div>
+          <div class="chips mt8">
+            ${[10,15,20,25,30].map(n=>`<button class="chip sm" onclick="document.getElementById('blCharge').value=${n};BijliBill._calc()">₹${n}</button>`).join('')}
+          </div>
+        </div>
+        <div class="divider"></div>
+        <div class="fg">
+          <p class="flabel"><span class="fnum">3</span> Customer se Payment</p>
+          <div class="pmgrid" id="blPmg">
+            ${C.pm.filter(p=>p.id==='cash'||p.id==='online').map(p=>`<button class="pmbtn ${p.id==='cash'?'sel':''}" data-pm="${p.id}" onclick="BijliBill._pm(this,'${p.id}')">${p.icon} ${p.name}</button>`).join('')}
+          </div>
+          <input type="hidden" id="blPm" value="cash">
+        </div>
+        <div class="divider"></div>
+        <div class="fg">
+          <p class="flabel" style="margin-bottom:6px;"><span class="fnum" style="background:#94a3b8;">4</span> Customer (optional)</p>
+          <input type="text" class="inp mb8" id="blCust" placeholder="👤 Customer Name">
+          <input type="tel" class="inp" id="blPhone" inputmode="numeric" maxlength="10" placeholder="📱 Mobile">
+        </div>
+        <div class="calc-box" style="background:#fef9c3;border:1.5px solid #facc15;border-radius:var(--r-md);padding:12px 14px;margin-top:6px;display:flex;justify-content:space-between;align-items:center;">
+          <div><div style="font-size:10px;color:#92400e;font-weight:700;">💰 Customer dega</div><div style="font-size:20px;font-weight:900;color:#854d0e;" id="blTotal">₹0</div></div>
+          <div style="text-align:right;"><div style="font-size:10px;color:#15803d;font-weight:700;">📈 Aapki Kamai</div><div style="font-size:20px;font-weight:900;color:#16a34a;" id="blKamai">₹0</div></div>
+        </div>
+      </div>
+      <div class="mfoot">
+        <button class="btn blue" onclick="BijliBill.save()">✅ Save Entry</button>
+        <button class="btn ghost" onclick="Modal.close()">Cancel</button>
+      </div>
+    `);
+    setTimeout(()=>document.getElementById('blBill')?.focus(),200);
+  },
+  _pm(el,mode){
+    document.querySelectorAll('#blPmg .pmbtn').forEach(b=>b.classList.remove('sel'));
+    el.classList.add('sel');
+    document.getElementById('blPm').value=mode;
+  },
+  _calc(){
+    const bill=parseFloat(document.getElementById('blBill')?.value)||0;
+    const charge=parseFloat(document.getElementById('blCharge')?.value)||0;
+    const tot=document.getElementById('blTotal');
+    const kam=document.getElementById('blKamai');
+    if(tot)tot.textContent=F.rs(bill+charge);
+    if(kam)kam.textContent=F.rs(charge);
+  },
+  save(){
+    const bill=parseFloat(document.getElementById('blBill')?.value)||0;
+    const charge=parseFloat(document.getElementById('blCharge')?.value)||0;
+    const pm=document.getElementById('blPm')?.value||'cash';
+    const cust=document.getElementById('blCust')?.value?.trim()||'';
+    const phone=document.getElementById('blPhone')?.value?.trim()||'';
+    if(!bill||bill<=0)return Toast.show('⚠️ Bill amount daalo');
+    if(charge<0)return Toast.show('⚠️ Valid charge daalo');
+    DB.push('entries',{
+      type:'bijli',svcId:'bijli',svc:'Light Bill',
+      bijliAmt:bill,amt:charge,pm,cust,phone,notes:'',
+      day:DB.today(),role:Auth.role(),who:Auth.user().name,
+    });
+    Toast.show('✅ Light bill saved! Kamai: '+F.rs(charge));
+    Modal.close();Router.go(Router.cur);
+  },
+};
+
+/* ── PRINTERS ── */
+const Printers = {
+  _k:'printers',
+  all(){return DB.l(this._k)},
+  _ensureDefault(){
+    if(!this.all().length){
+      DB.push(this._k,{id:'p1',name:'Printer 1',type:'bw',ratePerPage:5,icon:'🖨️'});
+    }
+  },
+  manage(){
+    if(!Auth.isOwner())return Toast.show('Owner only');
+    this._ensureDefault();
+    const list=this.all();
+    const renderList=()=>{
+      const c=document.getElementById('prList');
+      if(!c)return;
+      c.innerHTML=list.length===0?'<p style="text-align:center;color:#94a3b8;padding:14px;">No printers added</p>':
+        list.map(p=>`<div class="card mb8 spread">
+          <div>
+            <div style="font-weight:700;font-size:13px;">${p.icon} ${p.name}</div>
+            <div style="font-size:11px;color:#94a3b8;">${p.type==='color'?'Colour':'B/W'} · ₹${p.ratePerPage}/page</div>
+          </div>
+          <button class="btn red sm" style="width:auto;padding:6px 12px;min-height:auto;font-size:12px;" onclick="Printers._del('${p.id}')">🗑️</button>
+        </div>`).join('');
+    };
+    Modal.open(`
+      <div class="mhead">
+        <div><div class="mt">🖨️ Manage Printers</div><div class="ms">Printer add / remove karo</div></div>
+        <button class="mclose" onclick="Modal.close()">✕</button>
+      </div>
+      <div class="mbody">
+        <div id="prList"></div>
+        <div class="divider"></div>
+        <p class="flabel" style="margin-bottom:8px;">➕ Add Printer</p>
+        <div class="fg"><p class="flabel">Printer Name</p><input type="text" class="inp mb8" id="prName" placeholder="e.g. HP LaserJet, Epson Color"></div>
+        <div class="fg"><p class="flabel">Type</p>
+          <div style="display:flex;gap:8px;">
+            <button class="pmbtn sel" id="prBW" onclick="Printers._selType('bw')">B/W</button>
+            <button class="pmbtn" id="prCol" onclick="Printers._selType('color')">🎨 Color</button>
+          </div>
+          <input type="hidden" id="prType" value="bw">
+        </div>
+        <div class="fg"><p class="flabel">Rate per Page ₹</p><input type="number" class="inp" id="prRate" inputmode="decimal" value="5"></div>
+      </div>
+      <div class="mfoot">
+        <button class="btn blue" onclick="Printers._add()">➕ Add</button>
+        <button class="btn ghost" onclick="Modal.close()">Done</button>
+      </div>
+    `);
+    renderList();
+  },
+  _selType(t){
+    document.getElementById('prType').value=t;
+    document.getElementById('prBW').classList.toggle('sel',t==='bw');
+    document.getElementById('prCol').classList.toggle('sel',t==='color');
+  },
+  _add(){
+    const name=document.getElementById('prName')?.value?.trim();
+    const type=document.getElementById('prType')?.value||'bw';
+    const rate=parseFloat(document.getElementById('prRate')?.value)||5;
+    if(!name)return Toast.show('⚠️ Printer name daalo');
+    const id='pr_'+Date.now();
+    DB.push(this._k,{id,name,type,ratePerPage:rate,icon:'🖨️'});
+    Toast.show('✅ Printer added: '+name);
+    document.getElementById('prName').value='';
+    this.manage();
+  },
+  _del(id){
+    if(!confirm('Printer delete karo?'))return;
+    DB.del(this._k,id);
+    Toast.show('✅ Printer removed');
+    this.manage();
+  },
+};
+
 /* ── MONEY BOXES ── */
 const Money = {
   _opening(){
@@ -1872,8 +2140,16 @@ const Money = {
       }
     });
     if(!Object.keys(d).length)return Toast.show('⚠️ Kuch to daalo');
-    DB.s('mbc_'+DB.today(),d);Modal.close();
-    Toast.show(mm?`⚠️ ${mm} box mismatch!`:'✅ Sab match! Day closed 🎉');
+    DB.s('mbc_'+DB.today(),d);
+    // Show cancelled entries summary before closing
+    const today=DB.today();
+    const cancelled=DB.l('entries').filter(e=>e.day===today&&e.cancelled);
+    if(cancelled.length){
+      Toast.show(`⚠️ ${mm} mismatch · ${cancelled.length} cancelled entries!`,3500);
+    } else {
+      Toast.show(mm?`⚠️ ${mm} box mismatch!`:'✅ Sab match! Day closed 🎉');
+    }
+    Modal.close();
     Router.go(Router.cur);
   },
 };
@@ -2025,9 +2301,9 @@ const Reports = {
       const d=new Date(now);d.setDate(d.getDate()-30);
       es=all.filter(e=>e.day>=d.toISOString().split('T')[0]);label='30 Days';
     }
-    const revEs=es.filter(e=>e.type!=='expense');
-    const expEs=es.filter(e=>e.type==='expense');
-    const aepsEs=es.filter(e=>e.type==='aeps');
+    const revEs=es.filter(e=>e.type!=='expense'&&!e.cancelled);
+    const expEs=es.filter(e=>e.type==='expense'&&!e.cancelled);
+    const aepsEs=es.filter(e=>e.type==='aeps'&&!e.cancelled);
     const total=revEs.reduce((s,e)=>s+e.amt,0);
     const expTotal=expEs.reduce((s,e)=>s+e.amt,0);
     const net=total-expTotal;
@@ -2200,12 +2476,12 @@ const Reports = {
 /* ── HOME ── */
 const Home = {
   _ecard(e){
-    const isAeps=e.type==='aeps', isExp=e.type==='expense';
+    const isAeps=e.type==='aeps', isExp=e.type==='expense', isBijli=e.type==='bijli';
     const pm=C.pm.find(p=>p.id===e.pm)||{icon:'🔢',name:e.pm||''};
-    const iconBg={cash:'#f0fdf4',online:'#eff6ff',udhar:'#fef2f2',partial:'#fff7ed',aeps:'#ecfeff',expense:'#f3f0ff'};
+    const iconBg={cash:'#f0fdf4',online:'#eff6ff',udhar:'#fef2f2',partial:'#fff7ed',aeps:'#ecfeff',expense:'#f3f0ff',bijli:'#fef9c3'};
     const showStaff=Auth.isOwner()&&e.who;
-    const kind=isAeps?'aeps':isExp?'expense':(e.pm||'');
-    const icon=isAeps?'🏧':isExp?'💸':pm.icon;
+    const kind=isAeps?'aeps':isExp?'expense':isBijli?'bijli':(e.pm||'');
+    const icon=isAeps?'🏧':isExp?'💸':isBijli?'💡':pm.icon;
     let pills,mainAmt;
     if(isAeps){
       pills=`<span class="epill aeps">AEPS ${e.aepsType==='deposit'?'Deposit':'Withdraw'}</span>`
@@ -2214,14 +2490,18 @@ const Home = {
     } else if(isExp){
       pills=`<span class="epill expense">Kharcha</span><span class="epill ${e.pm||''}">${pm.name}</span>`;
       mainAmt=`<div class="eamt expense">−${F.rs(e.amt)}</div>`;
+    } else if(isBijli){
+      pills=`<span class="epill" style="background:#fef9c3;color:#854d0e;border:1px solid #facc15;">💡 Light Bill</span><span class="epill ${e.pm||''}">${pm.name}</span>`;
+      mainAmt=`<div class="eamt" style="color:#854d0e;">${F.rs(e.amt)}<div style="font-size:9px;color:#94a3b8;">bill:${F.short(e.bijliAmt||0)}</div></div>`;
     } else {
       pills=`<span class="epill ${e.pm||''}">${pm.name}</span>`;
       mainAmt=`<div class="eamt ${e.pm==='udhar'?'udhar':''}">${F.rs(e.amt)}</div>`;
     }
-    return `<div class="ecard ${kind}" onclick="Entry.detail('${e.id}')">
+    const cancelledClass=e.cancelled?' cancelled':'';
+    return `<div class="ecard ${kind}${cancelledClass}" onclick="Entry.detail('${e.id}')">
       <div class="eicon ${kind}" style="background:${iconBg[kind]||'#f1f5f9'}">${icon}</div>
       <div class="einfo">
-        <div class="ename">${e.svc}</div>
+        <div class="ename">${e.svc}${e.cancelled?' <span style="font-size:10px;color:#dc2626;">[Cancelled]</span>':''}</div>
         <div class="emeta">
           ${pills}
           ${e.cust?`<span>👤 ${e.cust}</span>`:''}
@@ -2239,6 +2519,7 @@ const Home = {
     d.setDate(d.getDate()+n);
     return d.getFullYear()+'-'+String(d.getMonth()+1).padStart(2,'0')+'-'+String(d.getDate()).padStart(2,'0');
   },
+  _filter:'all',
   renderOwner(dayOff=0){
     this._vday=dayOff;
     const today=DB.today();
@@ -2246,12 +2527,13 @@ const Home = {
     const isToday=viewDay===today;
     const allEs=DB.l('entries');
     const es=allEs.filter(e=>e.day===viewDay).reverse();
-    // Revenue entries exclude expenses; expense entries tracked separately
-    const revEs=es.filter(e=>e.type!=='expense');
-    const expEs=es.filter(e=>e.type==='expense');
-    // Prev day comparison
+    // Revenue entries exclude expenses + cancelled
+    const revEs=es.filter(e=>e.type!=='expense'&&!e.cancelled);
+    const expEs=es.filter(e=>e.type==='expense'&&!e.cancelled);
+    const cancelledEs=es.filter(e=>e.cancelled);
+    // Prev day comparison (exclude cancelled)
     const prevDay=(()=>{const d=new Date(viewDay);d.setDate(d.getDate()-1);return d.getFullYear()+'-'+String(d.getMonth()+1).padStart(2,'0')+'-'+String(d.getDate()).padStart(2,'0')})();
-    const prevRevEs=allEs.filter(e=>e.day===prevDay&&e.type!=='expense');
+    const prevRevEs=allEs.filter(e=>e.day===prevDay&&e.type!=='expense'&&!e.cancelled);
     const total=revEs.reduce((s,e)=>s+e.amt,0);
     const prevTotal=prevRevEs.reduce((s,e)=>s+e.amt,0);
     const expTotal=expEs.reduce((s,e)=>s+e.amt,0);
@@ -2260,7 +2542,7 @@ const Home = {
     const online=revEs.filter(e=>e.pm==='online').reduce((s,e)=>s+e.amt,0);
     const udharAmt=revEs.filter(e=>e.pm==='udhar').reduce((s,e)=>s+e.amt,0);
     // AEPS
-    const aepsEs=es.filter(e=>e.type==='aeps');
+    const aepsEs=es.filter(e=>e.type==='aeps'&&!e.cancelled);
     const aepsVol=aepsEs.reduce((s,e)=>s+(e.aepsAmt||0),0);
     const aepsComm=aepsEs.reduce((s,e)=>s+(e.amt||0),0);
     const pendU=DB.l('udhar').reduce((s,a)=>s+Math.max(0,(a.given||0)-(a.paid||0)),0);
@@ -2272,6 +2554,17 @@ const Home = {
     const trendHtml=trend===null?'':(parseFloat(trend)>0?`<span class="trend-up">▲ ${trend}%</span>`:parseFloat(trend)<0?`<span class="trend-dn">▼ ${Math.abs(trend)}%</span>`:`<span class="trend-eq">→ 0%</span>`);
     // Day label
     const dayLabel=isToday?'Today':viewDay===this._dayOffset(-1)?'Yesterday':new Date(viewDay).toLocaleDateString('en-IN',{day:'2-digit',month:'short',year:'numeric'});
+    // 7-day chart data
+    const days7=Array.from({length:7},(_,i)=>{
+      const d=new Date();d.setDate(d.getDate()-(6-i));
+      const k=d.getFullYear()+'-'+String(d.getMonth()+1).padStart(2,'0')+'-'+String(d.getDate()).padStart(2,'0');
+      const rev=allEs.filter(e=>e.day===k&&e.type!=='expense'&&!e.cancelled).reduce((s,e)=>s+e.amt,0);
+      return{k,rev,lbl:['Su','Mo','Tu','We','Th','Fr','Sa'][d.getDay()],isT:i===6};
+    });
+    const maxRev=Math.max(...days7.map(d=>d.rev),1);
+    // Closing banner check
+    const closingDone=!!DB.g('mbc_'+today);
+    const showClosingBanner=isToday&&hr>=18&&!closingDone;
 
     document.getElementById('main').innerHTML=`
       <!-- Date Navigator -->
@@ -2287,7 +2580,7 @@ const Home = {
       <div class="hero">
         <div class="hero-greet">${isToday?greet:'📅 '+dayLabel}</div>
         <div class="hero-amt" style="display:flex;align-items:baseline;gap:10px;">${F.rs(total)} ${trendHtml}</div>
-        <div class="hero-lbl">${es.length} entries · vs prev: ${F.rs(prevTotal)}</div>
+        <div class="hero-lbl">${revEs.length} entries · vs prev: ${F.rs(prevTotal)}</div>
         <div class="hero-stats">
           <div class="hstat"><div class="sl">💵 CASH</div><div class="sv">${F.short(cash)}</div></div>
           <div class="hstat"><div class="sl">📱 ONLINE</div><div class="sv">${F.short(online)}</div></div>
@@ -2295,17 +2588,37 @@ const Home = {
         </div>
       </div>
 
-      <div class="stat-row">
-        <div class="stat-box"><div class="sb-v" style="color:#0891b2;">${F.short(aepsVol)}</div><div class="sb-l">🏧 AEPS Today</div><div class="sb-t" style="color:#16a34a;">${aepsEs.length} txn · +${F.rs(aepsComm)}</div></div>
-        <div class="stat-box"><div class="sb-v" style="color:#7c3aed;">${F.short(expTotal)}</div><div class="sb-l">💸 Kharcha</div><div class="sb-t">${expEs.length} items</div></div>
-        <div class="stat-box"><div class="sb-v" style="color:${net>=0?'#16a34a':'#dc2626'};">${F.short(net)}</div><div class="sb-l">📈 Net Profit</div><div class="sb-t">income − kharcha</div></div>
+      <div class="plrow">
+        <div class="plcard income"><div class="pli">💰 Income</div><div class="plv">${F.short(total)}</div></div>
+        <div class="plcard expense"><div class="pli">💸 Kharcha</div><div class="plv">${F.short(expTotal)}</div></div>
+        <div class="plcard profit"><div class="pli">📈 Munaafa</div><div class="plv" style="color:${net>=0?'#1d4ed8':'#dc2626'};">${F.short(net)}</div></div>
       </div>
+
+      ${isToday?`
+      <div class="wkchart">
+        ${days7.map(d=>`<div class="wkday">
+          <div class="wkamt">${d.rev>0?F.short(d.rev):''}</div>
+          <div class="wkbar ${d.isT?'today':d.rev===0?'zero':''}" style="height:${Math.round((d.rev/maxRev)*44)+4}px;"></div>
+          <div class="wklbl">${d.lbl}</div>
+        </div>`).join('')}
+      </div>`:''}
+
+      ${showClosingBanner?`<div class="close-banner">
+        <div>
+          <div style="font-weight:700;font-size:13px;color:#dc2626;">⚠️ Closing Baaki Hai!</div>
+          <div style="font-size:11px;color:#b91c1c;margin-top:2px;">Dukaan band karne se pehle hisab milao</div>
+        </div>
+        <button class="btn red sm" style="width:auto;padding:8px 14px;min-height:auto;font-size:12px;white-space:nowrap;" onclick="Money.showClosing()">🔒 Band Karo</button>
+      </div>`:''}
+
+      ${cancelledEs.length>0&&isToday?`<div style="padding:8px 12px;background:#fef2f2;border-radius:var(--r-md);border:1.5px solid #fca5a5;margin-bottom:12px;font-size:12px;color:#dc2626;font-weight:700;">⚠️ ${cancelledEs.length} entry staff ne cancel ki — closing mein check karo</div>`:''}
 
       ${isToday?`<div class="section">
         <p class="stitle">⚡ Quick Actions</p>
         <div class="qagrid">
           <button class="qabtn primary" onclick="Entry.show()"><span class="qi">➕</span><span class="ql">New Entry</span></button>
           <button class="qabtn teal" onclick="Aeps.show()"><span class="qi">🏧</span><span class="ql">AEPS Cash</span></button>
+          <button class="qabtn" onclick="BijliBill.show()"><span class="qi">💡</span><span class="ql">Light Bill</span></button>
           <button class="qabtn" onclick="Entry.showSale()"><span class="qi">🛒</span><span class="ql">Product Sale</span></button>
           <button class="qabtn" onclick="Router.go('udhar')"><span class="qi">📋</span><span class="ql">${pendU>0?'Udhar<br><b style=\'color:#dc2626;\'>'+F.rs(pendU)+'</b>':'Udhar'}</span></button>
           <button class="qabtn purple" onclick="Expense.show()"><span class="qi">💸</span><span class="ql">Expense</span></button>
@@ -2313,7 +2626,6 @@ const Home = {
           <button class="qabtn" onclick="Money.showClosing()"><span class="qi">🔒</span><span class="ql">Closing</span></button>
           <button class="qabtn" onclick="Router.go('reports')"><span class="qi">📊</span><span class="ql">Reports</span></button>
           <button class="qabtn" onclick="App.staffAttend()"><span class="qi">👥</span><span class="ql">Attendance</span></button>
-          <button class="qabtn" onclick="App.settings()"><span class="qi">⚙️</span><span class="ql">Settings</span></button>
         </div>
       </div>
 
@@ -2334,86 +2646,138 @@ const Home = {
 
       <div class="section">
         <p class="stitle">📋 ${dayLabel}'s Entries ${es.length>0?`<span class="pill">${es.length}</span>`:''}</p>
-        ${es.length===0?
-          `<div class="empty"><div class="ei">📝</div><div class="et">No entries ${isToday?'yet':'this day'}</div><div class="es">${isToday?'Start adding entries!':'No records found'}</div>${isToday?`<button class="eb" onclick="Entry.show()">➕ First Entry</button>`:''}</div>`:
-          `<div class="elist">${es.slice(0,50).map(e=>this._ecard(e)).join('')}</div>`}
+        <div class="fchips" id="fchips">
+          <button class="fchip ${(this._filter||'all')==='all'?'active':''}" onclick="Home._setFilter('all')">All</button>
+          <button class="fchip ${this._filter==='cash'?'active':''}" onclick="Home._setFilter('cash')">💵 Cash</button>
+          <button class="fchip ${this._filter==='online'?'active':''}" onclick="Home._setFilter('online')">📱 Online</button>
+          <button class="fchip ${this._filter==='udhar'?'active':''}" onclick="Home._setFilter('udhar')">📋 Udhar</button>
+          <button class="fchip ${this._filter==='expense'?'active':''}" onclick="Home._setFilter('expense')">💸 Kharcha</button>
+          ${cancelledEs.length>0?`<button class="fchip ${this._filter==='cancelled'?'active':''}" onclick="Home._setFilter('cancelled')">🚫 Cancelled</button>`:''}
+        </div>
+        ${(()=>{
+          const f=this._filter||'all';
+          let filtered;
+          if(f==='all') filtered=es.filter(e=>!e.cancelled);
+          else if(f==='cancelled') filtered=cancelledEs;
+          else if(f==='expense') filtered=expEs;
+          else filtered=revEs.filter(e=>e.pm===f);
+          if(!filtered.length) return `<div class="empty"><div class="ei">📝</div><div class="et">${f==='all'?(isToday?'No entries yet':'No records found'):'No '+f+' entries'}</div><div class="es">${isToday&&f==='all'?'Start adding entries!':''}</div>${isToday&&f==='all'?`<button class="eb" onclick="Entry.show()">➕ First Entry</button>`:''}</div>`;
+          return `<div class="elist">${filtered.slice(0,60).map(e=>this._ecard(e)).join('')}</div>`;
+        })()}
       </div>
     `;
   },
+  _setFilter(f){this._filter=f;Home.renderOwner(this._vday||0)},
 
   renderStaff(){
     const today=DB.today(),myName=Auth.user().name;
-    const myEs=DB.l('entries').filter(e=>e.day===today&&e.who===myName).reverse();
-    const myRev=myEs.filter(e=>e.type!=='expense');
-    const myTotal=myRev.reduce((s,e)=>s+e.amt,0);
-    const myAeps=myEs.filter(e=>e.type==='aeps').reduce((s,e)=>s+(e.aepsAmt||0),0);
+    const myEs=DB.l('entries').filter(e=>e.day===today&&e.who===myName&&!e.cancelled).reverse();
     const hr=new Date().getHours();
-    const greet=hr<12?'🌅 Subah ko swagat':hr<17?'☀️ Dopahar namaste':'🌙 Shaam ko namaste';
+    const greet=hr<12?'🌅 Subah namaste':hr<17?'☀️ Dopahar namaste':'🌙 Shaam namaste';
     const attend=DB.g('at_'+today)||{};
-    const present=!!attend[myName];
+    const myAtt=attend[myName];
+    const punchIn=myAtt?.punchIn||null;
+    const punchOut=myAtt?.punchOut||null;
+
+    let attendHtml;
+    if(!punchIn){
+      attendHtml=`<div class="attend-banner pending">
+        <div>
+          <div style="font-weight:700;font-size:13px;color:#854d0e;">🕐 Punch In Nahi Kiya</div>
+          <div style="font-size:11px;color:#a16207;margin-top:2px;">Shuruaat ke liye punch in karo</div>
+        </div>
+        <button class="btn green" style="width:auto;padding:10px 18px;font-size:13px;min-height:auto;" onclick="Home._punchIn()">📍 Punch In</button>
+      </div>`;
+    } else if(!punchOut){
+      attendHtml=`<div class="attend-banner done" style="justify-content:space-between;">
+        <div>
+          <div style="font-weight:700;font-size:13px;color:#15803d;">✅ Punched In — ${F.time(punchIn)}</div>
+          <div style="font-size:11px;color:#16a34a;margin-top:2px;">Kaam jari hai...</div>
+        </div>
+        <button class="btn sm" style="background:#fef2f2;color:#dc2626;border:1.5px solid #fca5a5;width:auto;padding:8px 12px;min-height:auto;font-size:12px;font-weight:700;" onclick="Home._punchOut()">🚪 Punch Out</button>
+      </div>`;
+    } else {
+      const inT=new Date(punchIn),outT=new Date(punchOut);
+      const diffMs=outT-inT;
+      const hrs=Math.floor(diffMs/3600000);
+      const mins=Math.floor((diffMs%3600000)/60000);
+      attendHtml=`<div class="attend-banner done">
+        <div>
+          <div style="font-weight:700;font-size:13px;color:#15803d;">✅ ${F.time(punchIn)} → ${F.time(punchOut)}</div>
+          <div style="font-size:11px;color:#16a34a;margin-top:2px;">${hrs}h ${mins}m kaam kiya aaj</div>
+        </div>
+      </div>`;
+    }
+
+    const qTiles=[
+      {id:'aadhaar',icon:'📄',name:'Aadhaar',rate:50},
+      {id:'pan',icon:'💳',name:'PAN Card',rate:150},
+      {id:'bijli',icon:'💡',name:'Light Bill',rate:20,action:"BijliBill.show()"},
+      {id:'print_bw',icon:'🖨️',name:'B/W Print',rate:5},
+      {id:'colour_print',icon:'🎨',name:'Colour',rate:15},
+      {id:'photo',icon:'📸',name:'Photo',rate:50},
+      {id:'spiral',icon:'📎',name:'Binding',rate:30},
+      {id:'pvc',icon:'💳',name:'PVC Card',rate:80},
+    ];
 
     document.getElementById('main').innerHTML=`
       <div class="hero" style="background:linear-gradient(135deg,#0891b2,#0e7490);">
-        <div class="hero-greet">${greet}, ${myName}!</div>
-        <div class="hero-amt">${F.rs(myTotal)}</div>
-        <div class="hero-lbl">Aapki aaj ki ${myEs.length} entries</div>
-      </div>
-
-      ${!present?`
-        <div class="attend-banner pending">
+        <div style="display:flex;justify-content:space-between;align-items:flex-start;gap:8px;">
           <div>
-            <div style="font-weight:700;font-size:13px;color:#854d0e;">🕐 Attendance Pending</div>
-            <div style="font-size:11px;color:#a16207;margin-top:2px;">Mark karo shuruaat ke liye</div>
+            <div class="hero-greet">${greet}, ${myName}!</div>
+            <div class="hero-amt">${myEs.length} entries</div>
+            <div class="hero-lbl">Aaj kiya kaam</div>
           </div>
-          <button class="btn green" style="width:auto;padding:10px 18px;font-size:13px;min-height:auto;" onclick="Home._attend()">✅ Present</button>
-        </div>`:
-        `<div class="attend-banner done">
-          <div>
-            <div style="font-weight:700;font-size:13px;color:#15803d;">✅ Present Aaj</div>
-            <div style="font-size:11px;color:#16a34a;margin-top:2px;">Marked at ${F.time(attend[myName])}</div>
-          </div>
-        </div>`}
-
-      <p class="stitle">⚡ Kya karna hai?</p>
-      <div class="staffbtns">
-        <button class="bgtbtn blue" onclick="Entry.show()">
-          <div class="bi">➕</div><div class="bl">New Entry</div><div class="bs">Service ki entry</div>
-        </button>
-        <button class="bgtbtn teal" onclick="Aeps.show()">
-          <div class="bi">🏧</div><div class="bl">AEPS Cash</div><div class="bs">Paise nikalo</div>
-        </button>
-        <button class="bgtbtn green" onclick="Entry.showSale()">
-          <div class="bi">🛒</div><div class="bl">Product Sale</div><div class="bs">Saaman becho</div>
-        </button>
-        <button class="bgtbtn purple" onclick="Router.go('udhar')">
-          <div class="bi">📋</div><div class="bl">Udhar</div><div class="bs">Udhar dekho / lo</div>
-        </button>
+          <button onclick="App._logout()" style="flex-shrink:0;background:rgba(255,255,255,.2);border:1.5px solid rgba(255,255,255,.4);color:#fff;border-radius:10px;padding:8px 12px;font-size:12px;font-weight:700;cursor:pointer;white-space:nowrap;">🚪 Logout</button>
+        </div>
       </div>
-      <button class="btn ghost mb16" onclick="Expense.show()" style="background:#f3f0ff;color:#7c3aed;">💸 Expense / Kharcha likho</button>
 
-      <div class="scgrid mb12">
-        <div class="scard blue"><div class="sl">📊 Entries</div><div class="sv" style="color:#1e40af;">${myEs.length}</div><div class="ss">aaj</div></div>
-        <div class="scard green"><div class="sl">💰 Total</div><div class="sv" style="color:#15803d;">${F.rs(myTotal)}</div><div class="ss">aaj ki kamai</div></div>
+      ${attendHtml}
+
+      <p class="stitle" style="margin-bottom:8px;">⚡ Jaldi Entry — Ek Tap</p>
+      <div class="qsgrid">
+        ${qTiles.map(t=>`<button class="qstile" onclick="${t.action||`Entry.showPreset('${t.id}')`}">
+          <span class="qsi">${t.icon}</span>
+          <span class="qsn">${t.name}</span>
+          <span class="qsr">₹${t.rate}</span>
+        </button>`).join('')}
       </div>
-      ${myAeps>0?`<div class="scard mb12" style="border-left:4px solid #0891b2;"><div class="spread"><div><div class="sl">🏧 AEPS Volume</div><div class="sv" style="color:#0891b2;">${F.rs(myAeps)}</div></div><div style="font-size:11px;color:#94a3b8;">aaj ka total</div></div></div>`:''}
+
+      <div style="display:grid;grid-template-columns:repeat(3,1fr);gap:8px;margin-bottom:14px;">
+        <button onclick="Entry.show()" style="background:#fff;border:1.5px solid var(--border);border-radius:var(--r-md);padding:11px 5px;display:flex;flex-direction:column;align-items:center;gap:4px;font-size:10px;font-weight:700;color:#374151;cursor:pointer;"><span style="font-size:20px;">➕</span>New Entry</button>
+        <button onclick="Aeps.show()" style="background:#ecfeff;border:1.5px solid #a5f3fc;border-radius:var(--r-md);padding:11px 5px;display:flex;flex-direction:column;align-items:center;gap:4px;font-size:10px;font-weight:700;color:#0e7490;cursor:pointer;"><span style="font-size:20px;">🏧</span>AEPS</button>
+        <button onclick="Entry.showSale()" style="background:#f0fdf4;border:1.5px solid #86efac;border-radius:var(--r-md);padding:11px 5px;display:flex;flex-direction:column;align-items:center;gap:4px;font-size:10px;font-weight:700;color:#15803d;cursor:pointer;"><span style="font-size:20px;">🛒</span>Product</button>
+      </div>
 
       <div class="section">
         <p class="stitle">📋 Meri Entries ${myEs.length>0?`<span class="pill">${myEs.length}</span>`:''}</p>
         ${myEs.length===0?
-          `<div class="empty"><div class="ei">📝</div><div class="et">Koi entry nahi</div><div class="es">Upar se entry karo!</div></div>`:
+          `<div class="empty"><div class="ei">📝</div><div class="et">Koi entry nahi</div><div class="es">Upar tiles se jaldi entry karo!</div></div>`:
           `<div class="elist">${myEs.map(e=>this._ecard(e)).join('')}</div>`}
       </div>
     `;
   },
 
-  _attend(){
+  _punchIn(){
     const today=DB.today(),name=Auth.user().name;
     const d=DB.g('at_'+today)||{};
-    d[name]=new Date().toISOString();
+    if(d[name]?.punchIn)return Toast.show('⚠️ Already punched in');
+    d[name]={present:true,punchIn:new Date().toISOString(),punchOut:null};
     DB.s('at_'+today,d);
-    Toast.show('✅ Present marked!');
+    Toast.show('✅ Punch in ho gaya!');
     Router.go('home');
   },
+  _punchOut(){
+    const today=DB.today(),name=Auth.user().name;
+    const d=DB.g('at_'+today)||{};
+    if(!d[name]?.punchIn)return Toast.show('⚠️ Pehle punch in karo');
+    if(d[name]?.punchOut)return Toast.show('⚠️ Already punched out');
+    d[name].punchOut=new Date().toISOString();
+    DB.s('at_'+today,d);
+    Toast.show('✅ Punch out ho gaya!');
+    Router.go('home');
+  },
+  _attend(){this._punchIn()},
 };
 
 /* ── ROUTER ── */
@@ -2489,7 +2853,9 @@ const App = {
         <button class="btn ghost mb8" onclick="App._bizSetup()" style="justify-content:flex-start;">🏪 Shop Name &amp; Details</button>
         <button class="btn ghost mb8" onclick="App._changePin()" style="justify-content:flex-start;">🔑 Change PINs</button>
         <button class="btn ghost mb8" onclick="App._staffName()" style="justify-content:flex-start;">✏️ Staff Name / PIN</button>
-        <button class="btn ghost mb8" onclick="App._addService()" style="justify-content:flex-start;">➕ Add Custom Service</button>
+        <button class="btn ghost mb8" onclick="App._addService()" style="justify-content:flex-start;">⚙️ Manage Services</button>
+        <button class="btn ghost mb8" onclick="App._manageProducts()" style="justify-content:flex-start;">🛒 Manage Products</button>
+        <button class="btn ghost mb8" onclick="Printers.manage()" style="justify-content:flex-start;">🖨️ Manage Printers</button>
         <button class="btn ghost mb8" onclick="App._attendance()" style="justify-content:flex-start;">👥 Staff Attendance</button>
 
         <p style="font-size:10px;font-weight:700;color:var(--text-3);text-transform:uppercase;letter-spacing:.08em;margin:12px 0 6px;">💾 Data</p>
@@ -2588,38 +2954,118 @@ const App = {
     Toast.show('✅ Backup downloaded!');
   },
   _attendance(){
-    const today=DB.today(),data=DB.g('at_'+today)||{};
+    const today=DB.today();
+    const todayData=DB.g('at_'+today)||{};
+    const now=new Date();
+    const monthDays=new Date(now.getFullYear(),now.getMonth()+1,0).getDate();
+    const staffSet=new Set();
+    // Collect all known staff from last 30 days
+    for(let i=0;i<30;i++){
+      const d=new Date(now);d.setDate(d.getDate()-i);
+      const k='at_'+d.getFullYear()+'-'+String(d.getMonth()+1).padStart(2,'0')+'-'+String(d.getDate()).padStart(2,'0');
+      const v=DB.g(k)||{};
+      Object.keys(v).forEach(n=>staffSet.add(n));
+    }
+    const staffList=[...staffSet];
+    // Build today summary
+    const todayRows=()=>{
+      if(!Object.keys(todayData).length) return '<p style="text-align:center;color:#94a3b8;padding:20px;">Aaj koi present nahi hua</p>';
+      return Object.entries(todayData).map(([name,att])=>{
+        const pIn=att?.punchIn,pOut=att?.punchOut;
+        let hrs='—';
+        if(pIn&&pOut){const diff=new Date(pOut)-new Date(pIn);hrs=Math.floor(diff/3600000)+'h '+Math.floor((diff%3600000)/60000)+'m';}
+        else if(pIn){const diff=Date.now()-new Date(pIn);hrs=Math.floor(diff/3600000)+'h '+Math.floor((diff%3600000)/60000)+'m (jari)';}
+        return `<div class="card mb8">
+          <div class="spread">
+            <div style="font-weight:700;font-size:13px;">${name}</div>
+            <span class="pill green">✅ Present</span>
+          </div>
+          <div style="font-size:11px;color:#64748b;margin-top:4px;display:flex;gap:12px;">
+            <span>In: ${pIn?F.time(pIn):'—'}</span>
+            <span>Out: ${pOut?F.time(pOut):'—'}</span>
+            <span>⏱️ ${hrs}</span>
+          </div>
+        </div>`;
+      }).join('');
+    };
+    // Build monthly summary
+    const monthRows=()=>{
+      if(!staffList.length) return '<p style="text-align:center;color:#94a3b8;padding:20px;">No attendance data</p>';
+      const yr=now.getFullYear(),mo=now.getMonth();
+      return staffList.map(name=>{
+        let present=0,totalMs=0;
+        const cells=Array.from({length:monthDays},(_,i)=>{
+          const d=new Date(yr,mo,i+1);
+          const k='at_'+yr+'-'+String(mo+1).padStart(2,'0')+'-'+String(d.getDate()).padStart(2,'0');
+          const v=DB.g(k)||{};
+          const att=v[name];
+          if(!att) return `<div class="atcell a" title="${i+1}" style="background:${d>now?'#f8fafc':'#fef2f2'};color:${d>now?'#cbd5e1':'#dc2626'};">${d>now?'':''}</div>`;
+          present++;
+          if(att.punchIn&&att.punchOut) totalMs+=new Date(att.punchOut)-new Date(att.punchIn);
+          return `<div class="atcell p" title="${i+1}">✓</div>`;
+        });
+        const totHrs=Math.floor(totalMs/3600000);
+        return `<div class="card mb12">
+          <div class="spread mb8"><span style="font-weight:700;font-size:13px;">${name}</span><span class="pill green">${present}/${monthDays} days · ${totHrs}h</span></div>
+          <div style="display:flex;flex-wrap:wrap;gap:2px;">${cells.join('')}</div>
+        </div>`;
+      }).join('');
+    };
     Modal.open(`
       <div class="mhead">
-        <div><div class="mt">👥 Staff Attendance</div><div class="ms">${new Date().toLocaleDateString('en-IN')}</div></div>
-        <button class="mclose" onclick="Modal.close()" aria-label="Close">✕</button>
+        <div><div class="mt">👥 Attendance</div><div class="ms">${new Date().toLocaleDateString('en-IN',{day:'2-digit',month:'short',year:'numeric'})}</div></div>
+        <button class="mclose" onclick="Modal.close()">✕</button>
       </div>
       <div class="mbody">
-        ${Object.keys(data).length===0?
-          '<p style="text-align:center;color:#94a3b8;padding:24px;">Aaj koi present nahi hua</p>':
-          Object.entries(data).map(([name,time])=>`
-            <div class="card mb8 spread">
-              <div><div style="font-weight:700;font-size:13px;">${name}</div><div style="font-size:11px;color:#94a3b8;">In: ${F.time(time)}</div></div>
-              <span class="pill green">✅ Present</span>
-            </div>`).join('')}
+        <div class="rtabs" style="margin-bottom:12px;">
+          <button class="rtab active" id="attTabToday" onclick="App._attTab('today')">📅 Aaj</button>
+          <button class="rtab" id="attTabMonth" onclick="App._attTab('month')">📆 Mahina</button>
+        </div>
+        <div id="attToday">${todayRows()}</div>
+        <div id="attMonth" style="display:none;">${monthRows()}</div>
       </div>
     `);
   },
+  _attTab(tab){
+    document.getElementById('attTabToday')?.classList.toggle('active',tab==='today');
+    document.getElementById('attTabMonth')?.classList.toggle('active',tab==='month');
+    const tEl=document.getElementById('attToday');
+    const mEl=document.getElementById('attMonth');
+    if(tEl)tEl.style.display=tab==='today'?'block':'none';
+    if(mEl)mEl.style.display=tab==='month'?'block':'none';
+  },
   _addService(){
+    const custom=DB.l('custom_svcs');
     Modal.open(`
       <div class="mhead">
-        <div><div class="mt">➕ Custom Service</div><div class="ms">Quick access ke liye</div></div>
-        <button class="mclose" onclick="Modal.close()" aria-label="Close">✕</button>
+        <div><div class="mt">⚙️ Manage Services</div><div class="ms">Custom services add / remove</div></div>
+        <button class="mclose" onclick="Modal.close()">✕</button>
       </div>
       <div class="mbody">
-        <div class="fg"><p class="flabel">Service Name</p><input type="text" class="inp" id="csn" placeholder="e.g. DL Form, RC Transfer" autocomplete="off"></div>
+        ${custom.length>0?`
+          <p class="flabel" style="margin-bottom:6px;">Custom Services</p>
+          ${custom.map(s=>`<div class="card mb8 spread">
+            <div><div style="font-weight:700;font-size:13px;">${s.name}</div><div style="font-size:11px;color:#94a3b8;">₹${s.rate} · Custom</div></div>
+            <button class="btn red sm" style="width:auto;padding:6px 12px;min-height:auto;font-size:12px;" onclick="App._delService('${s.id}')">🗑️</button>
+          </div>`).join('')}
+          <div class="divider"></div>`:''}
+        <p class="flabel" style="margin-bottom:8px;">➕ New Custom Service</p>
+        <div class="fg"><p class="flabel">Name</p><input type="text" class="inp mb8" id="csn" placeholder="e.g. DL Form, RC Transfer" autocomplete="off"></div>
         <div class="fg"><p class="flabel">Default Rate ₹</p><input type="number" class="inp" id="csr" inputmode="decimal" placeholder="0"></div>
       </div>
       <div class="mfoot">
         <button class="btn blue" onclick="App._saveService()">➕ Add Service</button>
-        <button class="btn ghost" onclick="Modal.close()">Cancel</button>
+        <button class="btn ghost" onclick="Modal.close()">Done</button>
       </div>
     `);
+    setTimeout(()=>document.getElementById('csn')?.focus(),200);
+  },
+  _delService(id){
+    const custom=DB.l('custom_svcs').filter(s=>s.id!==id);
+    DB.s('custom_svcs',custom);
+    C.svcs=C.svcs.filter(s=>s.id!==id);
+    Toast.show('✅ Service removed');
+    this._addService();
   },
   _saveService(){
     const name=document.getElementById('csn')?.value?.trim();
@@ -2631,8 +3077,61 @@ const App = {
     custom.push(svc);
     DB.s('custom_svcs',custom);
     C.svcs.push(svc);
-    Toast.show('✅ Service added: '+name);Modal.close();
+    Toast.show('✅ Service added: '+name);
+    this._addService();
   },
+  _manageProducts(){
+    const custom=DB.l('custom_prods');
+    const hidden=DB.l('prod_hidden');
+    const allProds=[...C.prods.filter(p=>!hidden.includes(p.id)),...custom];
+    Modal.open(`
+      <div class="mhead">
+        <div><div class="mt">🛒 Manage Products</div><div class="ms">Add / remove products</div></div>
+        <button class="mclose" onclick="Modal.close()">✕</button>
+      </div>
+      <div class="mbody">
+        <p class="flabel" style="margin-bottom:6px;">Current Products</p>
+        ${allProds.map(p=>`<div class="card mb8 spread">
+          <div><div style="font-weight:700;font-size:13px;">${p.icon||'📦'} ${p.name}</div><div style="font-size:11px;color:#94a3b8;">₹${p.price}</div></div>
+          <button class="btn red sm" style="width:auto;padding:6px 12px;min-height:auto;font-size:12px;" onclick="App._delProduct('${p.id}')">🗑️</button>
+        </div>`).join('')}
+        <div class="divider"></div>
+        <p class="flabel" style="margin-bottom:8px;">➕ Add Product</p>
+        <div class="fg"><p class="flabel">Icon (emoji)</p><input type="text" class="inp mb8" id="mpIcon" value="📦" maxlength="4" style="font-size:20px;text-align:center;width:60px;"></div>
+        <div class="fg"><p class="flabel">Product Name</p><input type="text" class="inp mb8" id="mpName" placeholder="e.g. Pen Drive 32GB" autocomplete="off"></div>
+        <div class="fg"><p class="flabel">Price ₹</p><input type="number" class="inp" id="mpPrice" inputmode="decimal" placeholder="0"></div>
+      </div>
+      <div class="mfoot">
+        <button class="btn blue" onclick="App._addProduct()">➕ Add</button>
+        <button class="btn ghost" onclick="Modal.close()">Done</button>
+      </div>
+    `);
+    setTimeout(()=>document.getElementById('mpName')?.focus(),200);
+  },
+  _delProduct(id){
+    const isDefault=C.prods.find(p=>p.id===id);
+    if(isDefault){
+      const h=DB.l('prod_hidden');if(!h.includes(id))h.push(id);DB.s('prod_hidden',h);
+      C.prods=C.prods.filter(p=>p.id!==id);
+    } else {
+      DB.s('custom_prods',DB.l('custom_prods').filter(p=>p.id!==id));
+    }
+    // Refresh C.prods
+    Toast.show('✅ Product removed');this._manageProducts();
+  },
+  _addProduct(){
+    const icon=document.getElementById('mpIcon')?.value?.trim()||'📦';
+    const name=document.getElementById('mpName')?.value?.trim();
+    const price=parseFloat(document.getElementById('mpPrice')?.value)||0;
+    if(!name)return Toast.show('⚠️ Product name daalo');
+    if(!price||price<=0)return Toast.show('⚠️ Price daalo');
+    const id='cp_'+Date.now();
+    const prod={id,name,price,icon};
+    const custom=DB.l('custom_prods');custom.push(prod);DB.s('custom_prods',custom);
+    C.prods.push(prod);
+    Toast.show('✅ Product added: '+name);this._manageProducts();
+  },
+
   _staffName(){
     const cur=DB.g('staff_name')||'Staff';
     Modal.open(`
@@ -2719,6 +3218,13 @@ function _boot(){
   // ── Load custom services ──
   const custom=DB.l('custom_svcs');
   custom.forEach(s=>{if(!C.svcs.find(x=>x.id===s.id))C.svcs.push(s)});
+  // ── Load custom products ──
+  const customProds=DB.l('custom_prods');
+  const hiddenProds=DB.l('prod_hidden');
+  customProds.forEach(p=>{if(!C.prods.find(x=>x.id===p.id))C.prods.push(p)});
+  C.prods=C.prods.filter(p=>!hiddenProds.includes(p.id));
+  // ── Ensure default printer exists ──
+  Printers._ensureDefault();
   requestAnimationFrame(()=>App.init());
 }
 // Fire immediately if DOM already ready (Hostinger/dynamic injection),
