@@ -1,0 +1,1659 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1.0">
+<meta name="theme-color" content="#2563eb">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+<meta name="apple-mobile-web-app-title" content="Hisab">
+<meta name="description" content="Hisab – Rohit Computer, Rath Hamirpur">
+<title>Hisab — Rohit Computer</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800;900&display=swap" rel="stylesheet">
+<style>
+/* ── VARIABLES ── */
+:root{
+  --blue:#2563eb;--blue-d:#1d4ed8;--blue-l:#eff6ff;--blue-b:#bfdbfe;
+  --green:#16a34a;--green-l:#f0fdf4;--green-b:#86efac;
+  --red:#dc2626;--red-l:#fef2f2;--red-b:#fca5a5;
+  --orange:#ea580c;--orange-l:#fff7ed;
+  --bg:#f0f2f5;--surface:#fff;--border:#e2e8f0;
+  --text:#1e293b;--text-2:#64748b;--text-3:#94a3b8;
+  --nav-h:64px;--sidebar-w:220px;--header-h:62px;
+  --r-sm:10px;--r-md:14px;--r-lg:20px;--r-xl:24px;
+  --sh-sm:0 1px 4px rgba(0,0,0,.06);
+  --sh-md:0 4px 12px rgba(0,0,0,.10);
+  --sh-lg:0 8px 24px rgba(0,0,0,.14);
+}
+
+/* ── RESET ── */
+input[type=number]::-webkit-outer-spin-button,
+input[type=number]::-webkit-inner-spin-button{-webkit-appearance:none;margin:0}
+input[type=number]{-moz-appearance:textfield}
+*{box-sizing:border-box;margin:0;padding:0;-webkit-tap-highlight-color:transparent}
+html{font-size:14px;scroll-behavior:smooth}
+body{font-family:'Plus Jakarta Sans',-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;background:var(--bg);color:var(--text);line-height:1.5;overflow-x:hidden;-webkit-font-smoothing:antialiased;-moz-osx-font-smoothing:grayscale}
+body.modal-open{overflow:hidden}
+button,input,select,textarea{font-family:inherit}
+button{cursor:pointer;border:none;background:none}
+input,textarea{outline:none}
+img{max-width:100%;height:auto}
+
+/* ── APP SHELL ── */
+#app{min-height:100vh;display:flex;flex-direction:column;position:relative}
+.main{flex:1;padding:14px 14px calc(var(--nav-h) + 14px);overflow-y:auto}
+
+/* ── HEADER ── */
+.header{background:linear-gradient(135deg,#1e3a8a,#2563eb);color:#fff;padding:12px 16px;display:flex;align-items:center;justify-content:space-between;position:sticky;top:0;z-index:90;box-shadow:0 2px 12px rgba(0,0,0,.18)}
+.hbrand{display:flex;align-items:center;gap:10px;min-width:0}
+.hlogo{width:38px;height:38px;min-width:38px;background:rgba(255,255,255,.18);border-radius:11px;display:flex;align-items:center;justify-content:center;font-size:20px}
+.hname{font-size:15px;font-weight:800;line-height:1.2;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.hsub{font-size:10px;opacity:.65}
+.hactions{display:flex;gap:6px;align-items:center;flex-shrink:0}
+.rbadge{font-size:11px;font-weight:700;padding:4px 10px;background:rgba(255,255,255,.2);border-radius:20px;border:1px solid rgba(255,255,255,.25);white-space:nowrap}
+.hibtn{width:40px;height:40px;min-width:40px;background:rgba(255,255,255,.15);border-radius:10px;display:flex;align-items:center;justify-content:center;color:#fff;font-size:16px;transition:.15s}
+.hibtn:hover{background:rgba(255,255,255,.28)}
+.hibtn:active{background:rgba(255,255,255,.35)}
+
+/* ── BOTTOM NAV ── */
+.bnav{position:fixed;bottom:0;left:0;right:0;background:#fff;border-top:1px solid var(--border);padding:6px 0 calc(6px + env(safe-area-inset-bottom));display:flex;z-index:90;box-shadow:0 -2px 10px rgba(0,0,0,.06)}
+.nbtn{flex:1;display:flex;flex-direction:column;align-items:center;gap:2px;padding:6px 4px;color:var(--text-3);font-size:10px;font-weight:600;transition:color .15s;min-height:48px;justify-content:center;cursor:pointer}
+.nbtn .ni{font-size:21px;line-height:1}
+.nbtn.active{color:var(--blue)}
+.nbtn.fab{color:var(--blue)}
+.nbtn.fab .ni{font-size:30px;line-height:.9}
+
+/* ── HERO CARD ── */
+.hero{background:linear-gradient(135deg,#1e40af,#2563eb 55%,#3b82f6);border-radius:var(--r-lg);padding:18px;color:#fff;margin-bottom:14px;box-shadow:0 6px 20px rgba(37,99,235,.28)}
+.hero-greet{font-size:12px;opacity:.8;margin-bottom:3px;font-weight:500}
+.hero-amt{font-size:34px;font-weight:900;letter-spacing:-1px;line-height:1}
+.hero-lbl{font-size:11px;opacity:.65;margin-top:3px}
+.hero-stats{display:grid;grid-template-columns:repeat(3,1fr);gap:8px;margin-top:14px}
+.hstat{background:rgba(255,255,255,.13);border:1px solid rgba(255,255,255,.15);border-radius:11px;padding:8px 10px}
+.hstat .sl{font-size:9px;opacity:.7;letter-spacing:.05em;text-transform:uppercase}
+.hstat .sv{font-size:14px;font-weight:800;margin-top:2px}
+
+/* ── SECTIONS ── */
+.section{margin-bottom:16px}
+.stitle{font-size:11px;font-weight:700;color:var(--text-3);text-transform:uppercase;letter-spacing:.08em;margin-bottom:9px;display:flex;justify-content:space-between;align-items:center}
+.stitle .slink{font-size:11px;color:var(--blue);text-transform:none;letter-spacing:0;font-weight:600;cursor:pointer}
+
+/* ── QUICK ACTIONS ── */
+.qagrid{display:grid;grid-template-columns:repeat(4,1fr);gap:8px}
+.qabtn{background:#fff;border-radius:var(--r-md);padding:13px 5px;display:flex;flex-direction:column;align-items:center;gap:6px;box-shadow:var(--sh-sm);border:1px solid #e8ecf1;min-height:84px;justify-content:center;transition:all .15s;width:100%}
+.qabtn:hover{border-color:#93c5fd;background:var(--blue-l);transform:translateY(-1px)}
+.qabtn:active{transform:scale(.95);background:var(--blue-l);border-color:#93c5fd}
+.qabtn .qi{font-size:26px}
+.qabtn .ql{font-size:10px;font-weight:700;color:#374151;text-align:center;line-height:1.3}
+.qabtn.primary{background:linear-gradient(135deg,var(--blue),var(--blue-d));border:none;box-shadow:0 4px 12px rgba(37,99,235,.3)}
+.qabtn.primary .ql{color:#fff}
+.qabtn.primary:hover{background:linear-gradient(135deg,#1d56d8,#1741b5)}
+.qabtn.red{background:linear-gradient(135deg,var(--red),#b91c1c);border:none;box-shadow:0 4px 12px rgba(220,38,38,.25)}
+.qabtn.red .ql{color:#fff}
+
+/* ── STAFF: BIG BTNS ── */
+.staffbtns{display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-bottom:16px}
+.bgtbtn{border-radius:var(--r-lg);padding:22px 14px;display:flex;flex-direction:column;align-items:center;gap:8px;transition:all .15s;box-shadow:0 4px 14px rgba(0,0,0,.12);width:100%}
+.bgtbtn:hover{transform:translateY(-2px);box-shadow:0 8px 20px rgba(0,0,0,.18)}
+.bgtbtn:active{transform:scale(.97)}
+.bgtbtn.blue{background:linear-gradient(135deg,var(--blue),var(--blue-d))}
+.bgtbtn.green{background:linear-gradient(135deg,var(--green),#15803d)}
+.bgtbtn .bi{font-size:34px;color:#fff}
+.bgtbtn .bl{font-size:15px;font-weight:800;color:#fff}
+.bgtbtn .bs{font-size:11px;color:rgba(255,255,255,.8)}
+
+/* ── MONEY BOXES ── */
+.mbgrid{display:grid;grid-template-columns:repeat(3,1fr);gap:8px}
+.mbcard{background:#fff;border-radius:var(--r-md);padding:11px 12px;border:2px solid var(--border);cursor:pointer;min-height:80px;display:flex;flex-direction:column;justify-content:space-between;transition:all .15s}
+.mbcard:hover{border-color:#93c5fd;transform:translateY(-1px);box-shadow:var(--sh-sm)}
+.mbcard:active{transform:translateY(1px)}
+.mbcard.ok{border-color:var(--green-b);background:#f9fffe}
+.mbcard.bad{border-color:var(--red-b);background:#fffafa}
+.mbcard .ml{font-size:10px;font-weight:700;color:var(--text-2);white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.mbcard .ma{font-size:17px;font-weight:800;color:#1e40af;letter-spacing:-.3px;margin:3px 0}
+.mbcard .mm{font-size:9px;color:var(--text-3)}
+
+/* ── STAT CARDS ── */
+.scgrid{display:grid;grid-template-columns:1fr 1fr;gap:10px}
+.scard{background:#fff;border-radius:var(--r-md);padding:12px 14px;box-shadow:var(--sh-sm)}
+.scard .sl{font-size:10px;color:var(--text-2);margin-bottom:4px}
+.scard .sv{font-size:22px;font-weight:800;letter-spacing:-.3px}
+.scard .ss{font-size:10px;color:var(--text-3);margin-top:4px}
+.scard.blue{border-left:4px solid var(--blue)}
+.scard.green{border-left:4px solid var(--green)}
+.scard.orange{border-left:4px solid var(--orange)}
+.scard.red{border-left:4px solid var(--red)}
+
+/* ── ENTRY CARDS ── */
+.elist{display:flex;flex-direction:column;gap:6px}
+.ecard{background:#fff;border-radius:13px;padding:10px 12px;display:flex;align-items:center;gap:10px;box-shadow:0 1px 3px rgba(0,0,0,.05);border-left:3px solid var(--text-3);cursor:pointer;transition:all .15s}
+.ecard:hover{box-shadow:0 3px 10px rgba(0,0,0,.10);transform:translateX(2px)}
+.ecard:active{background:#f8fafc;transform:scale(.99)}
+.ecard.cash{border-left-color:var(--green)}
+.ecard.online{border-left-color:var(--blue)}
+.ecard.udhar{border-left-color:var(--red)}
+.ecard.partial{border-left-color:var(--orange)}
+.eicon{width:36px;height:36px;border-radius:10px;background:#f1f5f9;display:flex;align-items:center;justify-content:center;font-size:16px;flex-shrink:0}
+.eicon.cash{background:var(--green-l)}
+.eicon.online{background:var(--blue-l)}
+.eicon.udhar{background:var(--red-l)}
+.einfo{flex:1;min-width:0}
+.ename{font-weight:700;font-size:13px;color:#0f172a;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.emeta{font-size:10px;color:var(--text-3);margin-top:2px;display:flex;gap:5px;flex-wrap:wrap;align-items:center}
+.epill{padding:1px 6px;border-radius:8px;font-weight:700;font-size:9px;text-transform:uppercase}
+.epill.cash{background:var(--green-l);color:var(--green)}
+.epill.online{background:var(--blue-l);color:var(--blue)}
+.epill.udhar{background:var(--red-l);color:var(--red)}
+.epill.partial{background:var(--orange-l);color:var(--orange)}
+.eamt{font-weight:800;font-size:15px;color:var(--green);flex-shrink:0}
+.eamt.udhar{color:var(--red)}
+
+/* ── CARD ── */
+.card{background:#fff;border-radius:var(--r-md);padding:14px;box-shadow:var(--sh-sm)}
+
+/* ── EMPTY ── */
+.empty{text-align:center;padding:32px 16px;background:#fff;border-radius:var(--r-md);border:1.5px dashed #cbd5e1}
+.empty .ei{font-size:42px;margin-bottom:8px}
+.empty .et{font-size:14px;font-weight:700;color:#475569;margin-bottom:4px}
+.empty .es{font-size:12px;color:var(--text-3);margin-bottom:14px}
+.empty .eb{background:var(--blue);color:#fff;border-radius:11px;padding:10px 22px;font-size:13px;font-weight:700;cursor:pointer;border:none}
+
+/* ── MODAL ── */
+#modal{position:fixed;inset:0;z-index:200;pointer-events:none}
+#modal:not(:empty){pointer-events:auto}
+.moverlay{position:fixed;inset:0;background:rgba(15,23,42,.6);display:flex;align-items:flex-end;justify-content:center;animation:fadeIn .2s;-webkit-overflow-scrolling:touch;overflow-y:auto}
+@keyframes fadeIn{from{opacity:0}to{opacity:1}}
+@keyframes slideUp{from{transform:translateY(100%)}to{transform:translateY(0)}}
+@keyframes scaleIn{from{opacity:0;transform:scale(.95)}to{opacity:1;transform:scale(1)}}
+@keyframes shake{0%,100%{transform:translateX(0)}25%{transform:translateX(-8px)}75%{transform:translateX(8px)}}
+@keyframes pop{0%{transform:scale(1)}50%{transform:scale(1.06)}100%{transform:scale(1)}}
+.shake{animation:shake .4s ease!important}
+.msheet{background:#fff;width:100%;max-width:480px;max-height:95vh;border-radius:var(--r-xl) var(--r-xl) 0 0;overflow:hidden;animation:slideUp .25s ease;display:flex;flex-direction:column;flex-shrink:0}
+.mbody{padding:16px;overflow-y:auto;flex:1;-webkit-overflow-scrolling:touch}
+.mhead{padding:14px 16px;border-bottom:1px solid #f1f5f9;display:flex;justify-content:space-between;align-items:center;background:#fff;position:sticky;top:0;z-index:5;flex-shrink:0}
+.mhead .mt{font-size:16px;font-weight:800;color:#0f172a}
+.mhead .ms{font-size:10px;color:var(--text-3);margin-top:1px}
+.mclose{width:32px;height:32px;min-width:32px;background:#f1f5f9;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:14px;color:var(--text-2);cursor:pointer;transition:.15s}
+.mclose:hover{background:var(--border);color:var(--text)}
+.mfoot{padding:14px 16px calc(14px + env(safe-area-inset-bottom,0px)) 16px;border-top:1px solid #f1f5f9;display:flex;flex-direction:column;gap:8px;background:#fff;flex-shrink:0}
+
+/* ── FORM ── */
+.fg{margin-bottom:16px}
+.flabel{font-size:11px;font-weight:700;color:var(--text-3);text-transform:uppercase;letter-spacing:.07em;margin-bottom:8px;display:flex;align-items:center;gap:6px}
+.fnum{display:inline-flex;width:18px;height:18px;background:var(--blue);color:#fff;border-radius:50%;align-items:center;justify-content:center;font-size:10px;font-weight:800;letter-spacing:0;flex-shrink:0}
+.inp{width:100%;border:2px solid var(--border);border-radius:12px;padding:12px 14px;font-size:16px;background:#f8fafc;color:var(--text);transition:all .15s;-webkit-appearance:none;appearance:none}
+.inp:focus{border-color:var(--blue);background:#fff;box-shadow:0 0 0 3px rgba(37,99,235,.08)}
+.inp.big{font-size:32px;font-weight:800;padding:14px 16px 14px 44px;letter-spacing:-.5px}
+.amtwrap{position:relative}
+.amtwrap::before{content:'₹';position:absolute;left:15px;top:50%;transform:translateY(-50%);font-size:22px;font-weight:800;color:var(--text-3);z-index:1;pointer-events:none}
+
+.svc-selected{display:none;background:var(--blue-l);border:2px solid var(--blue-b);border-radius:11px;padding:9px 12px;margin-top:8px;align-items:center;justify-content:space-between}
+.svc-selected.show{display:flex}
+.svc-sel-name{font-size:13px;font-weight:700;color:#1d4ed8}
+.svc-sel-clear{font-size:11px;color:var(--text-2);background:#f1f5f9;border-radius:7px;padding:3px 8px;cursor:pointer}
+
+.chips{display:flex;flex-wrap:wrap;gap:6px}
+.chip{background:#f1f5f9;border:1.5px solid var(--border);border-radius:10px;padding:7px 13px;font-size:12px;font-weight:600;color:#475569;transition:all .15s;cursor:pointer}
+.chip:hover{border-color:#93c5fd;background:var(--blue-l);color:var(--blue-d)}
+.chip:active{transform:scale(.95)}
+.chip.sel{background:var(--blue-l);border-color:var(--blue);color:#1d4ed8}
+.chip.sm{padding:6px 11px;font-size:11px}
+
+.pmgrid{display:grid;grid-template-columns:1fr 1fr;gap:8px}
+.pmbtn{padding:14px 8px;border:2px solid var(--border);border-radius:var(--r-md);background:#fff;font-size:13px;font-weight:700;color:#475569;display:flex;align-items:center;justify-content:center;gap:7px;transition:all .15s;min-height:52px;cursor:pointer;width:100%}
+.pmbtn:hover{border-color:#93c5fd;background:var(--blue-l)}
+.pmbtn:active{transform:scale(.97)}
+.pmbtn.sel{border-color:var(--blue);background:var(--blue-l);color:#1d4ed8}
+.pmbtn.sel.udhar-mode{border-color:var(--red);background:var(--red-l);color:var(--red)}
+
+.divider{height:1px;background:#f1f5f9;margin:14px 0}
+
+/* ── BUTTONS ── */
+.btn{width:100%;border-radius:var(--r-md);padding:15px;font-size:15px;font-weight:800;display:flex;align-items:center;justify-content:center;gap:8px;transition:all .15s;flex-shrink:0;cursor:pointer;min-height:52px;border:none}
+.btn:hover:not(:disabled){transform:translateY(-1px);opacity:.93}
+.btn:active:not(:disabled){transform:translateY(1px)}
+.btn:disabled{opacity:.5;pointer-events:none;cursor:not-allowed}
+.btn.blue{background:var(--blue);color:#fff;box-shadow:0 4px 12px rgba(37,99,235,.28)}
+.mfoot .btn.blue,.mfoot .btn.green,.mfoot .btn.red{padding:17px;font-size:16px;border-radius:16px}
+.btn.green{background:var(--green);color:#fff;box-shadow:0 4px 12px rgba(22,163,74,.28)}
+.btn.red{background:var(--red);color:#fff;box-shadow:0 4px 12px rgba(220,38,38,.28)}
+.btn.ghost{background:#f1f5f9;color:var(--text-2)}
+.mfoot .btn.ghost{padding:12px;font-size:13px;font-weight:600;background:transparent;color:var(--text-3)}
+.btn.sm{padding:11px;font-size:13px;border-radius:12px}
+.btn.success{background:var(--green);animation:pop .3s ease}
+
+/* ── PRODUCT CART ── */
+.pgrid{display:grid;grid-template-columns:repeat(3,1fr);gap:8px}
+.ptile{background:#f8fafc;border:2px solid #e8ecf1;border-radius:13px;padding:10px 5px;text-align:center;font-size:11px;font-weight:600;color:#374151;transition:all .15s;cursor:pointer;width:100%}
+.ptile:hover{border-color:#93c5fd;background:var(--blue-l)}
+.ptile:active{transform:scale(.95)}
+.ptile .pi{font-size:24px;margin-bottom:4px}
+.ptile .pp{font-size:10px;color:var(--text-2);margin-top:2px}
+.ptile.sel{background:var(--blue-l);border-color:var(--blue)}
+.ptile.sel .pp{color:#1d4ed8;font-weight:700}
+.citem{display:flex;align-items:center;gap:8px;padding:9px 12px;background:#f8fafc;border-radius:11px;margin-bottom:6px}
+.ciname{flex:1;font-size:13px;font-weight:600;min-width:0}
+.cipx{font-size:11px;color:var(--text-2)}
+.cqty{display:flex;align-items:center;gap:6px}
+.cqbtn{width:32px;height:32px;border-radius:50%;font-size:17px;font-weight:800;display:flex;align-items:center;justify-content:center;cursor:pointer;transition:.1s;flex-shrink:0}
+.cqbtn:active{transform:scale(.9)}
+.cqbtn.minus{background:#fee2e2;color:var(--red)}
+.cqbtn.plus{background:#dcfce7;color:var(--green)}
+.cqnum{font-size:14px;font-weight:800;min-width:22px;text-align:center}
+.ctotal{background:linear-gradient(135deg,#1e40af,var(--blue));color:#fff;border-radius:13px;padding:12px 16px;display:flex;justify-content:space-between;align-items:center;margin-top:10px}
+.ctotal .cl{font-size:11px;opacity:.8}
+.ctotal .cv{font-size:23px;font-weight:800}
+
+/* ── PILLS ── */
+.pill{font-size:10px;font-weight:700;padding:2px 8px;border-radius:12px;background:#f1f5f9;color:#475569;display:inline-block}
+.pill.blue{background:var(--blue-l);color:#1d4ed8}
+.pill.green{background:var(--green-l);color:var(--green)}
+.pill.red{background:var(--red-l);color:var(--red)}
+.pill.orange{background:var(--orange-l);color:var(--orange)}
+
+/* ── ATTEND BANNER ── */
+.attend-banner{border-radius:var(--r-md);padding:14px 16px;display:flex;align-items:center;justify-content:space-between;margin-bottom:14px;gap:12px}
+.attend-banner.pending{background:#fefce8;border:1.5px solid #facc15}
+.attend-banner.done{background:var(--green-l);border:1.5px solid var(--green-b)}
+
+/* ── TOAST ── */
+#toast{position:fixed;bottom:80px;left:50%;transform:translateX(-50%);background:#1e293b;color:#fff;padding:11px 18px;border-radius:24px;font-size:13px;font-weight:600;z-index:9999;box-shadow:0 4px 14px rgba(0,0,0,.25);max-width:90vw;text-align:center;pointer-events:none;opacity:0;transition:opacity .25s;white-space:nowrap}
+#toast.show{opacity:1}
+
+/* ── LOGIN ── */
+#loginOverlay{position:fixed;inset:0;background:linear-gradient(160deg,#1e3a8a,#2563eb 55%,#1d4ed8);z-index:300;display:none;align-items:center;justify-content:center;padding:20px;overflow-y:auto}
+.lcard{background:#fff;border-radius:var(--r-xl);padding:28px 22px;width:100%;max-width:340px;text-align:center;box-shadow:0 16px 48px rgba(0,0,0,.2);margin:auto}
+.llogo{width:68px;height:68px;background:linear-gradient(135deg,#1e40af,var(--blue));border-radius:20px;display:flex;align-items:center;justify-content:center;font-size:34px;margin:0 auto 14px}
+.ltitle{font-size:24px;font-weight:900;color:#0f172a}
+.lsub{font-size:13px;color:var(--text-2);margin-bottom:24px}
+.pdots{display:flex;gap:12px;justify-content:center;margin-bottom:22px}
+.pdot{width:14px;height:14px;border-radius:50%;background:var(--border);transition:all .15s}
+.pdot.on{background:var(--blue);transform:scale(1.15)}
+.ppad{display:grid;grid-template-columns:repeat(3,1fr);gap:10px;margin-bottom:16px}
+.pkey{background:#f8fafc;border-radius:16px;padding:18px 0;font-size:24px;font-weight:700;color:#1e293b;border:1.5px solid #e8ecf1;transition:all .1s;cursor:pointer;width:100%;min-height:64px}
+.pkey:hover{background:var(--blue-l);border-color:var(--blue-b)}
+.pkey:active{background:#e8f0fe;transform:scale(.93);border-color:#93c5fd}
+.pkey.act{font-size:16px;color:var(--text-2);background:#fff}
+.lroles{display:flex;gap:8px;justify-content:center;flex-wrap:wrap}
+.lrpill{background:#f1f5f9;border-radius:16px;padding:6px 14px;font-size:11px;font-weight:600;color:#475569}
+
+/* ── REPORT TABS ── */
+.rtabs{display:flex;gap:6px;background:#f1f5f9;border-radius:var(--r-md);padding:4px;margin-bottom:14px}
+.rtab{flex:1;padding:10px;border-radius:10px;font-size:13px;font-weight:700;background:transparent;color:var(--text-2);transition:all .15s;cursor:pointer;min-height:44px;border:none}
+.rtab.active{background:var(--blue);color:#fff}
+.rtab:not(.active):hover{background:var(--border)}
+
+/* ── UDHAR DETAIL ── */
+.uhist{padding:9px 12px;border-radius:11px;margin-bottom:6px;display:flex;justify-content:space-between;align-items:center}
+.uhist.paid{background:var(--green-l)}
+.uhist.udhar{background:var(--red-l)}
+
+/* ── MISC ── */
+.flex{display:flex;align-items:center;gap:10px}
+.spread{display:flex;justify-content:space-between;align-items:center}
+.tc{text-align:center}
+.mt8{margin-top:8px}.mt12{margin-top:12px}
+.mb8{margin-bottom:8px}.mb12{margin-bottom:12px}.mb16{margin-bottom:16px}
+
+/* ── FOCUS STYLES ── */
+:focus-visible{outline:2px solid var(--blue);outline-offset:2px;border-radius:4px}
+
+/* ── PRINT ── */
+@media print{
+  .bnav,.hibtn,.moverlay,#toast,#loginOverlay,.qagrid,.staffbtns{display:none!important}
+  .main{padding:0!important}
+  #app{min-height:auto}
+  .header{position:static!important;box-shadow:none!important}
+  .hero{box-shadow:none!important;-webkit-print-color-adjust:exact;print-color-adjust:exact}
+}
+
+/* ── TABLET 640px+ ── */
+@media(min-width:640px){
+  html{font-size:15px}
+  .main{padding:16px 20px calc(var(--nav-h) + 20px)}
+  .qagrid{grid-template-columns:repeat(4,1fr);gap:10px}
+  .mbgrid{grid-template-columns:repeat(6,1fr)}
+  .pgrid{grid-template-columns:repeat(4,1fr)}
+  .scgrid{grid-template-columns:repeat(4,1fr)}
+  .hero-amt{font-size:40px}
+  .msheet{border-radius:var(--r-xl)}
+  .hero-stats .sl{font-size:10px}
+  .hero-stats .sv{font-size:16px}
+}
+
+/* ── DESKTOP 1024px+ ── */
+@media(min-width:1024px){
+  body{overflow-y:auto}
+  body.modal-open{overflow:hidden}
+
+  /* Sidebar nav */
+  .bnav{
+    position:fixed;left:0;top:0;bottom:0;right:auto;width:var(--sidebar-w);
+    height:100vh;flex-direction:column;justify-content:flex-start;
+    border-top:none;border-right:1px solid var(--border);
+    padding:80px 12px 24px;gap:4px;
+    box-shadow:2px 0 12px rgba(0,0,0,.05);overflow-y:auto;
+    transform:none;
+  }
+  .nbtn{
+    flex-direction:row;justify-content:flex-start;gap:10px;
+    padding:10px 14px;font-size:13px;border-radius:10px;
+    min-height:48px;width:100%;flex:none;
+  }
+  .nbtn .ni{font-size:20px;line-height:1;flex-shrink:0}
+  .nbtn.fab .ni{font-size:20px}
+  .nbtn.fab{
+    background:var(--blue);color:#fff!important;
+    border-radius:12px;order:-1;
+    box-shadow:0 4px 12px rgba(37,99,235,.3);
+    margin-bottom:6px;
+  }
+  .nbtn.fab:hover{background:var(--blue-d)}
+  .nbtn:not(.fab):hover{background:#f1f5f9;color:var(--blue)}
+  .nbtn.active:not(.fab){background:var(--blue-l);color:var(--blue)}
+
+  /* Header offset for sidebar */
+  .header{padding-left:calc(var(--sidebar-w) + 16px)}
+
+  /* Main content with sidebar offset */
+  .main{
+    padding:14px 24px 40px calc(var(--sidebar-w) + 24px);
+  }
+
+  /* Wider grids */
+  .qagrid{grid-template-columns:repeat(4,1fr);gap:12px}
+  .mbgrid{grid-template-columns:repeat(6,1fr)}
+  .pgrid{grid-template-columns:repeat(4,1fr)}
+  .scgrid{grid-template-columns:repeat(4,1fr)}
+  .staffbtns{grid-template-columns:repeat(4,1fr)}
+  .hero{max-width:640px}
+  .hero-amt{font-size:44px}
+
+  /* Centered modal on desktop */
+  .moverlay{align-items:center}
+  .msheet{
+    border-radius:var(--r-xl);
+    max-width:520px;max-height:88vh;
+    animation:scaleIn .2s ease;
+  }
+
+  #toast{bottom:32px}
+}
+
+/* ── LARGE DESKTOP 1440px+ ── */
+@media(min-width:1440px){
+  :root{--sidebar-w:240px}
+  .mbgrid{grid-template-columns:repeat(6,1fr)}
+  .qagrid{grid-template-columns:repeat(4,1fr)}
+}
+
+/* ── SMALL PHONES <360px ── */
+@media(max-width:359px){
+  .qagrid{grid-template-columns:repeat(2,1fr)}
+  .hero-amt{font-size:26px}
+  .mbgrid{grid-template-columns:repeat(2,1fr)}
+  .staffbtns{grid-template-columns:1fr}
+  .inp.big{font-size:24px}
+  .pmgrid{grid-template-columns:1fr 1fr}
+}
+
+/* ── LANDSCAPE PHONES ── */
+@media(max-width:767px) and (orientation:landscape){
+  .hero{padding:12px 16px}
+  .hero-amt{font-size:26px}
+  .hero-stats{margin-top:10px}
+  .main{padding:10px 14px calc(var(--nav-h) + 10px)}
+  .msheet{max-height:90vh}
+}
+</style>
+</head>
+<body>
+
+<div id="app">
+  <header class="header">
+    <div class="hbrand">
+      <div class="hlogo" aria-hidden="true">🏪</div>
+      <div>
+        <div class="hname">Rohit Computer</div>
+        <div class="hsub">Rath, Hamirpur (UP)</div>
+      </div>
+    </div>
+    <div class="hactions">
+      <span class="rbadge" id="roleBadge">👑 Owner</span>
+      <button class="hibtn" onclick="App.settings()" aria-label="Settings">⚙️</button>
+    </div>
+  </header>
+  <main class="main" id="main" role="main"></main>
+  <nav class="bnav" id="bnav" aria-label="Main navigation"></nav>
+</div>
+
+<div id="modal" role="dialog" aria-modal="true" aria-label="Dialog"></div>
+<div id="toast" role="status" aria-live="polite"></div>
+<div id="loginOverlay" role="dialog" aria-modal="true" aria-label="Login"></div>
+
+<script>
+/* =====================================================
+   HISAB v9 — Rohit Computer
+   Fully responsive: mobile / tablet / desktop
+   ===================================================== */
+
+/* ── CONFIG ── */
+const C = {
+  ownerPIN: '1234', staffPIN: '5678',
+  pm: [{id:'cash',name:'Cash',icon:'💵'},{id:'online',name:'Online',icon:'📱'},{id:'udhar',name:'Udhar',icon:'📋'},{id:'partial',name:'Partial',icon:'🔢'}],
+  qa: [10,20,30,50,100,120,150,200,300,500],
+  svcs: [
+    {id:'aadhaar',name:'Aadhaar Update',rate:50,cat:'CSC'},
+    {id:'pan',name:'PAN Card',rate:150,cat:'CSC'},
+    {id:'birth',name:'Birth Cert.',rate:100,cat:'CSC'},
+    {id:'caste',name:'Caste Cert.',rate:100,cat:'CSC'},
+    {id:'income',name:'Income Cert.',rate:100,cat:'CSC'},
+    {id:'voter',name:'Voter ID',rate:50,cat:'CSC'},
+    {id:'rcert',name:'Residence Cert.',rate:100,cat:'CSC'},
+    {id:'aeps',name:'AEPS Withdraw',rate:20,cat:'Banking'},
+    {id:'balance',name:'Balance Check',rate:10,cat:'Banking'},
+    {id:'mtransfer',name:'Money Transfer',rate:30,cat:'Banking'},
+    {id:'bill',name:'Bill Payment',rate:20,cat:'Banking'},
+    {id:'form',name:'Form Fill',rate:30,cat:'Forms'},
+    {id:'scholar',name:'Scholarship',rate:50,cat:'Forms'},
+    {id:'exam',name:'Exam Form',rate:50,cat:'Forms'},
+    {id:'job',name:'Job Form',rate:50,cat:'Forms'},
+    {id:'print_bw',name:'Print B/W',rate:5,cat:'Print'},
+    {id:'print_col',name:'Print Color',rate:15,cat:'Print'},
+    {id:'copy',name:'Photocopy',rate:3,cat:'Print'},
+    {id:'lami',name:'Lamination',rate:20,cat:'Print'},
+    {id:'photo',name:'Passport Photo',rate:50,cat:'Print'},
+    {id:'scan',name:'Scan',rate:10,cat:'Print'},
+    {id:'typing',name:'Typing Work',rate:50,cat:'Print'},
+    {id:'other',name:'Other',rate:0,cat:'Other'},
+  ],
+  prods: [
+    {id:'pd',name:'Pen Drive 16GB',price:300,icon:'💾'},
+    {id:'kb',name:'Keyboard',price:350,icon:'⌨️'},
+    {id:'ms',name:'Mouse',price:200,icon:'🖱️'},
+    {id:'uc',name:'USB Cable',price:80,icon:'🔌'},
+    {id:'pp',name:'Paper Bundle',price:400,icon:'📦'},
+    {id:'tn',name:'Printer Toner',price:800,icon:'🖨️'},
+    {id:'mc',name:'Memory Card',price:250,icon:'💳'},
+    {id:'ep',name:'Earphones',price:150,icon:'🎧'},
+    {id:'cv',name:'Mobile Cover',price:100,icon:'📱'},
+  ],
+  boxes: [
+    {id:'cash',name:'Cash Counter',icon:'💵'},
+    {id:'bank',name:'Bank',icon:'🏦'},
+    {id:'aeps',name:'AEPS Wallet',icon:'🏧'},
+    {id:'csc',name:'CSC Wallet',icon:'🖥️'},
+    {id:'online',name:'Online/UPI',icon:'📱'},
+    {id:'pocket',name:'Pocket',icon:'👛'},
+  ],
+};
+
+/* ── DB ── */
+const DB = {
+  p: 'rc8_',
+  g(k){try{return JSON.parse(localStorage.getItem(this.p+k))}catch{return null}},
+  s(k,v){localStorage.setItem(this.p+k,JSON.stringify(v))},
+  d(k){localStorage.removeItem(this.p+k)},
+  l(k){return this.g(k)||[]},
+  push(k,item){
+    const a=this.l(k);
+    item.id=item.id||('_'+Date.now()+'_'+Math.random().toString(36).substr(2,4));
+    item.at=item.at||new Date().toISOString();
+    a.push(item); this.s(k,a); return item;
+  },
+  del(k,id){this.s(k,this.l(k).filter(x=>x.id!==id))},
+  today(){const d=new Date();return d.getFullYear()+'-'+String(d.getMonth()+1).padStart(2,'0')+'-'+String(d.getDate()).padStart(2,'0')},
+  dateOf(iso){try{const d=new Date(iso);return d.getFullYear()+'-'+String(d.getMonth()+1).padStart(2,'0')+'-'+String(d.getDate()).padStart(2,'0')}catch{return ''}},
+};
+
+/* ── FORMAT ── */
+const F = {
+  rs(n){if(!n&&n!==0)return '₹0';return '₹'+Math.round(n).toLocaleString('en-IN')},
+  short(n){if(!n)return '₹0';if(n>=100000)return '₹'+(n/100000).toFixed(1)+'L';if(n>=1000)return '₹'+(n/1000).toFixed(1)+'k';return '₹'+Math.round(n)},
+  time(s){try{return new Date(s).toLocaleTimeString('en-IN',{hour:'2-digit',minute:'2-digit',hour12:true})}catch{return ''}},
+  date(s){try{return new Date(s).toLocaleDateString('en-IN',{day:'2-digit',month:'short'})}catch{return ''}},
+};
+
+/* ── AUTH ── */
+const Auth = {
+  _r:null,_u:null,
+  init(){
+    const s=DB.g('session');
+    if(s&&s.role&&s.at&&(Date.now()-new Date(s.at).getTime())<43200000){
+      this._r=s.role;this._u=s.user;return true;
+    }
+    return false;
+  },
+  login(pin){
+    if(pin===C.ownerPIN){
+      this._r='owner';
+      this._u={name:'Rohit',role:'owner'};
+      DB.s('session',{role:'owner',user:this._u,at:new Date().toISOString()});
+      return true;
+    }
+    if(pin===C.staffPIN){
+      const staffName=DB.g('staff_name')||'Staff';
+      this._r='staff';
+      this._u={name:staffName,role:'staff'};
+      DB.s('session',{role:'staff',user:this._u,at:new Date().toISOString()});
+      return true;
+    }
+    return false;
+  },
+  logout(){this._r=null;this._u=null;DB.d('session')},
+  isOwner(){return this._r==='owner'},
+  role(){return this._r},
+  user(){return this._u||{}},
+};
+
+/* ── TOAST ── */
+const Toast = {
+  _t:null,
+  show(msg,ms=2200){
+    const el=document.getElementById('toast');
+    if(!el) return;
+    el.textContent=msg;el.classList.add('show');
+    clearTimeout(this._t);this._t=setTimeout(()=>el.classList.remove('show'),ms);
+  },
+};
+
+/* ── MODAL ── */
+const Modal = {
+  _prev:null,
+  open(html){
+    const el=document.getElementById('modal');
+    if(!el)return;
+    el.innerHTML=`<div class="moverlay" onclick="if(event.target===this)Modal.close()"><div class="msheet">${html}</div></div>`;
+    document.body.classList.add('modal-open');
+    // Focus first focusable element
+    requestAnimationFrame(()=>{
+      const f=el.querySelector('input:not([type=hidden]),button:not(.mclose),select,textarea');
+      if(f) f.focus();
+    });
+  },
+  close(){
+    const el=document.getElementById('modal');
+    if(el){el.innerHTML=''}
+    document.body.classList.remove('modal-open');
+  },
+};
+
+/* ── LOGIN ── */
+const Login = {
+  pin:'',
+  show(){
+    const el=document.getElementById('loginOverlay');
+    if(!el) return;
+    el.style.display='flex';
+    el.innerHTML=`
+    <div class="lcard">
+      <div class="llogo">🏪</div>
+      <div class="ltitle">Hisab</div>
+      <div class="lsub">Rohit Computer, Rath</div>
+      <div class="pdots" id="pdots">
+        ${[0,1,2,3].map(i=>`<div class="pdot" id="pd${i}"></div>`).join('')}
+      </div>
+      <div class="ppad">
+        ${[1,2,3,4,5,6,7,8,9].map(n=>`<button class="pkey" onclick="Login.tap('${n}')">${n}</button>`).join('')}
+        <button class="pkey act" onclick="Login.clear()">CLR</button>
+        <button class="pkey" onclick="Login.tap('0')">0</button>
+        <button class="pkey act" onclick="Login.back()">⌫</button>
+      </div>
+      <div class="lroles">
+        <span class="lrpill">👑 Owner: 1234</span>
+        <span class="lrpill">👤 Staff: 5678</span>
+      </div>
+    </div>`;
+  },
+  hide(){
+    const el=document.getElementById('loginOverlay');
+    if(!el) return;
+    el.style.display='none';el.innerHTML='';
+  },
+  tap(d){if(this.pin.length>=4)return;this.pin+=d;this._dots();if(this.pin.length===4)setTimeout(()=>this._check(),200)},
+  back(){this.pin=this.pin.slice(0,-1);this._dots()},
+  clear(){this.pin='';this._dots()},
+  _dots(){for(let i=0;i<4;i++){const el=document.getElementById('pd'+i);if(el)el.classList.toggle('on',i<this.pin.length)}},
+  _check(){
+    if(Auth.login(this.pin)){this.hide();App.boot();Toast.show('✅ Welcome '+Auth.user().name+'!')}
+    else{
+      const c=document.querySelector('.lcard');
+      if(c){c.classList.add('shake');setTimeout(()=>c.classList.remove('shake'),500)}
+      this.pin='';this._dots();Toast.show('❌ Wrong PIN');
+    }
+  },
+};
+
+/* ── ENTRY ── */
+const Entry = {
+  cart:[],
+
+  save(d){
+    if(!d.svc)return Toast.show('⚠️ Service select karo');
+    if(!d.amt||d.amt<=0)return Toast.show('⚠️ Amount daalo');
+    if(d.pm==='udhar'&&(!d.phone||d.phone.length<10))return Toast.show('⚠️ Phone required for Udhar');
+
+    const e=DB.push('entries',{
+      type:d.type||'service',svcId:d.svcId||'',svc:d.svc,
+      amt:d.amt,pm:d.pm,
+      cust:d.cust||'',phone:d.phone||'',notes:d.notes||'',
+      day:DB.today(),role:Auth.role(),who:Auth.user().name,
+    });
+
+    if(d.pm==='udhar'&&d.phone){
+      const accts=DB.l('udhar');
+      let a=accts.find(x=>x.phone===d.phone);
+      if(!a){a={phone:d.phone,name:d.cust||'',given:0,paid:0,tx:[]};accts.push(a)}
+      if(d.cust&&!a.name)a.name=d.cust;
+      a.given=(a.given||0)+d.amt;
+      a.tx=a.tx||[];
+      a.tx.push({type:'udhar',amt:d.amt,svc:d.svc,at:new Date().toISOString()});
+      DB.s('udhar',accts);
+    }
+
+    Toast.show('✅ Saved! '+F.rs(d.amt));
+    Modal.close();
+    Router.go(Router.cur);
+  },
+
+  show(preAmt=null){
+    try{
+      if(!C.svcs || C.svcs.length===0){Toast.show('⚠️ Services loading... try again');return}
+      const grps={};
+      C.svcs.forEach(s=>{if(!grps[s.cat])grps[s.cat]=[];grps[s.cat].push(s)});
+      Modal.open(`
+      <div class="mhead">
+        <div>
+          <div class="mt">➕ New Entry</div>
+          <div class="ms">${Auth.isOwner()?'👑 Owner':'👤 Staff'} mode</div>
+        </div>
+        <button class="mclose" onclick="Modal.close()" aria-label="Close">✕</button>
+      </div>
+      <div class="mbody" id="ebdy">
+        <div class="fg">
+          <p class="flabel"><span class="fnum" aria-hidden="true">1</span> Service</p>
+          <input class="inp mb8" id="ss" placeholder="🔍 Search service..." oninput="Entry._fs(this.value)" autocomplete="off" aria-label="Search service">
+          <div id="sgrps" style="max-height:160px;overflow-y:auto;display:flex;flex-direction:column;gap:10px;padding-right:2px;">
+            ${Object.entries(grps).map(([cat,svcs])=>`
+              <div class="sg" data-c="${cat}">
+                <p style="font-size:10px;font-weight:700;color:#94a3b8;text-transform:uppercase;margin-bottom:5px;">${cat}</p>
+                <div class="chips">
+                  ${svcs.map(s=>`<button class="chip sm sc" data-n="${s.name}" data-r="${s.rate}" data-id="${s.id}" onclick="Entry._ps(this)">${s.name}${s.rate>0?' · ₹'+s.rate:''}</button>`).join('')}
+                </div>
+              </div>`).join('')}
+          </div>
+          <div class="svc-selected" id="svcBadge">
+            <span class="svc-sel-name" id="svcBadgeName"></span>
+            <button class="svc-sel-clear" onclick="Entry._cs()">✕ Change</button>
+          </div>
+          <input type="hidden" id="sid"><input type="hidden" id="sname">
+        </div>
+
+        <div class="divider"></div>
+
+        <div class="fg">
+          <p class="flabel"><span class="fnum" aria-hidden="true">2</span> Amount</p>
+          <div class="amtwrap">
+            <input type="number" class="inp big" id="amt" inputmode="decimal" value="${preAmt||''}" placeholder="0"
+              onkeydown="if(event.key==='Enter'){event.preventDefault();Entry._sub()}" aria-label="Amount in rupees">
+          </div>
+          <div class="chips mt8">
+            ${C.qa.map(a=>`<button class="chip sm" onclick="Entry._sa(${a})">₹${a}</button>`).join('')}
+          </div>
+        </div>
+
+        <div class="divider"></div>
+
+        <div class="fg">
+          <p class="flabel"><span class="fnum" aria-hidden="true">3</span> Payment Mode</p>
+          <div class="pmgrid" id="pmg">
+            ${C.pm.map((p,i)=>`<button class="pmbtn ${i===0?'sel':''}" data-pm="${p.id}" onclick="Entry._pp(this,'${p.id}')">${p.icon} ${p.name}</button>`).join('')}
+          </div>
+          <input type="hidden" id="pm" value="cash">
+          <div id="uphf" style="display:none;margin-top:10px;">
+            <input type="tel" class="inp" id="uphv" inputmode="numeric" maxlength="10" placeholder="📞 Mobile (required for Udhar)" style="background:#fef2f2;border-color:#fca5a5;" aria-label="Customer mobile for udhar">
+          </div>
+        </div>
+
+        <div class="divider"></div>
+
+        <div class="fg">
+          <div class="spread mb8">
+            <p class="flabel" style="margin:0;"><span class="fnum" aria-hidden="true">4</span> Customer <span style="text-transform:none;letter-spacing:0;font-weight:400;font-size:10px;">(optional)</span></p>
+            <button class="pill blue" onclick="Entry._tc()" id="ctog" style="cursor:pointer;">+ Add</button>
+          </div>
+          <div id="cfields" style="display:none;gap:8px;flex-direction:column;">
+            <input type="text" class="inp" id="cname" placeholder="👤 Customer Name" autocomplete="name">
+            <input type="tel" class="inp" id="cmob" inputmode="numeric" maxlength="10" placeholder="📱 Mobile" autocomplete="tel">
+          </div>
+        </div>
+
+        ${Auth.isOwner()?`<div class="fg"><input type="text" class="inp" id="enotes" placeholder="📝 Notes (owner only)" style="font-size:13px;padding:11px 14px;" aria-label="Notes"></div>`:`<input type="hidden" id="enotes">`}
+
+      </div>
+      <div class="mfoot">
+        <button class="btn blue" id="saveBtn" onclick="Entry._sub()">✅ Save Entry</button>
+        <button class="btn ghost" onclick="Modal.close()">Cancel</button>
+      </div>
+    `);
+    setTimeout(()=>document.getElementById('ss')?.focus(),200);
+    }catch(e){Toast.show('❌ Error opening form')}
+  },
+
+  _fs(q){
+    const sq=q.toLowerCase().trim();
+    document.querySelectorAll('.sg').forEach(g=>{
+      let any=false;
+      g.querySelectorAll('.sc').forEach(c=>{
+        const m=!sq||(c.dataset.n||'').toLowerCase().includes(sq);
+        c.style.display=m?'':'none';if(m)any=true;
+      });
+      g.style.display=any?'':'none';
+    });
+  },
+
+  _ps(el){
+    document.querySelectorAll('.sc').forEach(c=>c.classList.remove('sel'));
+    el.classList.add('sel');
+    document.getElementById('sid').value=el.dataset.id;
+    document.getElementById('sname').value=el.dataset.n;
+    const badge=document.getElementById('svcBadge');
+    const badgeName=document.getElementById('svcBadgeName');
+    if(badge&&badgeName){badgeName.textContent=el.dataset.n+(parseFloat(el.dataset.r)>0?' · ₹'+el.dataset.r:'');badge.classList.add('show')}
+    const r=parseFloat(el.dataset.r)||0;
+    const ai=document.getElementById('amt');
+    if(r>0&&ai&&!ai.value){ai.value=r;ai.style.borderColor='#16a34a';setTimeout(()=>ai.style.borderColor='',800)}
+    setTimeout(()=>ai?.scrollIntoView({behavior:'smooth',block:'center'}),100);
+  },
+
+  _cs(){
+    document.querySelectorAll('.sc').forEach(c=>c.classList.remove('sel'));
+    document.getElementById('sid').value='';
+    document.getElementById('sname').value='';
+    const badge=document.getElementById('svcBadge');
+    if(badge)badge.classList.remove('show');
+    const ssInput=document.getElementById('ss');
+    if(ssInput){ssInput.value='';ssInput.focus()}
+    Entry._fs('');
+  },
+
+  _pp(el,mode){
+    document.querySelectorAll('#pmg .pmbtn').forEach(b=>{b.classList.remove('sel');b.classList.remove('udhar-mode')});
+    el.classList.add('sel');
+    if(mode==='udhar')el.classList.add('udhar-mode');
+    document.getElementById('pm').value=mode;
+    const pf=document.getElementById('uphf');
+    if(pf){pf.style.display=mode==='udhar'?'block':'none'}
+    if(mode==='udhar')setTimeout(()=>document.getElementById('uphv')?.focus(),100);
+  },
+
+  _sa(v){const i=document.getElementById('amt');if(i){i.value=v;i.focus()}},
+
+  _tc(){
+    const f=document.getElementById('cfields'),b=document.getElementById('ctog');
+    if(!f) return;
+    const isHidden=f.style.display==='none'||f.style.display==='';
+    f.style.display=isHidden?'flex':'none';
+    if(b)b.textContent=isHidden?'− Hide':'+ Add';
+    if(isHidden)setTimeout(()=>document.getElementById('cname')?.focus(),100);
+  },
+
+  _sub(){
+    const pm=document.getElementById('pm')?.value||'cash';
+    const sname=document.getElementById('sname')?.value;
+    const amt=parseFloat(document.getElementById('amt')?.value)||0;
+    if(!sname){
+      const s=document.getElementById('ss');
+      if(s){s.style.borderColor='#fca5a5';setTimeout(()=>s.style.borderColor='',1200)}
+      return Toast.show('⚠️ Service select karo');
+    }
+    if(!amt||amt<=0){
+      const a=document.getElementById('amt');
+      if(a){a.style.borderColor='#fca5a5';setTimeout(()=>a.style.borderColor='',1200)}
+      return Toast.show('⚠️ Amount daalo');
+    }
+    if(pm==='udhar'){
+      const ph=document.getElementById('uphv')?.value?.trim()||'';
+      if(!ph||ph.length<10){
+        const u=document.getElementById('uphv');
+        if(u){u.style.borderColor='#dc2626';setTimeout(()=>u.style.borderColor='#fca5a5',1200)}
+        return Toast.show('⚠️ Phone required for Udhar');
+      }
+    }
+    const btn=document.getElementById('saveBtn');
+    if(btn){btn.textContent='🎉 Saving...';btn.classList.add('success');btn.disabled=true}
+    setTimeout(()=>{
+      this.save({
+        svcId:document.getElementById('sid')?.value||'other',
+        svc:sname,amt,pm,
+        cust:document.getElementById('cname')?.value?.trim()||'',
+        phone:pm==='udhar'?(document.getElementById('uphv')?.value?.trim()||''):(document.getElementById('cmob')?.value?.trim()||''),
+        notes:document.getElementById('enotes')?.value?.trim()||'',
+      });
+    },300);
+  },
+
+  showSale(){this.cart=[];this._rm()},
+
+  _rm(){
+    try{
+      if(!C.prods||C.prods.length===0){Toast.show('⚠️ Products loading...');return}
+      const total=this.cart.reduce((s,c)=>s+c.price*c.qty,0);
+      const cnt=this.cart.reduce((s,c)=>s+c.qty,0);
+      Modal.open(`
+      <div class="mhead">
+        <div>
+          <div class="mt">🛒 Product Sale</div>
+          <div class="ms">${cnt} items in cart</div>
+        </div>
+        <button class="mclose" onclick="Modal.close()" aria-label="Close">✕</button>
+      </div>
+      <div class="mbody">
+        <div class="fg">
+          <p class="flabel">Select Products</p>
+          <div class="pgrid">
+            ${C.prods.map(p=>{
+              const ic=this.cart.find(c=>c.id===p.id);
+              return `<button class="ptile ${ic?'sel':''}" onclick="Entry._ac('${p.id}')">
+                <div class="pi">${p.icon}</div>
+                <div>${p.name}</div>
+                <div class="pp">₹${p.price}${ic?' · ×'+ic.qty:''}</div>
+              </button>`;
+            }).join('')}
+          </div>
+        </div>
+        ${this.cart.length>0?`
+        <div class="fg">
+          <p class="flabel">🛒 Cart</p>
+          ${this.cart.map(c=>`
+            <div class="citem">
+              <span style="font-size:18px;">${c.icon}</span>
+              <div class="ciname">${c.name}<br><span class="cipx">₹${c.price}</span></div>
+              <div class="cqty">
+                <button class="cqbtn minus" onclick="Entry._cq('${c.id}',-1)" aria-label="Decrease">−</button>
+                <span class="cqnum">${c.qty}</span>
+                <button class="cqbtn plus" onclick="Entry._cq('${c.id}',1)" aria-label="Increase">+</button>
+              </div>
+              <span style="font-weight:800;color:#1d4ed8;min-width:56px;text-align:right;">₹${(c.price*c.qty).toLocaleString('en-IN')}</span>
+            </div>`).join('')}
+          <div class="ctotal">
+            <div><div class="cl">Total (${cnt} items)</div></div>
+            <div class="cv">${F.rs(total)}</div>
+          </div>
+        </div>
+        <div class="fg">
+          <p class="flabel">Payment</p>
+          <div class="pmgrid" id="spm">
+            ${C.pm.map((p,i)=>`<button class="pmbtn ${i===0?'sel':''}" data-pm="${p.id}" onclick="Entry._spp(this)">${p.icon} ${p.name}</button>`).join('')}
+          </div>
+          <input type="hidden" id="spv" value="cash">
+        </div>
+        <div class="fg">
+          <p class="flabel">Customer (optional)</p>
+          <input type="text" class="inp mb8" id="scn" placeholder="👤 Name" autocomplete="name">
+          <input type="tel" class="inp" id="scp" inputmode="numeric" maxlength="10" placeholder="📱 Mobile" autocomplete="tel">
+        </div>`
+        :`<div class="empty"><div class="ei">🛒</div><div class="et">Cart Empty</div><div class="es">Products tap karo</div></div>`}
+      </div>
+      <div class="mfoot">
+        <button class="btn green" onclick="Entry._sv()" ${this.cart.length===0?'disabled':''}>✅ Save Sale</button>
+        <button class="btn ghost" onclick="Modal.close()">Cancel</button>
+      </div>
+    `);
+    }catch(e){Toast.show('❌ Error loading products')}
+  },
+
+  _ac(pid){
+    const p=C.prods.find(x=>x.id===pid);if(!p)return;
+    const ex=this.cart.find(c=>c.id===pid);
+    if(ex)ex.qty++;else this.cart.push({id:p.id,name:p.name,price:p.price,icon:p.icon,qty:1});
+    this._rm();
+  },
+
+  _cq(pid,d){
+    const item=this.cart.find(c=>c.id===pid);if(!item)return;
+    item.qty+=d;
+    if(item.qty<1)this.cart=this.cart.filter(c=>c.id!==pid);
+    this._rm();
+  },
+
+  _spp(el){
+    document.querySelectorAll('#spm .pmbtn').forEach(b=>b.classList.remove('sel'));
+    el.classList.add('sel');
+    document.getElementById('spv').value=el.dataset.pm;
+  },
+
+  _sv(){
+    if(!this.cart.length)return Toast.show('⚠️ Cart empty');
+    const total=this.cart.reduce((s,c)=>s+c.price*c.qty,0);
+    this.save({
+      svc:'Sale: '+this.cart.map(c=>c.name+(c.qty>1?' x'+c.qty:'')).join(', '),
+      svcId:'product_sale',amt:total,
+      pm:document.getElementById('spv')?.value||'cash',
+      cust:document.getElementById('scn')?.value?.trim()||'',
+      phone:document.getElementById('scp')?.value?.trim()||'',
+      type:'product',
+    });
+    this.cart=[];
+  },
+
+  detail(id){
+    const e=DB.l('entries').find(x=>x.id===id);
+    if(!e)return;
+    const pm=C.pm.find(p=>p.id===e.pm)||{icon:'🔢',name:e.pm};
+    Modal.open(`
+      <div class="mhead">
+        <div>
+          <div class="mt">📋 Entry</div>
+          <div class="ms">${F.date(e.at)} · ${F.time(e.at)}</div>
+        </div>
+        <button class="mclose" onclick="Modal.close()" aria-label="Close">✕</button>
+      </div>
+      <div class="mbody">
+        <div class="card mb12">
+          <p style="font-size:10px;color:#94a3b8;text-transform:uppercase;">Service</p>
+          <p style="font-size:16px;font-weight:700;margin:4px 0 14px;">${e.svc}</p>
+          <p style="font-size:10px;color:#94a3b8;text-transform:uppercase;">Amount</p>
+          <p style="font-size:32px;font-weight:900;letter-spacing:-1px;color:${e.pm==='udhar'?'#dc2626':'#16a34a'};margin:4px 0 14px;">${F.rs(e.amt)}</p>
+          <div class="spread mb8"><span style="color:#64748b;font-size:12px;">Payment</span><span class="pill ${e.pm==='cash'?'green':e.pm==='online'?'blue':e.pm==='udhar'?'red':'orange'}">${pm.icon} ${pm.name}</span></div>
+          ${e.cust?`<div class="spread mb8"><span style="color:#64748b;font-size:12px;">Customer</span><span style="font-size:13px;font-weight:600;">${e.cust}</span></div>`:''}
+          ${e.phone?`<div class="spread mb8"><span style="color:#64748b;font-size:12px;">Mobile</span><span style="font-size:13px;font-weight:600;">${e.phone}</span></div>`:''}
+          ${e.notes?`<div style="margin-top:10px;padding:9px 11px;background:#fef9c3;border-radius:10px;font-size:12px;color:#713f12;">📝 ${e.notes}</div>`:''}
+          <div style="margin-top:10px;font-size:10px;color:#94a3b8;">By: ${e.who||'—'} (${e.role||''})</div>
+        </div>
+        ${e.phone?`<button class="btn ghost mb8" style="background:#f0fdf4;color:#16a34a;" onclick="Entry._sendWA('${e.id}')">💬 WhatsApp Receipt</button>`:''}
+        ${Auth.isOwner()?`<button class="btn red" onclick="Entry._del('${e.id}')">🗑️ Delete Entry</button>`:''}
+      </div>
+    `);
+  },
+
+  _sendWA(id){
+    const e=DB.l('entries').find(x=>x.id===id);if(!e||!e.phone)return;
+    const msg=this._waText(id);
+    window.open('https://wa.me/91'+e.phone+'?text='+encodeURIComponent(msg),'_blank');
+  },
+
+  _waText(id){
+    const e=DB.l('entries').find(x=>x.id===id);
+    if(!e)return '';
+    const pm=C.pm.find(p=>p.id===e.pm)||{name:e.pm};
+    return 'Receipt from Rohit Computer:\nService: '+e.svc+'\nAmount: '+F.rs(e.amt)+'\nPayment: '+pm.name+'\nDate: '+F.date(e.at)+'\n\nThank you! 🙏';
+  },
+
+  _del(id){
+    if(!Auth.isOwner())return;
+    if(!confirm('Delete this entry?'))return;
+    DB.del('entries',id);Modal.close();Toast.show('✅ Deleted');Router.go(Router.cur);
+  },
+};
+
+/* ── UDHAR ── */
+const Udhar = {
+  render(){
+    const accts=DB.l('udhar').map(a=>({...a,pending:Math.max(0,(a.given||0)-(a.paid||0))})).sort((a,b)=>b.pending-a.pending);
+    const total=accts.reduce((s,a)=>s+a.pending,0);
+    document.getElementById('main').innerHTML=`
+      <div class="hero" style="background:linear-gradient(135deg,#dc2626,#ea580c);">
+        <div class="hero-greet">📋 Total Pending</div>
+        <div class="hero-amt">${F.rs(total)}</div>
+        <div class="hero-lbl">${accts.filter(a=>a.pending>0).length} customers</div>
+      </div>
+      <div class="section">
+        <p class="stitle">All Accounts</p>
+        ${accts.length===0?`<div class="empty"><div class="ei">✅</div><div class="et">All Clear!</div><div class="es">No pending udhar</div></div>`:
+          accts.map(a=>`
+            <div class="card mb8" style="cursor:pointer;" onclick="Udhar.detail('${a.phone}')">
+              <div class="spread">
+                <div>
+                  <div style="font-weight:700;font-size:14px;">${a.name||'Unknown'}</div>
+                  <div style="font-size:11px;color:#94a3b8;margin-top:2px;">📞 ${a.phone}</div>
+                </div>
+                <div style="text-align:right;">
+                  <div style="font-weight:800;font-size:18px;color:${a.pending>0?'#dc2626':'#16a34a'};">${F.rs(a.pending)}</div>
+                  <div style="font-size:10px;color:#94a3b8;">pending</div>
+                </div>
+              </div>
+            </div>`).join('')}
+      </div>`;
+  },
+
+  detail(phone){
+    const a=DB.l('udhar').find(x=>x.phone===phone);if(!a)return;
+    const pending=Math.max(0,(a.given||0)-(a.paid||0));
+    const txns=(a.tx||[]).slice().reverse();
+    Modal.open(`
+      <div class="mhead">
+        <div>
+          <div class="mt">${a.name||'Customer'}</div>
+          <div class="ms">📞 ${a.phone}</div>
+        </div>
+        <button class="mclose" onclick="Modal.close()" aria-label="Close">✕</button>
+      </div>
+      <div class="mbody">
+        <div class="card mb12" style="background:#fef2f2;border:2px solid #fca5a5;">
+          <div class="tc">
+            <div style="font-size:11px;color:#64748b;text-transform:uppercase;">Pending</div>
+            <div style="font-size:36px;font-weight:900;color:#dc2626;letter-spacing:-1px;margin:4px 0;">${F.rs(pending)}</div>
+            <div style="font-size:11px;color:#94a3b8;">Given: ${F.rs(a.given||0)} · Paid: ${F.rs(a.paid||0)}</div>
+          </div>
+        </div>
+
+        ${pending>0?`
+          <div class="fg">
+            <p class="flabel">💸 Collect Payment</p>
+            <input type="number" class="inp" id="cpay" inputmode="decimal" value="${pending}" placeholder="Amount" aria-label="Payment amount">
+            <div class="chips mt8">
+              <button class="chip sm" onclick="document.getElementById('cpay').value=${pending}">Full ${F.rs(pending)}</button>
+              <button class="chip sm" onclick="document.getElementById('cpay').value=${Math.round(pending/2)}">Half ${F.rs(Math.round(pending/2))}</button>
+            </div>
+            <button class="btn green mt12" onclick="Udhar._collect('${phone}')">✅ Received</button>
+          </div>
+          <div class="divider"></div>`:''
+        }
+
+        <p class="flabel">History</p>
+        ${txns.length===0?'<p style="text-align:center;color:#94a3b8;padding:14px;">No history</p>':
+          txns.map(t=>`
+            <div class="uhist ${t.type}">
+              <div>
+                <div style="font-weight:600;font-size:13px;">${t.type==='paid'?'💸 Received':'📋 '+(t.svc||'Udhar')}</div>
+                <div style="font-size:10px;color:#94a3b8;">${F.date(t.at)} ${F.time(t.at)}</div>
+              </div>
+              <div style="font-weight:800;color:${t.type==='paid'?'#16a34a':'#dc2626'};">${t.type==='paid'?'+':'-'}${F.rs(t.amt)}</div>
+            </div>`).join('')}
+
+        <div style="display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-top:14px;">
+          <button class="btn ghost sm" onclick="window.open('tel:+91${a.phone}','_self')">📞 Call</button>
+          <button class="btn ghost sm" style="background:#f0fdf4;color:#16a34a;" onclick="Udhar._wa('${a.phone.replace(/'/g,'&#39;')}')">💬 WA</button>
+        </div>
+      </div>
+    `);
+  },
+
+  _wa(phone){
+    const a=DB.l('udhar').find(x=>x.phone===phone);
+    if(!a)return;
+    const pending=Math.max(0,(a.given||0)-(a.paid||0));
+    const msg='Hi '+(a.name||'')+(a.name?',':'')+' aapka Rohit Computer mein pending balance: '+F.rs(pending)+'. Please clear karo. Thank you 🙏';
+    window.open('https://wa.me/91'+phone+'?text='+encodeURIComponent(msg),'_blank');
+  },
+
+  _collect(phone){
+    const amt=parseFloat(document.getElementById('cpay')?.value);
+    if(!amt||amt<=0)return Toast.show('⚠️ Valid amount daalo');
+    const accts=DB.l('udhar');
+    const a=accts.find(x=>x.phone===phone);if(!a)return;
+    a.paid=(a.paid||0)+amt;
+    a.tx=a.tx||[];
+    a.tx.push({type:'paid',amt,at:new Date().toISOString()});
+    DB.s('udhar',accts);
+    DB.push('entries',{type:'collect',svc:'Udhar Received: '+(a.name||phone),svcId:'collect',amt,pm:'cash',cust:a.name||'',phone:phone,day:DB.today(),role:Auth.role(),who:Auth.user().name});
+    Toast.show('✅ '+F.rs(amt)+' received');
+    Modal.close();
+    Router.go(Router.cur);
+  },
+};
+
+/* ── MONEY BOXES ── */
+const Money = {
+  _opening(){
+    const today=DB.today(),key='mbo_'+today;
+    let d=DB.g(key);
+    if(!d||!Object.keys(d).length){
+      const dt=new Date();dt.setDate(dt.getDate()-1);
+      const yk=dt.getFullYear()+'-'+String(dt.getMonth()+1).padStart(2,'0')+'-'+String(dt.getDate()).padStart(2,'0');
+      const prev=DB.g('mbc_'+yk);
+      if(prev){DB.s(key,prev);return {...prev}}
+    }
+    return d||{};
+  },
+  _closing(){return DB.g('mbc_'+DB.today())||{}},
+  _inflow(id){
+    const es=DB.l('entries').filter(e=>e.day===DB.today());
+    if(id==='cash') return es.filter(e=>e.pm==='cash').reduce((s,e)=>s+e.amt,0);
+    if(id==='online') return es.filter(e=>e.pm==='online').reduce((s,e)=>s+e.amt,0);
+    return 0;
+  },
+  boxes(){
+    const o=this._opening(),c=this._closing();
+    return C.boxes.map(b=>{
+      const op=o[b.id]||0,inf=this._inflow(b.id),exp=op+inf;
+      const act=c[b.id]!==undefined?c[b.id]:null;
+      return {...b,op,inf,exp,act};
+    });
+  },
+  showOpening(){
+    if(!Auth.isOwner())return Toast.show('Owner only');
+    const op=this._opening();
+    Modal.open(`
+      <div class="mhead">
+        <div><div class="mt">🔓 Opening Balance</div><div class="ms">${new Date().toLocaleDateString('en-IN')}</div></div>
+        <button class="mclose" onclick="Modal.close()" aria-label="Close">✕</button>
+      </div>
+      <div class="mbody">
+        <p style="font-size:12px;color:#64748b;margin-bottom:14px;">Subah ki shuruaat ki raqam daalo</p>
+        ${C.boxes.map(b=>`
+          <div class="fg">
+            <p class="flabel">${b.icon} ${b.name}</p>
+            <input type="number" class="inp" id="op_${b.id}" inputmode="decimal" value="${op[b.id]||''}" placeholder="₹ 0" aria-label="${b.name} opening balance">
+          </div>`).join('')}
+      </div>
+      <div class="mfoot">
+        <button class="btn blue" onclick="Money._saveOp()">✅ Save Balance</button>
+        <button class="btn ghost" onclick="Modal.close()">Cancel</button>
+      </div>
+    `);
+    setTimeout(()=>document.getElementById('op_cash')?.focus(),200);
+  },
+  _saveOp(){
+    const d={};
+    C.boxes.forEach(b=>{const v=parseFloat(document.getElementById('op_'+b.id)?.value);if(!isNaN(v)&&v>=0)d[b.id]=v});
+    if(!Object.keys(d).length)return Toast.show('⚠️ Kuch to daalo');
+    DB.s('mbo_'+DB.today(),d);Modal.close();Toast.show('✅ Opening saved');Router.go(Router.cur);
+  },
+  showClosing(){
+    if(!Auth.isOwner())return Toast.show('Owner only');
+    const boxes=this.boxes();
+    Modal.open(`
+      <div class="mhead">
+        <div><div class="mt">🔒 Daily Closing</div><div class="ms">Asli raqam daalo</div></div>
+        <button class="mclose" onclick="Modal.close()" aria-label="Close">✕</button>
+      </div>
+      <div class="mbody">
+        ${boxes.map(b=>`
+          <div class="card mb8">
+            <p style="font-weight:700;font-size:13px;margin-bottom:8px;">${b.icon} ${b.name}</p>
+            <div style="display:grid;grid-template-columns:repeat(3,1fr);gap:6px;font-size:10px;color:#64748b;margin-bottom:8px;padding-bottom:8px;border-bottom:1px solid #f1f5f9;">
+              <span>Open<br><b>${F.short(b.op)}</b></span>
+              <span>In<br><b style="color:#16a34a;">${F.short(b.inf)}</b></span>
+              <span>Expected<br><b style="color:#1d4ed8;">${F.rs(b.exp)}</b></span>
+            </div>
+            <input type="number" class="inp" id="cl_${b.id}" inputmode="decimal" value="${b.act!==null?b.act:''}" placeholder="Actual amount..."
+              oninput="Money._diff('${b.id}',this.value,${b.exp})" aria-label="${b.name} actual amount">
+            <p id="dif_${b.id}" style="font-size:11px;font-weight:700;height:16px;margin-top:6px;"></p>
+          </div>`).join('')}
+      </div>
+      <div class="mfoot">
+        <button class="btn red" onclick="Money._saveCl()">🔒 Close Day</button>
+        <button class="btn ghost" onclick="Modal.close()">Cancel</button>
+      </div>
+    `);
+  },
+  _diff(id,val,exp){
+    const el=document.getElementById('dif_'+id);if(!el)return;
+    if(!val){el.textContent='';return}
+    const a=parseFloat(val);if(isNaN(a)){el.textContent='';return}
+    const d=a-exp;
+    if(d===0){el.textContent='✅ Perfect!';el.style.color='#16a34a'}
+    else if(d>0){el.textContent='🔺 +'+F.rs(d)+' extra';el.style.color='#ea580c'}
+    else{el.textContent='🔻 '+F.rs(Math.abs(d))+' short';el.style.color='#dc2626'}
+  },
+  _saveCl(){
+    const d={};let mm=0;
+    C.boxes.forEach(b=>{
+      const v=parseFloat(document.getElementById('cl_'+b.id)?.value);
+      if(!isNaN(v)&&v>=0){
+        d[b.id]=v;
+        const box=this.boxes().find(x=>x.id===b.id);
+        if(box&&Math.abs(v-box.exp)>0.01)mm++;
+      }
+    });
+    if(!Object.keys(d).length)return Toast.show('⚠️ Kuch to daalo');
+    DB.s('mbc_'+DB.today(),d);Modal.close();
+    Toast.show(mm?`⚠️ ${mm} box mismatch!`:'✅ Sab match! Day closed 🎉');
+    Router.go(Router.cur);
+  },
+};
+
+/* ── REPORTS ── */
+const Reports = {
+  tab:'today',
+  render(){
+    if(!Auth.isOwner()){
+      document.getElementById('main').innerHTML='<div class="empty"><div class="ei">🔒</div><div class="et">Owner Only</div><div class="es">Reports sirf owner ke liye hain</div></div>';
+      return;
+    }
+    this._draw();
+  },
+  _draw(){
+    const all=DB.l('entries'),now=new Date();
+    let es,label;
+    if(this.tab==='today'){es=all.filter(e=>e.day===DB.today());label='Today'}
+    else if(this.tab==='week'){
+      const d=new Date(now);d.setDate(d.getDate()-7);
+      es=all.filter(e=>e.day>=d.toISOString().split('T')[0]);label='7 Days';
+    } else {
+      const d=new Date(now);d.setDate(d.getDate()-30);
+      es=all.filter(e=>e.day>=d.toISOString().split('T')[0]);label='30 Days';
+    }
+    const total=es.reduce((s,e)=>s+e.amt,0);
+    const cash=es.filter(e=>e.pm==='cash').reduce((s,e)=>s+e.amt,0);
+    const online=es.filter(e=>e.pm==='online').reduce((s,e)=>s+e.amt,0);
+    const udhar=es.filter(e=>e.pm==='udhar').reduce((s,e)=>s+e.amt,0);
+    const staffMap={};
+    es.forEach(e=>{const k=e.who||'Unknown';if(!staffMap[k])staffMap[k]={n:0,t:0};staffMap[k].n++;staffMap[k].t+=e.amt});
+    const svcMap={};
+    es.forEach(e=>{svcMap[e.svc]=(svcMap[e.svc]||0)+1});
+    const top=Object.entries(svcMap).sort((a,b)=>b[1]-a[1]).slice(0,5);
+    const tabBtn=(t,l)=>`<button class="rtab ${this.tab===t?'active':''}" onclick="Reports.tab='${t}';Reports._draw()">${l}</button>`;
+
+    document.getElementById('main').innerHTML=`
+      <div class="section">
+        <p class="stitle">📊 Reports <span class="slink" onclick="Reports._export()">📥 CSV</span></p>
+        <div class="rtabs">${tabBtn('today','Today')}${tabBtn('week','7 Days')}${tabBtn('month','30 Days')}</div>
+
+        <div class="hero mb12">
+          <div class="hero-greet">${label} Total</div>
+          <div class="hero-amt">${F.rs(total)}</div>
+          <div class="hero-lbl">${es.length} entries</div>
+          <div class="hero-stats">
+            <div class="hstat"><div class="sl">💵 CASH</div><div class="sv">${F.short(cash)}</div></div>
+            <div class="hstat"><div class="sl">📱 ONLINE</div><div class="sv">${F.short(online)}</div></div>
+            <div class="hstat"><div class="sl">📋 UDHAR</div><div class="sv">${F.short(udhar)}</div></div>
+          </div>
+        </div>
+
+        ${Object.keys(staffMap).length>0?`
+          <p class="stitle">👥 Staff</p>
+          ${Object.entries(staffMap).sort((a,b)=>b[1].t-a[1].t).map(([n,s])=>`
+            <div class="card mb8 spread">
+              <div><div style="font-weight:700;font-size:13px;">${n}</div><div style="font-size:11px;color:#94a3b8;">${s.n} entries</div></div>
+              <div style="font-weight:800;color:#2563eb;">${F.rs(s.t)}</div>
+            </div>`).join('')}`:''}
+
+        ${top.length>0?`
+          <p class="stitle mt8">🏆 Top Services</p>
+          <div class="card">
+            ${top.map(([n,c],i)=>`
+              <div class="spread" style="padding:8px 0;${i<top.length-1?'border-bottom:1px solid #f1f5f9;':''}">
+                <span style="font-size:13px;">${['🥇','🥈','🥉','4️⃣','5️⃣'][i]} ${n}</span>
+                <span class="pill blue">${c}x</span>
+              </div>`).join('')}
+          </div>`:''}
+
+        <div style="margin-top:16px;display:flex;gap:8px;flex-direction:column;">
+          <button class="btn blue" onclick="Money.showOpening()">🔓 Opening Balance</button>
+          <button class="btn red" onclick="Money.showClosing()">🔒 Daily Closing</button>
+        </div>
+      </div>`;
+  },
+  _export(){
+    const all=DB.l('entries'),now=new Date();
+    let es;
+    if(this.tab==='today')es=all.filter(e=>e.day===DB.today());
+    else if(this.tab==='week'){const d=new Date(now);d.setDate(d.getDate()-7);es=all.filter(e=>e.day>=d.toISOString().split('T')[0])}
+    else{const d=new Date(now);d.setDate(d.getDate()-30);es=all.filter(e=>e.day>=d.toISOString().split('T')[0])}
+    let csv='Date,Time,Service,Amount,Payment,Customer,Phone,Staff,Notes\n';
+    es.forEach(e=>{csv+=`${e.day},${F.time(e.at)},"${e.svc}",${e.amt},${e.pm},"${e.cust||''}",${e.phone||''},"${e.who||''}","${(e.notes||'').replace(/"/g,'""')}"\n`});
+    const b=new Blob(['﻿'+csv],{type:'text/csv;charset=utf-8'});
+    const u=URL.createObjectURL(b);
+    const a=document.createElement('a');a.href=u;a.download=`report_${this.tab}_${DB.today()}.csv`;a.click();URL.revokeObjectURL(u);
+    Toast.show('✅ CSV downloaded');
+  },
+};
+
+/* ── HOME ── */
+const Home = {
+  _ecard(e){
+    const pm=C.pm.find(p=>p.id===e.pm)||{icon:'🔢',name:e.pm||''};
+    const iconBg={cash:'#f0fdf4',online:'#eff6ff',udhar:'#fef2f2',partial:'#fff7ed'};
+    const showStaff=Auth.isOwner()&&e.who;
+    return `<div class="ecard ${e.pm||''}" onclick="Entry.detail('${e.id}')">
+      <div class="eicon ${e.pm||''}" style="background:${iconBg[e.pm]||'#f1f5f9'}">${pm.icon}</div>
+      <div class="einfo">
+        <div class="ename">${e.svc}</div>
+        <div class="emeta">
+          <span class="epill ${e.pm||''}">${pm.name}</span>
+          ${e.cust?`<span>👤 ${e.cust}</span>`:''}
+          <span>🕐 ${F.time(e.at)}</span>
+          ${showStaff?`<span style="color:#a5b4fc;">👤 ${e.who}</span>`:''}
+        </div>
+      </div>
+      <div class="eamt ${e.pm==='udhar'?'udhar':''}">${F.rs(e.amt)}</div>
+    </div>`;
+  },
+
+  renderOwner(){
+    const today=DB.today();
+    const es=DB.l('entries').filter(e=>e.day===today).reverse();
+    const total=es.reduce((s,e)=>s+e.amt,0);
+    const cash=es.filter(e=>e.pm==='cash').reduce((s,e)=>s+e.amt,0);
+    const online=es.filter(e=>e.pm==='online').reduce((s,e)=>s+e.amt,0);
+    const udharAmt=es.filter(e=>e.pm==='udhar').reduce((s,e)=>s+e.amt,0);
+    const pendU=DB.l('udhar').reduce((s,a)=>s+Math.max(0,(a.given||0)-(a.paid||0)),0);
+    const hr=new Date().getHours();
+    const greet=hr<12?'🌅 Good Morning':hr<17?'☀️ Good Afternoon':'🌙 Good Evening';
+    const boxes=Money.boxes();
+
+    document.getElementById('main').innerHTML=`
+      <div class="hero">
+        <div class="hero-greet">${greet}, Rohit!</div>
+        <div class="hero-amt">${F.rs(total)}</div>
+        <div class="hero-lbl">Today · ${es.length} entries</div>
+        <div class="hero-stats">
+          <div class="hstat"><div class="sl">💵 CASH</div><div class="sv">${F.short(cash)}</div></div>
+          <div class="hstat"><div class="sl">📱 ONLINE</div><div class="sv">${F.short(online)}</div></div>
+          <div class="hstat"><div class="sl">📋 UDHAR</div><div class="sv">${F.short(udharAmt)}</div></div>
+        </div>
+      </div>
+
+      <div class="section">
+        <p class="stitle">⚡ Quick Actions</p>
+        <div class="qagrid">
+          <button class="qabtn primary" onclick="Entry.show()"><span class="qi">➕</span><span class="ql">New Entry</span></button>
+          <button class="qabtn" onclick="Entry.showSale()"><span class="qi">🛒</span><span class="ql">Product Sale</span></button>
+          <button class="qabtn" onclick="Router.go('udhar')"><span class="qi">📋</span><span class="ql">${pendU>0?'Udhar<br><b style=\'color:#dc2626;\'>'+F.rs(pendU)+'</b>':'Udhar'}</span></button>
+          <button class="qabtn" onclick="Money.showOpening()"><span class="qi">🔓</span><span class="ql">Opening</span></button>
+          <button class="qabtn" onclick="Money.showClosing()"><span class="qi">🔒</span><span class="ql">Closing</span></button>
+          <button class="qabtn" onclick="Router.go('reports')"><span class="qi">📊</span><span class="ql">Reports</span></button>
+          <button class="qabtn" onclick="App.staffAttend()"><span class="qi">👥</span><span class="ql">Attendance</span></button>
+          <button class="qabtn" onclick="App.settings()"><span class="qi">⚙️</span><span class="ql">Settings</span></button>
+        </div>
+      </div>
+
+      <div class="section">
+        <p class="stitle">💰 Money Boxes <span class="slink" onclick="Money.showClosing()">🔒 Closing</span></p>
+        <div class="mbgrid">
+          ${boxes.map(b=>{
+            const diff=b.act!==null?b.act-b.exp:null;
+            const cls=diff===null?'':(diff===0?'ok':'bad');
+            const icon=diff===null?'':(diff===0?'✅':diff>0?'🔺':'🔻');
+            return `<div class="mbcard ${cls}" onclick="Money.showClosing()">
+              <div>
+                <div class="ml">${b.icon} ${b.name}</div>
+                <div class="ma">${F.short(b.act!==null?b.act:b.exp)}</div>
+              </div>
+              <div class="mm">${icon} Op: ${F.short(b.op)}</div>
+            </div>`;
+          }).join('')}
+        </div>
+      </div>
+
+      <div class="section">
+        <p class="stitle">📋 Today's Entries ${es.length>0?`<span class="pill">${es.length}</span>`:''}</p>
+        ${es.length===0?
+          `<div class="empty"><div class="ei">📝</div><div class="et">No entries yet</div><div class="es">Start adding entries!</div><button class="eb" onclick="Entry.show()">➕ First Entry</button></div>`:
+          `<div class="elist">${es.slice(0,25).map(e=>this._ecard(e)).join('')}</div>`}
+      </div>
+    `;
+  },
+
+  renderStaff(){
+    const today=DB.today(),myName=Auth.user().name;
+    const myEs=DB.l('entries').filter(e=>e.day===today&&e.who===myName).reverse();
+    const myTotal=myEs.reduce((s,e)=>s+e.amt,0);
+    const hr=new Date().getHours();
+    const greet=hr<12?'🌅 Subah ko swagat':hr<17?'☀️ Dopahar namaste':'🌙 Shaam ko namaste';
+    const attend=DB.g('at_'+today)||{};
+    const present=!!attend[myName];
+
+    document.getElementById('main').innerHTML=`
+      <div class="hero" style="background:linear-gradient(135deg,#0891b2,#0e7490);">
+        <div class="hero-greet">${greet}, Staff!</div>
+        <div class="hero-amt">${F.rs(myTotal)}</div>
+        <div class="hero-lbl">Aapki aaj ki ${myEs.length} entries</div>
+      </div>
+
+      ${!present?`
+        <div class="attend-banner pending">
+          <div>
+            <div style="font-weight:700;font-size:13px;color:#854d0e;">🕐 Attendance Pending</div>
+            <div style="font-size:11px;color:#a16207;margin-top:2px;">Mark karo shuruaat ke liye</div>
+          </div>
+          <button class="btn green" style="width:auto;padding:10px 18px;font-size:13px;min-height:auto;" onclick="Home._attend()">✅ Present</button>
+        </div>`:
+        `<div class="attend-banner done">
+          <div>
+            <div style="font-weight:700;font-size:13px;color:#15803d;">✅ Present Aaj</div>
+            <div style="font-size:11px;color:#16a34a;margin-top:2px;">Marked at ${F.time(attend[myName])}</div>
+          </div>
+        </div>`}
+
+      <div class="staffbtns">
+        <button class="bgtbtn blue" onclick="Entry.show()">
+          <div class="bi">➕</div><div class="bl">New Entry</div><div class="bs">Service add karo</div>
+        </button>
+        <button class="bgtbtn green" onclick="Entry.showSale()">
+          <div class="bi">🛒</div><div class="bl">Product Sale</div><div class="bs">Items becho</div>
+        </button>
+      </div>
+
+      <div class="scgrid mb12">
+        <div class="scard blue"><div class="sl">📊 Entries</div><div class="sv" style="color:#1e40af;">${myEs.length}</div><div class="ss">today</div></div>
+        <div class="scard green"><div class="sl">💰 Total</div><div class="sv" style="color:#15803d;">${F.rs(myTotal)}</div><div class="ss">today</div></div>
+      </div>
+
+      <div class="section">
+        <p class="stitle">📋 Meri Entries ${myEs.length>0?`<span class="pill">${myEs.length}</span>`:''}</p>
+        ${myEs.length===0?
+          `<div class="empty"><div class="ei">📝</div><div class="et">Koi entry nahi</div><div class="es">Upar se entry karo!</div></div>`:
+          `<div class="elist">${myEs.map(e=>this._ecard(e)).join('')}</div>`}
+      </div>
+    `;
+  },
+
+  _attend(){
+    const today=DB.today(),name=Auth.user().name;
+    const d=DB.g('at_'+today)||{};
+    d[name]=new Date().toISOString();
+    DB.s('at_'+today,d);
+    Toast.show('✅ Present marked!');
+    Router.go('home');
+  },
+};
+
+/* ── ROUTER ── */
+const Router = {
+  cur:'home',
+  go(view){
+    this.cur=view;
+    if(view==='home')Auth.isOwner()?Home.renderOwner():Home.renderStaff();
+    else if(view==='udhar')Udhar.render();
+    else if(view==='reports')Reports.render();
+    this._nav();
+    // Scroll to top on view change
+    const main=document.getElementById('main');
+    if(main)main.scrollTop=0;
+  },
+  _nav(){
+    const isO=Auth.isOwner();
+    document.getElementById('bnav').innerHTML=isO?`
+      <button class="nbtn ${this.cur==='home'?'active':''}" onclick="Router.go('home')"><span class="ni">🏠</span><span>Home</span></button>
+      <button class="nbtn ${this.cur==='udhar'?'active':''}" onclick="Router.go('udhar')"><span class="ni">📋</span><span>Udhar</span></button>
+      <button class="nbtn fab" onclick="Entry.show()" aria-label="New Entry"><span class="ni">＋</span><span>Entry</span></button>
+      <button class="nbtn ${this.cur==='reports'?'active':''}" onclick="Router.go('reports')"><span class="ni">📊</span><span>Reports</span></button>
+      <button class="nbtn" onclick="App.settings()"><span class="ni">⚙️</span><span>Settings</span></button>
+    `:`
+      <button class="nbtn ${this.cur==='home'?'active':''}" onclick="Router.go('home')"><span class="ni">🏠</span><span>Home</span></button>
+      <button class="nbtn ${this.cur==='udhar'?'active':''}" onclick="Router.go('udhar')"><span class="ni">📋</span><span>Udhar</span></button>
+      <button class="nbtn fab" onclick="Entry.show()" aria-label="New Entry"><span class="ni">＋</span><span>Entry</span></button>
+      <button class="nbtn" onclick="Entry.showSale()"><span class="ni">🛒</span><span>Sale</span></button>
+      <button class="nbtn" onclick="App.settings()"><span class="ni">⚙️</span><span>Settings</span></button>
+    `;
+  },
+};
+
+/* ── APP ── */
+const App = {
+  init(){
+    if(Auth.init())this.boot();
+    else Login.show();
+  },
+  boot(){
+    document.getElementById('roleBadge').textContent=Auth.isOwner()?'👑 Owner':'👤 Staff';
+    Router.go('home');
+  },
+  staffAttend(){this._attendance()},
+  settings(){
+    const isO=Auth.isOwner();
+    Modal.open(`
+      <div class="mhead">
+        <div><div class="mt">⚙️ Settings</div><div class="ms">${isO?'👑 Owner':'👤 Staff'}</div></div>
+        <button class="mclose" onclick="Modal.close()" aria-label="Close">✕</button>
+      </div>
+      <div class="mbody">
+        <div class="card mb12">
+          <div class="spread">
+            <div>
+              <div style="font-weight:700;font-size:14px;">${Auth.user().name}</div>
+              <div style="font-size:11px;color:#94a3b8;">${isO?'Owner Account':'Staff Account'}</div>
+            </div>
+            <button class="pill red" onclick="App._logout()" style="cursor:pointer;padding:5px 12px;">Logout</button>
+          </div>
+        </div>
+
+        ${isO?`
+          <button class="btn ghost mb8" onclick="App._backup()" style="justify-content:flex-start;">📦 Backup / Download Data</button>
+          <button class="btn ghost mb8" onclick="App._attendance()" style="justify-content:flex-start;">👥 Staff Attendance</button>
+          <button class="btn ghost mb8" onclick="App._staffName()" style="justify-content:flex-start;">✏️ Set Staff Name</button>
+          <button class="btn ghost mb8" onclick="App._addService()" style="justify-content:flex-start;">➕ Add Custom Service</button>
+          <button class="btn ghost mb8" style="background:#fef2f2;color:#dc2626;justify-content:flex-start;" onclick="App._reset()">🗑️ Clear All Data</button>
+        `:`<p style="text-align:center;color:#94a3b8;font-size:12px;padding:14px;">Staff ke liye limited settings hai.<br>Owner se contact karo changes ke liye.</p>`}
+
+        <div style="text-align:center;font-size:10px;color:#94a3b8;margin-top:16px;padding-top:12px;border-top:1px solid #f1f5f9;">
+          Hisab v9 · Rohit Computer · Rath, Hamirpur
+        </div>
+      </div>
+    `);
+  },
+  _logout(){
+    if(!confirm('Logout karna chahte ho?'))return;
+    Auth.logout();Modal.close();Login.show();
+  },
+  _backup(){
+    const keys=Object.keys(localStorage).filter(k=>k.startsWith('rc8_'));
+    const data={v:'9',exported:new Date().toISOString(),data:{}};
+    keys.forEach(k=>{try{data.data[k.replace('rc8_','')]=JSON.parse(localStorage.getItem(k))}catch{}});
+    const b=new Blob([JSON.stringify(data,null,2)],{type:'application/json'});
+    const u=URL.createObjectURL(b);
+    const a=document.createElement('a');a.href=u;a.download=`hisab_backup_${DB.today()}.json`;a.click();URL.revokeObjectURL(u);
+    Toast.show('✅ Backup downloaded!');
+  },
+  _attendance(){
+    const today=DB.today(),data=DB.g('at_'+today)||{};
+    Modal.open(`
+      <div class="mhead">
+        <div><div class="mt">👥 Staff Attendance</div><div class="ms">${new Date().toLocaleDateString('en-IN')}</div></div>
+        <button class="mclose" onclick="Modal.close()" aria-label="Close">✕</button>
+      </div>
+      <div class="mbody">
+        ${Object.keys(data).length===0?
+          '<p style="text-align:center;color:#94a3b8;padding:24px;">Aaj koi present nahi hua</p>':
+          Object.entries(data).map(([name,time])=>`
+            <div class="card mb8 spread">
+              <div><div style="font-weight:700;font-size:13px;">${name}</div><div style="font-size:11px;color:#94a3b8;">In: ${F.time(time)}</div></div>
+              <span class="pill green">✅ Present</span>
+            </div>`).join('')}
+      </div>
+    `);
+  },
+  _addService(){
+    Modal.open(`
+      <div class="mhead">
+        <div><div class="mt">➕ Custom Service</div><div class="ms">Quick access ke liye</div></div>
+        <button class="mclose" onclick="Modal.close()" aria-label="Close">✕</button>
+      </div>
+      <div class="mbody">
+        <div class="fg"><p class="flabel">Service Name</p><input type="text" class="inp" id="csn" placeholder="e.g. DL Form, RC Transfer" autocomplete="off"></div>
+        <div class="fg"><p class="flabel">Default Rate ₹</p><input type="number" class="inp" id="csr" inputmode="decimal" placeholder="0"></div>
+      </div>
+      <div class="mfoot">
+        <button class="btn blue" onclick="App._saveService()">➕ Add Service</button>
+        <button class="btn ghost" onclick="Modal.close()">Cancel</button>
+      </div>
+    `);
+  },
+  _saveService(){
+    const name=document.getElementById('csn')?.value?.trim();
+    const rate=parseFloat(document.getElementById('csr')?.value)||0;
+    if(!name)return Toast.show('⚠️ Name daalo');
+    const uid='c_'+Date.now();
+    const svc={id:uid,name,rate,cat:'Custom'};
+    const custom=DB.l('custom_svcs');
+    custom.push(svc);
+    DB.s('custom_svcs',custom);
+    C.svcs.push(svc);
+    Toast.show('✅ Service added: '+name);Modal.close();
+  },
+  _staffName(){
+    const cur=DB.g('staff_name')||'Staff';
+    Modal.open(`
+      <div class="mhead">
+        <div><div class="mt">✏️ Staff Name</div><div class="ms">Login ke liye naam set karo</div></div>
+        <button class="mclose" onclick="Modal.close()" aria-label="Close">✕</button>
+      </div>
+      <div class="mbody">
+        <div class="fg">
+          <p class="flabel">Staff ka Naam</p>
+          <input type="text" class="inp" id="snInp" value="${cur}" placeholder="e.g. Ramu, Shyam, Laxmi" autocomplete="off">
+        </div>
+        <p style="font-size:12px;color:#94a3b8;margin-top:4px;">Yeh naam entries mein dikhega. Staff ko dobara login karna hoga.</p>
+      </div>
+      <div class="mfoot">
+        <button class="btn blue" onclick="App._saveStaffName()">✅ Save Name</button>
+        <button class="btn ghost" onclick="Modal.close()">Cancel</button>
+      </div>
+    `);
+    setTimeout(()=>document.getElementById('snInp')?.focus(),200);
+  },
+  _saveStaffName(){
+    const name=document.getElementById('snInp')?.value?.trim();
+    if(!name)return Toast.show('⚠️ Naam daalo');
+    DB.s('staff_name',name);
+    Toast.show('✅ Staff name set: '+name);
+    Modal.close();
+  },
+  _reset(){
+    if(!confirm('⚠️ DANGER: Sab data delete hoga!'))return;
+    if(!confirm('LAST CHANCE! Confirm delete?'))return;
+    Object.keys(localStorage).filter(k=>k.startsWith('rc8_')).forEach(k=>localStorage.removeItem(k));
+    Toast.show('🗑️ Data cleared');Modal.close();
+    setTimeout(()=>location.reload(),1500);
+  },
+};
+
+/* ── KEYBOARD HANDLER ── */
+document.addEventListener('keydown',e=>{
+  if(e.key==='Escape'&&document.getElementById('loginOverlay')?.style.display!=='flex'){
+    Modal.close();
+  }
+  // Keyboard shortcuts on desktop
+  if(e.ctrlKey||e.metaKey){
+    if(e.key==='n'&&Auth.role()){e.preventDefault();Entry.show()}
+  }
+});
+
+/* ── LOGIN KEYBOARD ── */
+document.addEventListener('keypress',e=>{
+  const overlay=document.getElementById('loginOverlay');
+  if(overlay&&overlay.style.display==='flex'){
+    if(e.key>='0'&&e.key<='9')Login.tap(e.key);
+    else if(e.key==='Backspace'||e.key==='\x08')Login.back();
+  }
+});
+document.addEventListener('keydown',e=>{
+  const overlay=document.getElementById('loginOverlay');
+  if(overlay&&overlay.style.display==='flex'){
+    if(e.key==='Backspace')Login.back();
+    else if(e.key==='Escape')Login.clear();
+  }
+});
+
+/* ── BOOT ── */
+window.addEventListener('DOMContentLoaded',()=>{
+  const custom=DB.l('custom_svcs');
+  custom.forEach(s=>{if(!C.svcs.find(x=>x.id===s.id))C.svcs.push(s)});
+  requestAnimationFrame(()=>App.init());
+});
+
+/* ── INSTALL PROMPT (PWA) ── */
+let _deferredPrompt=null;
+window.addEventListener('beforeinstallprompt',e=>{
+  e.preventDefault();_deferredPrompt=e;
+  // Could show install button here if desired
+});
+</script>
+</body>
+</html>
