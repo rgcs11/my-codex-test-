@@ -390,6 +390,7 @@ img{max-width:100%;height:auto}
 
 /* ── FOCUS STYLES ── */
 :focus-visible{outline:2px solid var(--blue);outline-offset:2px;border-radius:4px}
+@keyframes spin{to{transform:rotate(360deg)}}
 
 /* ── PRINT ── */
 @media print{
@@ -513,8 +514,11 @@ body.embed #app{
   min-height:0!important;
 }
 body.embed .main{
-  max-height:calc(var(--embed-h,700px) - var(--header-h) - var(--nav-h));
-  overflow-y:auto;
+  flex:1!important;
+  min-height:0!important;
+  max-height:calc(var(--embed-h,700px) - var(--header-h) - var(--nav-h))!important;
+  overflow-y:auto!important;
+  -webkit-overflow-scrolling:touch!important;
   padding-bottom:calc(var(--nav-h) + 8px)!important;
 }
 body.embed .header{position:sticky!important;top:0}
@@ -537,7 +541,7 @@ body.embed .nbtn .ni{font-size:21px!important;line-height:1!important}
 body.embed .nbtn.fab .ni{font-size:30px!important;line-height:.9!important}
 body.embed .nbtn.fab{background:transparent!important;box-shadow:none!important;border-radius:0!important;order:0!important}
 body.embed .header{padding-left:16px!important}
-body.embed .main{margin-left:0!important;padding-left:14px!important;padding-right:14px!important}
+body.embed .main{margin-left:0!important;padding-left:14px!important;padding-right:14px!important;padding-top:14px!important;margin-top:0!important}
 </style>
 </head>
 <body>
@@ -556,7 +560,7 @@ body.embed .main{margin-left:0!important;padding-left:14px!important;padding-rig
       <button class="hibtn" onclick="App.settings()" aria-label="Settings">⚙️</button>
     </div>
   </header>
-  <main class="main" id="main" role="main"></main>
+  <main class="main" id="main" role="main"><div id="appLoader" style="display:flex;flex-direction:column;align-items:center;justify-content:center;height:180px;gap:12px;color:#64748b;font-size:13px"><div style="width:32px;height:32px;border:3px solid #e2e8f0;border-top-color:#2563eb;border-radius:50%;animation:spin .7s linear infinite"></div>Loading…</div></main>
   <nav class="bnav" id="bnav" aria-label="Main navigation"></nav>
 </div>
 
@@ -2446,6 +2450,7 @@ const Router = {
 /* ── APP ── */
 const App = {
   init(){
+    const l=document.getElementById('appLoader');if(l)l.remove();
     if(Auth.init())this.boot();
     else Login.show();
   },
@@ -2693,7 +2698,10 @@ document.addEventListener('keydown',e=>{
 });
 
 /* ── BOOT ── */
-window.addEventListener('DOMContentLoaded',()=>{
+let _booted=false;
+function _boot(){
+  if(_booted)return;
+  _booted=true;
   // Embed mode: detect iframe OR ?embed param in URL
   const inFrame=()=>{try{return window.self!==window.top}catch{return true}};
   const params=new URLSearchParams(window.location.search);
@@ -2704,9 +2712,7 @@ window.addEventListener('DOMContentLoaded',()=>{
       document.documentElement.style.setProperty('--embed-h',params.get('h')+'px');
     }
     // Tell parent frame our natural scroll height (for auto-sizing iframes)
-    window.addEventListener('load',()=>{
-      try{parent.postMessage({hisabHeight:document.getElementById('app')?.offsetHeight||700},'*')}catch{}
-    });
+    try{parent.postMessage({hisabHeight:document.getElementById('app')?.offsetHeight||700},'*')}catch{}
   }
   // ── Run data migrations (safe, non-destructive) ──
   Migration.run();
@@ -2714,7 +2720,14 @@ window.addEventListener('DOMContentLoaded',()=>{
   const custom=DB.l('custom_svcs');
   custom.forEach(s=>{if(!C.svcs.find(x=>x.id===s.id))C.svcs.push(s)});
   requestAnimationFrame(()=>App.init());
-});
+}
+// Fire immediately if DOM already ready (Hostinger/dynamic injection),
+// otherwise wait for DOMContentLoaded
+if(document.readyState==='loading'){
+  window.addEventListener('DOMContentLoaded',_boot);
+}else{
+  _boot();
+}
 
 /* ── INSTALL PROMPT (PWA) ── */
 let _deferredPrompt=null;
