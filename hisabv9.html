@@ -150,6 +150,44 @@ img{max-width:100%;height:auto}
 .eamt{font-weight:800;font-size:15px;color:var(--green);flex-shrink:0}
 .eamt.udhar{color:var(--red)}
 
+/* ── AEPS / EXPENSE ENTRY STYLES ── */
+.ecard.aeps{border-left-color:#0891b2}
+.ecard.expense{border-left-color:#7c3aed}
+.eicon.aeps{background:#ecfeff}
+.eicon.expense{background:#f3f0ff}
+.epill.aeps{background:#ecfeff;color:#0891b2}
+.epill.expense{background:#f3f0ff;color:#7c3aed}
+.eamt.aeps{color:#0891b2}
+.eamt.expense{color:#7c3aed}
+
+/* ── BIG BUTTON COLORS ── */
+.bgtbtn.teal{background:linear-gradient(135deg,#0891b2,#0e7490)}
+.bgtbtn.purple{background:linear-gradient(135deg,#7c3aed,#6d28d9)}
+.qabtn.teal{background:linear-gradient(135deg,#0891b2,#0e7490);border:none;box-shadow:0 4px 12px rgba(8,145,178,.3)}
+.qabtn.teal .ql{color:#fff}
+.qabtn.purple{background:linear-gradient(135deg,#7c3aed,#6d28d9);border:none;box-shadow:0 4px 12px rgba(124,58,237,.3)}
+.qabtn.purple .ql{color:#fff}
+
+/* ── AEPS TOGGLE ── */
+.atog{display:flex;gap:6px;background:#f1f5f9;border-radius:13px;padding:4px;margin-bottom:14px}
+.atog button{flex:1;padding:13px 8px;border-radius:10px;font-size:14px;font-weight:700;background:transparent;color:var(--text-2);transition:.15s;cursor:pointer;min-height:48px;border:none}
+.atog button.sel{background:#0891b2;color:#fff;box-shadow:0 2px 8px rgba(8,145,178,.3)}
+
+/* ── CALC SUMMARY ── */
+.calc-box{border-radius:14px;padding:14px 16px;margin-top:12px;display:flex;justify-content:space-between;align-items:center}
+.calc-box.teal{background:linear-gradient(135deg,#0891b2,#0e7490);color:#fff}
+.calc-box .cb-l{font-size:11px;opacity:.85}
+.calc-box .cb-v{font-size:22px;font-weight:900;letter-spacing:-.5px}
+
+/* ── CATEGORY GRID ── */
+.catgrid{display:grid;grid-template-columns:repeat(3,1fr);gap:8px}
+.catbtn{background:#f8fafc;border:2px solid #e8ecf1;border-radius:13px;padding:12px 6px;display:flex;flex-direction:column;align-items:center;gap:5px;transition:all .15s;cursor:pointer;min-height:74px;justify-content:center}
+.catbtn:hover{border-color:#c4b5fd;background:#f3f0ff}
+.catbtn:active{transform:scale(.95)}
+.catbtn.sel{border-color:#7c3aed;background:#f3f0ff}
+.catbtn .ci{font-size:23px}
+.catbtn .cn{font-size:10px;font-weight:700;color:#475569;text-align:center;line-height:1.2}
+
 /* ── CARD ── */
 .card{background:#fff;border-radius:var(--r-md);padding:14px;box-shadow:var(--sh-sm)}
 
@@ -552,7 +590,6 @@ const C = {
     {id:'income',name:'Income Cert.',rate:100,cat:'CSC'},
     {id:'voter',name:'Voter ID',rate:50,cat:'CSC'},
     {id:'rcert',name:'Residence Cert.',rate:100,cat:'CSC'},
-    {id:'aeps',name:'AEPS Withdraw',rate:20,cat:'Banking'},
     {id:'balance',name:'Balance Check',rate:10,cat:'Banking'},
     {id:'mtransfer',name:'Money Transfer',rate:30,cat:'Banking'},
     {id:'bill',name:'Bill Payment',rate:20,cat:'Banking'},
@@ -763,7 +800,8 @@ const Entry = {
   _recentSvcs(){
     const seen=new Set();
     return DB.l('entries')
-      .filter(e=>e.svcId&&e.svcId!=='product_sale'&&e.svcId!=='collect'&&e.svc)
+      .filter(e=>e.svcId&&e.svcId!=='product_sale'&&e.svcId!=='collect'&&e.svcId!=='aeps'
+        &&e.type!=='aeps'&&e.type!=='expense'&&e.svc)
       .slice(-100).reverse()
       .filter(e=>{if(seen.has(e.svcId))return false;seen.add(e.svcId);return true})
       .slice(0,6)
@@ -1229,25 +1267,42 @@ const Entry = {
     const e=DB.l('entries').find(x=>x.id===id);
     if(!e)return;
     const pm=C.pm.find(p=>p.id===e.pm)||{icon:'🔢',name:e.pm};
+    const isAeps=e.type==='aeps', isExp=e.type==='expense';
+    const titleIcon=isAeps?'🏧':isExp?'💸':'📋';
+    const amtColor=isExp?'#7c3aed':isAeps?'#0891b2':(e.pm==='udhar'?'#dc2626':'#16a34a');
+    let amtBlock;
+    if(isAeps){
+      amtBlock=`
+        <p style="font-size:10px;color:#94a3b8;text-transform:uppercase;">AEPS ${e.aepsType==='deposit'?'Deposit':'Withdrawal'}</p>
+        <p style="font-size:32px;font-weight:900;letter-spacing:-1px;color:#0891b2;margin:4px 0 10px;">${F.rs(e.aepsAmt||0)}</p>
+        <div class="spread mb8" style="padding:8px 11px;background:#f0fdf4;border-radius:10px;"><span style="color:#15803d;font-size:12px;font-weight:600;">💰 Aapki Kamai</span><span style="font-weight:800;color:#16a34a;font-size:15px;">+${F.rs(e.amt)}</span></div>`;
+    } else if(isExp){
+      amtBlock=`
+        <p style="font-size:10px;color:#94a3b8;text-transform:uppercase;">Kharcha Amount</p>
+        <p style="font-size:32px;font-weight:900;letter-spacing:-1px;color:#7c3aed;margin:4px 0 14px;">−${F.rs(e.amt)}</p>`;
+    } else {
+      amtBlock=`
+        <p style="font-size:10px;color:#94a3b8;text-transform:uppercase;">Amount</p>
+        <p style="font-size:32px;font-weight:900;letter-spacing:-1px;color:${amtColor};margin:4px 0 14px;">${F.rs(e.amt)}</p>`;
+    }
     Modal.open(`
       <div class="mhead">
         <div>
-          <div class="mt">📋 Entry</div>
+          <div class="mt">${titleIcon} ${isAeps?'AEPS Entry':isExp?'Expense':'Entry'}</div>
           <div class="ms">${F.date(e.at)} · ${F.time(e.at)}</div>
         </div>
         <button class="mclose" onclick="Modal.close()" aria-label="Close">✕</button>
       </div>
       <div class="mbody">
         <div class="card mb12">
-          <p style="font-size:10px;color:#94a3b8;text-transform:uppercase;">Service</p>
+          <p style="font-size:10px;color:#94a3b8;text-transform:uppercase;">${isExp?'Category':'Service'}</p>
           <p style="font-size:16px;font-weight:700;margin:4px 0 14px;">${e.svc}</p>
-          <p style="font-size:10px;color:#94a3b8;text-transform:uppercase;">Amount</p>
-          <p style="font-size:32px;font-weight:900;letter-spacing:-1px;color:${e.pm==='udhar'?'#dc2626':'#16a34a'};margin:4px 0 14px;">${F.rs(e.amt)}</p>
+          ${amtBlock}
           <div class="spread mb8"><span style="color:#64748b;font-size:12px;">Payment</span><span class="pill ${e.pm==='cash'?'green':e.pm==='online'?'blue':e.pm==='udhar'?'red':'orange'}">${pm.icon} ${pm.name}</span></div>
           ${e.cust?`<div class="spread mb8"><span style="color:#64748b;font-size:12px;">Customer</span><span style="font-size:13px;font-weight:600;">${e.cust}</span></div>`:''}
           ${e.phone?`<div class="spread mb8"><span style="color:#64748b;font-size:12px;">Mobile</span><span style="font-size:13px;font-weight:600;">${e.phone}</span></div>`:''}
           ${e.notes?`<div style="margin-top:10px;padding:9px 11px;background:#fef9c3;border-radius:10px;font-size:12px;color:#713f12;">📝 ${e.notes}</div>`:''}
-          <div style="margin-top:10px;font-size:10px;color:#94a3b8;">By: ${e.who||'—'} (${e.role||''})</div>
+          <div style="margin-top:10px;font-size:10px;color:#94a3b8;">By: ${e.who||'—'} (${e.role||''})${e.editedAt?' · ✏️ edited':''}</div>
         </div>
         ${e.phone?`<button class="btn ghost mb8" style="background:#f0fdf4;color:#16a34a;" onclick="Entry._sendWA('${e.id}')">💬 WhatsApp Receipt</button>`:''}
         ${Auth.isOwner()?`
@@ -1349,6 +1404,236 @@ const Entry = {
     Toast.show('✅ Entry updated!');
     Modal.close();
     Router.go(Router.cur);
+  },
+};
+
+/* ── AEPS ──────────────────────────────────────────────
+   Aadhaar Enabled Payment System — the core of CSC business.
+   Withdrawal: customer takes cash, operator's AEPS wallet
+   gets the settlement. Deposit: reverse. Operator earns a
+   small commission/charge per transaction.
+   Kept deliberately simple: amount + commission + done.
+   ─────────────────────────────────────────────────────── */
+const Aeps = {
+  mode:'withdraw', // 'withdraw' | 'deposit'
+
+  // Suggested commission by withdrawal amount slab (operator can change)
+  slab(amt){
+    if(!amt||amt<=0)return 0;
+    if(amt<=500)return 5;
+    if(amt<=1000)return 10;
+    if(amt<=2000)return 15;
+    if(amt<=5000)return 20;
+    return 25;
+  },
+
+  show(){this.mode='withdraw';this._render()},
+
+  setMode(m){
+    const a=document.getElementById('aeAmt')?.value;
+    const c=document.getElementById('aeComm')?.value;
+    const p=document.getElementById('aePhone')?.value;
+    this.mode=m;
+    this._render();
+    if(a)document.getElementById('aeAmt').value=a;
+    if(c)document.getElementById('aeComm').value=c;
+    if(p)document.getElementById('aePhone').value=p;
+    this._calc();
+  },
+
+  _render(){
+    const isW=this.mode==='withdraw';
+    Modal.open(`
+      <div class="mhead">
+        <div><div class="mt">🏧 AEPS Cash</div><div class="ms">${isW?'Customer ko paise nikaal ke do':'Customer se paise jama karo'}</div></div>
+        <button class="mclose" onclick="Modal.close()" aria-label="Close">✕</button>
+      </div>
+      <div class="mbody">
+        <div class="atog">
+          <button class="${isW?'sel':''}" onclick="Aeps.setMode('withdraw')">💸 Withdrawal</button>
+          <button class="${!isW?'sel':''}" onclick="Aeps.setMode('deposit')">💵 Deposit</button>
+        </div>
+
+        <div class="fg">
+          <p class="flabel"><span class="fnum" style="background:#0891b2;">1</span> ${isW?'Kitna cash nikla?':'Kitna cash jama?'}</p>
+          <div class="amtwrap">
+            <input type="number" class="inp big" id="aeAmt" inputmode="decimal" placeholder="0"
+              oninput="Aeps._suggest()" aria-label="AEPS amount">
+          </div>
+          <div class="chips mt8">
+            ${[500,1000,2000,3000,5000,10000].map(a=>`<button class="chip sm" onclick="Aeps._setA(${a})">₹${a>=1000?(a/1000)+'k':a}</button>`).join('')}
+          </div>
+        </div>
+
+        <div class="divider"></div>
+
+        <div class="fg">
+          <p class="flabel"><span class="fnum" style="background:#16a34a;">2</span> Aapki Kamai (Commission)</p>
+          <div class="amtwrap">
+            <input type="number" class="inp big" id="aeComm" inputmode="decimal" placeholder="0"
+              oninput="Aeps._calc()" style="font-size:24px;" aria-label="Commission earned">
+          </div>
+          <div class="chips mt8">
+            ${[0,5,10,15,20,25,30,40,50].map(a=>`<button class="chip sm" onclick="Aeps._setC(${a})">₹${a}</button>`).join('')}
+          </div>
+        </div>
+
+        <div class="divider"></div>
+
+        <div class="fg">
+          <p class="flabel"><span class="fnum" style="background:#94a3b8;">3</span> Customer Mobile <span style="text-transform:none;letter-spacing:0;font-weight:400;font-size:10px;">(optional)</span></p>
+          <input type="tel" class="inp" id="aePhone" inputmode="numeric" maxlength="10" placeholder="📱 Mobile number">
+        </div>
+
+        <div class="calc-box teal">
+          <div><div class="cb-l">${isW?'💸 Cash diya':'💵 Cash mila'}</div><div class="cb-v" id="aeSumAmt">₹0</div></div>
+          <div style="text-align:right;"><div class="cb-l">💰 Aapki Kamai</div><div class="cb-v" id="aeSumComm">₹0</div></div>
+        </div>
+      </div>
+      <div class="mfoot">
+        <button class="btn green" id="aeSaveBtn" onclick="Aeps.save()">✅ Save AEPS</button>
+        <button class="btn ghost" onclick="Modal.close()">Cancel</button>
+      </div>
+    `);
+    setTimeout(()=>document.getElementById('aeAmt')?.focus(),200);
+  },
+
+  _setA(v){const e=document.getElementById('aeAmt');if(e){e.value=v;this._suggest()}},
+  _setC(v){const e=document.getElementById('aeComm');if(e){e.value=v;this._calc()}},
+
+  _suggest(){
+    const amt=parseFloat(document.getElementById('aeAmt')?.value)||0;
+    const ce=document.getElementById('aeComm');
+    if(ce&&!ce.value)ce.value=this.slab(amt);
+    this._calc();
+  },
+
+  _calc(){
+    const amt=parseFloat(document.getElementById('aeAmt')?.value)||0;
+    const comm=parseFloat(document.getElementById('aeComm')?.value)||0;
+    const sa=document.getElementById('aeSumAmt');
+    const sc=document.getElementById('aeSumComm');
+    if(sa)sa.textContent=F.rs(amt);
+    if(sc)sc.textContent=F.rs(comm);
+  },
+
+  save(){
+    const amt=parseFloat(document.getElementById('aeAmt')?.value)||0;
+    const comm=parseFloat(document.getElementById('aeComm')?.value)||0;
+    const phone=document.getElementById('aePhone')?.value?.trim()||'';
+    if(!amt||amt<=0){
+      const e=document.getElementById('aeAmt');
+      if(e){e.style.borderColor='#fca5a5';setTimeout(()=>e.style.borderColor='',1200)}
+      return Toast.show('⚠️ AEPS amount daalo');
+    }
+    const isW=this.mode==='withdraw';
+    DB.push('entries',{
+      type:'aeps', aepsType:this.mode, aepsAmt:amt,
+      svcId:'aeps', svc:'AEPS '+(isW?'Withdrawal':'Deposit'),
+      amt:comm, pm:'cash',
+      cust:'', phone, notes:'',
+      day:DB.today(), role:Auth.role(), who:Auth.user().name,
+    });
+    const btn=document.getElementById('aeSaveBtn');
+    if(btn){btn.textContent='🎉 Saved!';btn.classList.add('success');btn.disabled=true}
+    Toast.show('✅ AEPS saved! Kamai: '+F.rs(comm));
+    setTimeout(()=>{Modal.close();Router.go(Router.cur)},400);
+  },
+};
+
+/* ── EXPENSE ──────────────────────────────────────────
+   Shop kharcha — rent, bijli, chai-pani, internet, stock.
+   Expenses reduce net profit (not counted as revenue).
+   ─────────────────────────────────────────────────────── */
+const Expense = {
+  cats:[
+    {id:'rent',name:'Rent / Kiraya',icon:'🏠'},
+    {id:'power',name:'Bijli / Power',icon:'⚡'},
+    {id:'tea',name:'Chai-Pani',icon:'☕'},
+    {id:'net',name:'Internet',icon:'🌐'},
+    {id:'stock',name:'Stock Purchase',icon:'📦'},
+    {id:'salary',name:'Salary',icon:'👥'},
+    {id:'travel',name:'Travel',icon:'🛵'},
+    {id:'repair',name:'Repair',icon:'🔧'},
+    {id:'other',name:'Other',icon:'📝'},
+  ],
+  _cat:'',
+
+  show(){
+    this._cat='';
+    Modal.open(`
+      <div class="mhead">
+        <div><div class="mt">💸 Expense / Kharcha</div><div class="ms">Dukaan ka kharcha likho</div></div>
+        <button class="mclose" onclick="Modal.close()" aria-label="Close">✕</button>
+      </div>
+      <div class="mbody">
+        <div class="fg">
+          <p class="flabel"><span class="fnum" style="background:#7c3aed;">1</span> Kis cheez ka kharcha?</p>
+          <div class="catgrid" id="expCats">
+            ${this.cats.map(c=>`<button class="catbtn" data-c="${c.id}" data-n="${c.name}" onclick="Expense._pc(this)">
+              <span class="ci">${c.icon}</span><span class="cn">${c.name}</span>
+            </button>`).join('')}
+          </div>
+        </div>
+        <div class="divider"></div>
+        <div class="fg">
+          <p class="flabel"><span class="fnum" style="background:#7c3aed;">2</span> Kitna kharcha?</p>
+          <div class="amtwrap">
+            <input type="number" class="inp big" id="expAmt" inputmode="decimal" placeholder="0"
+              onkeydown="if(event.key==='Enter'){event.preventDefault();Expense.save()}" aria-label="Expense amount">
+          </div>
+        </div>
+        <div class="fg">
+          <p class="flabel">Payment Mode</p>
+          <div class="pmgrid" id="expPm">
+            <button class="pmbtn sel" data-pm="cash" onclick="Expense._pp(this,'cash')">💵 Cash</button>
+            <button class="pmbtn" data-pm="online" onclick="Expense._pp(this,'online')">📱 Online</button>
+          </div>
+          <input type="hidden" id="expPmV" value="cash">
+        </div>
+        <div class="fg">
+          <p class="flabel">Note <span style="text-transform:none;letter-spacing:0;font-weight:400;font-size:10px;">(optional)</span></p>
+          <input type="text" class="inp" id="expNote" placeholder="📝 Detail..." style="font-size:13px;padding:11px 14px;">
+        </div>
+      </div>
+      <div class="mfoot">
+        <button class="btn" style="background:#7c3aed;color:#fff;" id="expSaveBtn" onclick="Expense.save()">✅ Save Expense</button>
+        <button class="btn ghost" onclick="Modal.close()">Cancel</button>
+      </div>
+    `);
+  },
+
+  _pc(el){
+    document.querySelectorAll('#expCats .catbtn').forEach(b=>b.classList.remove('sel'));
+    el.classList.add('sel');
+    this._cat=el.dataset.n;
+    setTimeout(()=>document.getElementById('expAmt')?.focus(),100);
+  },
+
+  _pp(el,mode){
+    document.querySelectorAll('#expPm .pmbtn').forEach(b=>b.classList.remove('sel'));
+    el.classList.add('sel');
+    document.getElementById('expPmV').value=mode;
+  },
+
+  save(){
+    const amt=parseFloat(document.getElementById('expAmt')?.value)||0;
+    if(!this._cat){return Toast.show('⚠️ Category select karo')}
+    if(!amt||amt<=0){
+      const e=document.getElementById('expAmt');
+      if(e){e.style.borderColor='#fca5a5';setTimeout(()=>e.style.borderColor='',1200)}
+      return Toast.show('⚠️ Amount daalo');
+    }
+    DB.push('entries',{
+      type:'expense', svcId:'expense', svc:'Kharcha: '+this._cat,
+      amt, pm:document.getElementById('expPmV')?.value||'cash',
+      cust:'', phone:'', notes:document.getElementById('expNote')?.value?.trim()||'',
+      day:DB.today(), role:Auth.role(), who:Auth.user().name,
+    });
+    const btn=document.getElementById('expSaveBtn');
+    if(btn){btn.textContent='🎉 Saved!';btn.classList.add('success');btn.disabled=true}
+    Toast.show('✅ Expense saved! −'+F.rs(amt));
+    setTimeout(()=>{Modal.close();Router.go(Router.cur)},400);
   },
 };
 
@@ -1475,8 +1760,27 @@ const Money = {
   _closing(){return DB.g('mbc_'+DB.today())||{}},
   _inflow(id){
     const es=DB.l('entries').filter(e=>e.day===DB.today());
-    if(id==='cash') return es.filter(e=>e.pm==='cash').reduce((s,e)=>s+e.amt,0);
-    if(id==='online') return es.filter(e=>e.pm==='online').reduce((s,e)=>s+e.amt,0);
+    // AEPS money flows
+    const aepsW=es.filter(e=>e.type==='aeps'&&e.aepsType!=='deposit')
+      .reduce((s,e)=>s+(e.aepsAmt||0),0);   // cash given out, wallet in
+    const aepsD=es.filter(e=>e.type==='aeps'&&e.aepsType==='deposit')
+      .reduce((s,e)=>s+(e.aepsAmt||0),0);   // cash received, wallet out
+    const aepsComm=es.filter(e=>e.type==='aeps').reduce((s,e)=>s+(e.amt||0),0);
+    if(id==='cash'){
+      let v=es.filter(e=>e.pm==='cash'&&e.type!=='aeps'&&e.type!=='expense')
+        .reduce((s,e)=>s+e.amt,0);
+      v+=aepsComm;       // commission earned
+      v-=aepsW;          // cash handed out for withdrawals
+      v+=aepsD;          // cash received for deposits
+      v-=es.filter(e=>e.type==='expense'&&e.pm==='cash').reduce((s,e)=>s+e.amt,0);
+      return v;
+    }
+    if(id==='online'){
+      return es.filter(e=>e.pm==='online'&&e.type!=='aeps'&&e.type!=='expense')
+        .reduce((s,e)=>s+e.amt,0)
+        - es.filter(e=>e.type==='expense'&&e.pm==='online').reduce((s,e)=>s+e.amt,0);
+    }
+    if(id==='aeps') return aepsW-aepsD;   // net AEPS wallet settlement
     return 0;
   },
   boxes(){
@@ -1717,15 +2021,26 @@ const Reports = {
       const d=new Date(now);d.setDate(d.getDate()-30);
       es=all.filter(e=>e.day>=d.toISOString().split('T')[0]);label='30 Days';
     }
-    const total=es.reduce((s,e)=>s+e.amt,0);
-    const cash=es.filter(e=>e.pm==='cash').reduce((s,e)=>s+e.amt,0);
-    const online=es.filter(e=>e.pm==='online').reduce((s,e)=>s+e.amt,0);
-    const udhar=es.filter(e=>e.pm==='udhar').reduce((s,e)=>s+e.amt,0);
+    const revEs=es.filter(e=>e.type!=='expense');
+    const expEs=es.filter(e=>e.type==='expense');
+    const aepsEs=es.filter(e=>e.type==='aeps');
+    const total=revEs.reduce((s,e)=>s+e.amt,0);
+    const expTotal=expEs.reduce((s,e)=>s+e.amt,0);
+    const net=total-expTotal;
+    const cash=revEs.filter(e=>e.pm==='cash').reduce((s,e)=>s+e.amt,0);
+    const online=revEs.filter(e=>e.pm==='online').reduce((s,e)=>s+e.amt,0);
+    const udhar=revEs.filter(e=>e.pm==='udhar').reduce((s,e)=>s+e.amt,0);
+    const aepsVol=aepsEs.reduce((s,e)=>s+(e.aepsAmt||0),0);
+    const aepsComm=aepsEs.reduce((s,e)=>s+(e.amt||0),0);
     const staffMap={};
-    es.forEach(e=>{const k=e.who||'Unknown';if(!staffMap[k])staffMap[k]={n:0,t:0};staffMap[k].n++;staffMap[k].t+=e.amt});
+    revEs.forEach(e=>{const k=e.who||'Unknown';if(!staffMap[k])staffMap[k]={n:0,t:0};staffMap[k].n++;staffMap[k].t+=e.amt});
     const svcMap={};
-    es.forEach(e=>{svcMap[e.svc]=(svcMap[e.svc]||0)+1});
+    revEs.forEach(e=>{svcMap[e.svc]=(svcMap[e.svc]||0)+1});
     const top=Object.entries(svcMap).sort((a,b)=>b[1]-a[1]).slice(0,5);
+    // Expense breakdown by category
+    const expMap={};
+    expEs.forEach(e=>{const c=(e.svc||'Other').replace('Kharcha: ','');expMap[c]=(expMap[c]||0)+e.amt});
+    const expBreak=Object.entries(expMap).sort((a,b)=>b[1]-a[1]);
     const tabBtn=(t,l)=>`<button class="rtab ${this.tab===t?'active':''}" onclick="Reports.tab='${t}';Reports._draw()">${l}</button>`;
 
     document.getElementById('main').innerHTML=`
@@ -1734,15 +2049,41 @@ const Reports = {
         <div class="rtabs">${tabBtn('today','Today')}${tabBtn('week','7 Days')}${tabBtn('month','30 Days')}</div>
 
         <div class="hero mb12">
-          <div class="hero-greet">${label} Total</div>
+          <div class="hero-greet">${label} Income</div>
           <div class="hero-amt">${F.rs(total)}</div>
-          <div class="hero-lbl">${es.length} entries</div>
+          <div class="hero-lbl">${revEs.length} entries</div>
           <div class="hero-stats">
             <div class="hstat"><div class="sl">💵 CASH</div><div class="sv">${F.short(cash)}</div></div>
             <div class="hstat"><div class="sl">📱 ONLINE</div><div class="sv">${F.short(online)}</div></div>
             <div class="hstat"><div class="sl">📋 UDHAR</div><div class="sv">${F.short(udhar)}</div></div>
           </div>
         </div>
+
+        <p class="stitle">💹 Profit Summary</p>
+        <div class="card mb16">
+          <div class="spread mb8"><span style="color:#64748b;font-size:13px;">📈 Total Income</span><span style="font-weight:800;color:#16a34a;font-size:15px;">${F.rs(total)}</span></div>
+          <div class="spread mb8"><span style="color:#64748b;font-size:13px;">💸 Total Kharcha</span><span style="font-weight:800;color:#7c3aed;font-size:15px;">−${F.rs(expTotal)}</span></div>
+          <div class="divider" style="margin:8px 0;"></div>
+          <div class="spread"><span style="font-weight:700;font-size:14px;">💰 Net Profit</span><span style="font-weight:900;font-size:20px;color:${net>=0?'#16a34a':'#dc2626'};">${F.rs(net)}</span></div>
+        </div>
+
+        ${aepsEs.length>0?`
+          <p class="stitle">🏧 AEPS Summary</p>
+          <div class="card mb16" style="border-left:4px solid #0891b2;">
+            <div class="spread mb8"><span style="color:#64748b;font-size:13px;">Total Volume</span><span style="font-weight:800;color:#0891b2;font-size:15px;">${F.rs(aepsVol)}</span></div>
+            <div class="spread mb8"><span style="color:#64748b;font-size:13px;">Transactions</span><span class="pill blue">${aepsEs.length}</span></div>
+            <div class="spread"><span style="color:#64748b;font-size:13px;">Commission Earned</span><span style="font-weight:800;color:#16a34a;font-size:15px;">+${F.rs(aepsComm)}</span></div>
+          </div>`:''}
+
+        ${expBreak.length>0?`
+          <p class="stitle">💸 Kharcha Breakdown</p>
+          <div class="card mb16">
+            ${expBreak.map(([n,v],i)=>`
+              <div class="spread" style="padding:7px 0;${i<expBreak.length-1?'border-bottom:1px solid #f1f5f9;':''}">
+                <span style="font-size:13px;">${n}</span>
+                <span style="font-weight:700;color:#7c3aed;">${F.rs(v)}</span>
+              </div>`).join('')}
+          </div>`:''}
 
         ${Object.keys(staffMap).length>0?`
           <p class="stitle">👥 Staff</p>
@@ -1834,10 +2175,13 @@ const Reports = {
   _doExport(){
     const es=this._getExpEntries();
     if(!es.length)return Toast.show('⚠️ No entries found');
-    let csv='Date,Time,Service,Type,Amount,Payment,Customer,Phone,Staff,Notes\n';
+    let csv='Date,Time,Service,Type,Income,AEPS Volume,Payment,Customer,Phone,Staff,Notes\n';
     es.forEach(e=>{
       const esc=s=>'"'+(s||'').toString().replace(/"/g,'""')+'"';
-      csv+=`${e.day},${F.time(e.at)},${esc(e.svc)},${e.type||'service'},${e.amt},${e.pm},${esc(e.cust)},${e.phone||''},${esc(e.who)},${esc(e.notes)}\n`;
+      const isExp=e.type==='expense';
+      const income=isExp?-e.amt:e.amt;
+      const aepsV=e.type==='aeps'?(e.aepsAmt||0):'';
+      csv+=`${e.day},${F.time(e.at)},${esc(e.svc)},${e.type||'service'},${income},${aepsV},${e.pm},${esc(e.cust)},${e.phone||''},${esc(e.who)},${esc(e.notes)}\n`;
     });
     const label=this._expRange==='custom'?
       (document.getElementById('expFrom')?.value||'custom')+'_to_'+(document.getElementById('expTo')?.value||'custom')
@@ -1852,21 +2196,36 @@ const Reports = {
 /* ── HOME ── */
 const Home = {
   _ecard(e){
+    const isAeps=e.type==='aeps', isExp=e.type==='expense';
     const pm=C.pm.find(p=>p.id===e.pm)||{icon:'🔢',name:e.pm||''};
-    const iconBg={cash:'#f0fdf4',online:'#eff6ff',udhar:'#fef2f2',partial:'#fff7ed'};
+    const iconBg={cash:'#f0fdf4',online:'#eff6ff',udhar:'#fef2f2',partial:'#fff7ed',aeps:'#ecfeff',expense:'#f3f0ff'};
     const showStaff=Auth.isOwner()&&e.who;
-    return `<div class="ecard ${e.pm||''}" onclick="Entry.detail('${e.id}')">
-      <div class="eicon ${e.pm||''}" style="background:${iconBg[e.pm]||'#f1f5f9'}">${pm.icon}</div>
+    const kind=isAeps?'aeps':isExp?'expense':(e.pm||'');
+    const icon=isAeps?'🏧':isExp?'💸':pm.icon;
+    let pills,mainAmt;
+    if(isAeps){
+      pills=`<span class="epill aeps">AEPS ${e.aepsType==='deposit'?'Deposit':'Withdraw'}</span>`
+        +(e.amt>0?`<span style="color:#16a34a;font-weight:700;">+${F.rs(e.amt)} kamai</span>`:'');
+      mainAmt=`<div class="eamt aeps">${F.rs(e.aepsAmt||0)}</div>`;
+    } else if(isExp){
+      pills=`<span class="epill expense">Kharcha</span><span class="epill ${e.pm||''}">${pm.name}</span>`;
+      mainAmt=`<div class="eamt expense">−${F.rs(e.amt)}</div>`;
+    } else {
+      pills=`<span class="epill ${e.pm||''}">${pm.name}</span>`;
+      mainAmt=`<div class="eamt ${e.pm==='udhar'?'udhar':''}">${F.rs(e.amt)}</div>`;
+    }
+    return `<div class="ecard ${kind}" onclick="Entry.detail('${e.id}')">
+      <div class="eicon ${kind}" style="background:${iconBg[kind]||'#f1f5f9'}">${icon}</div>
       <div class="einfo">
         <div class="ename">${e.svc}</div>
         <div class="emeta">
-          <span class="epill ${e.pm||''}">${pm.name}</span>
+          ${pills}
           ${e.cust?`<span>👤 ${e.cust}</span>`:''}
           <span>🕐 ${F.time(e.at)}</span>
           ${showStaff?`<span style="color:#a5b4fc;">👤 ${e.who}</span>`:''}
         </div>
       </div>
-      <div class="eamt ${e.pm==='udhar'?'udhar':''}">${F.rs(e.amt)}</div>
+      ${mainAmt}
     </div>`;
   },
 
@@ -1883,14 +2242,23 @@ const Home = {
     const isToday=viewDay===today;
     const allEs=DB.l('entries');
     const es=allEs.filter(e=>e.day===viewDay).reverse();
-    // Yesterday / prev day for comparison
+    // Revenue entries exclude expenses; expense entries tracked separately
+    const revEs=es.filter(e=>e.type!=='expense');
+    const expEs=es.filter(e=>e.type==='expense');
+    // Prev day comparison
     const prevDay=(()=>{const d=new Date(viewDay);d.setDate(d.getDate()-1);return d.getFullYear()+'-'+String(d.getMonth()+1).padStart(2,'0')+'-'+String(d.getDate()).padStart(2,'0')})();
-    const prevEs=allEs.filter(e=>e.day===prevDay);
-    const total=es.reduce((s,e)=>s+e.amt,0);
-    const prevTotal=prevEs.reduce((s,e)=>s+e.amt,0);
-    const cash=es.filter(e=>e.pm==='cash').reduce((s,e)=>s+e.amt,0);
-    const online=es.filter(e=>e.pm==='online').reduce((s,e)=>s+e.amt,0);
-    const udharAmt=es.filter(e=>e.pm==='udhar').reduce((s,e)=>s+e.amt,0);
+    const prevRevEs=allEs.filter(e=>e.day===prevDay&&e.type!=='expense');
+    const total=revEs.reduce((s,e)=>s+e.amt,0);
+    const prevTotal=prevRevEs.reduce((s,e)=>s+e.amt,0);
+    const expTotal=expEs.reduce((s,e)=>s+e.amt,0);
+    const net=total-expTotal;
+    const cash=revEs.filter(e=>e.pm==='cash').reduce((s,e)=>s+e.amt,0);
+    const online=revEs.filter(e=>e.pm==='online').reduce((s,e)=>s+e.amt,0);
+    const udharAmt=revEs.filter(e=>e.pm==='udhar').reduce((s,e)=>s+e.amt,0);
+    // AEPS
+    const aepsEs=es.filter(e=>e.type==='aeps');
+    const aepsVol=aepsEs.reduce((s,e)=>s+(e.aepsAmt||0),0);
+    const aepsComm=aepsEs.reduce((s,e)=>s+(e.amt||0),0);
     const pendU=DB.l('udhar').reduce((s,a)=>s+Math.max(0,(a.given||0)-(a.paid||0)),0);
     const hr=new Date().getHours();
     const greet=hr<12?'🌅 Good Morning':hr<17?'☀️ Good Afternoon':'🌙 Good Evening';
@@ -1898,11 +2266,6 @@ const Home = {
     // Trend
     const trend=prevTotal===0?null:((total-prevTotal)/prevTotal*100).toFixed(1);
     const trendHtml=trend===null?'':(parseFloat(trend)>0?`<span class="trend-up">▲ ${trend}%</span>`:parseFloat(trend)<0?`<span class="trend-dn">▼ ${Math.abs(trend)}%</span>`:`<span class="trend-eq">→ 0%</span>`);
-    // Top service
-    const svcMap={};es.forEach(e=>{svcMap[e.svc]=(svcMap[e.svc]||0)+1});
-    const topSvc=Object.entries(svcMap).sort((a,b)=>b[1]-a[1])[0];
-    // Staff summary
-    const staffMap={};es.forEach(e=>{const k=e.who||'?';if(!staffMap[k])staffMap[k]=0;staffMap[k]+=e.amt});
     // Day label
     const dayLabel=isToday?'Today':viewDay===this._dayOffset(-1)?'Yesterday':new Date(viewDay).toLocaleDateString('en-IN',{day:'2-digit',month:'short',year:'numeric'});
 
@@ -1928,19 +2291,20 @@ const Home = {
         </div>
       </div>
 
-      ${topSvc||Object.keys(staffMap).length>0?`
       <div class="stat-row">
-        ${topSvc?`<div class="stat-box"><div class="sb-v" style="font-size:13px;color:var(--blue);">${topSvc[0].length>12?topSvc[0].slice(0,12)+'…':topSvc[0]}</div><div class="sb-l">Top Service</div><div class="sb-t pill blue">${topSvc[1]}x</div></div>`:'<div class="stat-box"><div class="sb-v">—</div><div class="sb-l">Top Service</div></div>'}
-        <div class="stat-box"><div class="sb-v" style="color:var(--red);">${F.short(pendU)}</div><div class="sb-l">Udhar Due</div><div class="sb-t" onclick="Router.go('udhar')" style="color:var(--blue);cursor:pointer;">View →</div></div>
-        <div class="stat-box"><div class="sb-v" style="color:var(--green);">${Object.keys(staffMap).length}</div><div class="sb-l">Active Staff</div><div class="sb-t">${Object.entries(staffMap).sort((a,b)=>b[1]-a[1]).map(([n])=>n.split(' ')[0]).slice(0,2).join(', ')||'—'}</div></div>
-      </div>`:''}
+        <div class="stat-box"><div class="sb-v" style="color:#0891b2;">${F.short(aepsVol)}</div><div class="sb-l">🏧 AEPS Today</div><div class="sb-t" style="color:#16a34a;">${aepsEs.length} txn · +${F.rs(aepsComm)}</div></div>
+        <div class="stat-box"><div class="sb-v" style="color:#7c3aed;">${F.short(expTotal)}</div><div class="sb-l">💸 Kharcha</div><div class="sb-t">${expEs.length} items</div></div>
+        <div class="stat-box"><div class="sb-v" style="color:${net>=0?'#16a34a':'#dc2626'};">${F.short(net)}</div><div class="sb-l">📈 Net Profit</div><div class="sb-t">income − kharcha</div></div>
+      </div>
 
       ${isToday?`<div class="section">
         <p class="stitle">⚡ Quick Actions</p>
         <div class="qagrid">
           <button class="qabtn primary" onclick="Entry.show()"><span class="qi">➕</span><span class="ql">New Entry</span></button>
+          <button class="qabtn teal" onclick="Aeps.show()"><span class="qi">🏧</span><span class="ql">AEPS Cash</span></button>
           <button class="qabtn" onclick="Entry.showSale()"><span class="qi">🛒</span><span class="ql">Product Sale</span></button>
           <button class="qabtn" onclick="Router.go('udhar')"><span class="qi">📋</span><span class="ql">${pendU>0?'Udhar<br><b style=\'color:#dc2626;\'>'+F.rs(pendU)+'</b>':'Udhar'}</span></button>
+          <button class="qabtn purple" onclick="Expense.show()"><span class="qi">💸</span><span class="ql">Expense</span></button>
           <button class="qabtn" onclick="Money.showOpening()"><span class="qi">🔓</span><span class="ql">Opening</span></button>
           <button class="qabtn" onclick="Money.showClosing()"><span class="qi">🔒</span><span class="ql">Closing</span></button>
           <button class="qabtn" onclick="Router.go('reports')"><span class="qi">📊</span><span class="ql">Reports</span></button>
@@ -1976,7 +2340,9 @@ const Home = {
   renderStaff(){
     const today=DB.today(),myName=Auth.user().name;
     const myEs=DB.l('entries').filter(e=>e.day===today&&e.who===myName).reverse();
-    const myTotal=myEs.reduce((s,e)=>s+e.amt,0);
+    const myRev=myEs.filter(e=>e.type!=='expense');
+    const myTotal=myRev.reduce((s,e)=>s+e.amt,0);
+    const myAeps=myEs.filter(e=>e.type==='aeps').reduce((s,e)=>s+(e.aepsAmt||0),0);
     const hr=new Date().getHours();
     const greet=hr<12?'🌅 Subah ko swagat':hr<17?'☀️ Dopahar namaste':'🌙 Shaam ko namaste';
     const attend=DB.g('at_'+today)||{};
@@ -1984,7 +2350,7 @@ const Home = {
 
     document.getElementById('main').innerHTML=`
       <div class="hero" style="background:linear-gradient(135deg,#0891b2,#0e7490);">
-        <div class="hero-greet">${greet}, Staff!</div>
+        <div class="hero-greet">${greet}, ${myName}!</div>
         <div class="hero-amt">${F.rs(myTotal)}</div>
         <div class="hero-lbl">Aapki aaj ki ${myEs.length} entries</div>
       </div>
@@ -2004,19 +2370,28 @@ const Home = {
           </div>
         </div>`}
 
+      <p class="stitle">⚡ Kya karna hai?</p>
       <div class="staffbtns">
         <button class="bgtbtn blue" onclick="Entry.show()">
-          <div class="bi">➕</div><div class="bl">New Entry</div><div class="bs">Service add karo</div>
+          <div class="bi">➕</div><div class="bl">New Entry</div><div class="bs">Service ki entry</div>
+        </button>
+        <button class="bgtbtn teal" onclick="Aeps.show()">
+          <div class="bi">🏧</div><div class="bl">AEPS Cash</div><div class="bs">Paise nikalo</div>
         </button>
         <button class="bgtbtn green" onclick="Entry.showSale()">
-          <div class="bi">🛒</div><div class="bl">Product Sale</div><div class="bs">Items becho</div>
+          <div class="bi">🛒</div><div class="bl">Product Sale</div><div class="bs">Saaman becho</div>
+        </button>
+        <button class="bgtbtn purple" onclick="Router.go('udhar')">
+          <div class="bi">📋</div><div class="bl">Udhar</div><div class="bs">Udhar dekho / lo</div>
         </button>
       </div>
+      <button class="btn ghost mb16" onclick="Expense.show()" style="background:#f3f0ff;color:#7c3aed;">💸 Expense / Kharcha likho</button>
 
       <div class="scgrid mb12">
-        <div class="scard blue"><div class="sl">📊 Entries</div><div class="sv" style="color:#1e40af;">${myEs.length}</div><div class="ss">today</div></div>
-        <div class="scard green"><div class="sl">💰 Total</div><div class="sv" style="color:#15803d;">${F.rs(myTotal)}</div><div class="ss">today</div></div>
+        <div class="scard blue"><div class="sl">📊 Entries</div><div class="sv" style="color:#1e40af;">${myEs.length}</div><div class="ss">aaj</div></div>
+        <div class="scard green"><div class="sl">💰 Total</div><div class="sv" style="color:#15803d;">${F.rs(myTotal)}</div><div class="ss">aaj ki kamai</div></div>
       </div>
+      ${myAeps>0?`<div class="scard mb12" style="border-left:4px solid #0891b2;"><div class="spread"><div><div class="sl">🏧 AEPS Volume</div><div class="sv" style="color:#0891b2;">${F.rs(myAeps)}</div></div><div style="font-size:11px;color:#94a3b8;">aaj ka total</div></div></div>`:''}
 
       <div class="section">
         <p class="stitle">📋 Meri Entries ${myEs.length>0?`<span class="pill">${myEs.length}</span>`:''}</p>
