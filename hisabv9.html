@@ -286,6 +286,26 @@ img{max-width:100%;height:auto}
 .psearch-inp{width:100%;border:2px solid var(--border);border-radius:12px;padding:10px 12px 10px 34px;font-size:13px;background:#f8fafc;transition:all .15s;-webkit-appearance:none}
 .psearch-inp:focus{border-color:var(--blue);background:#fff;outline:none;box-shadow:0 0 0 3px rgba(37,99,235,.08)}
 
+/* ── DATE NAV ── */
+.dnav{display:flex;align-items:center;justify-content:space-between;background:#fff;border-radius:var(--r-md);padding:8px 12px;margin-bottom:12px;box-shadow:var(--sh-sm)}
+.dnavbtn{width:36px;height:36px;border-radius:50%;background:#f1f5f9;display:flex;align-items:center;justify-content:center;font-size:18px;cursor:pointer;transition:.15s;border:none}
+.dnavbtn:hover{background:var(--border)}
+.dnavbtn:disabled{opacity:.3;cursor:default}
+.dnavlbl{font-size:13px;font-weight:700;color:var(--text)}
+.dnavsub{font-size:10px;color:var(--text-3);text-align:center}
+
+/* ── TREND ARROWS ── */
+.trend-up{color:var(--green);font-size:11px;font-weight:700}
+.trend-dn{color:var(--red);font-size:11px;font-weight:700}
+.trend-eq{color:var(--text-3);font-size:11px;font-weight:700}
+
+/* ── STAT ROW ── */
+.stat-row{display:grid;grid-template-columns:repeat(3,1fr);gap:8px;margin-bottom:12px}
+.stat-box{background:#fff;border-radius:var(--r-md);padding:10px 12px;box-shadow:var(--sh-sm);text-align:center}
+.stat-box .sb-v{font-size:18px;font-weight:900;letter-spacing:-.5px}
+.stat-box .sb-l{font-size:9px;color:var(--text-3);text-transform:uppercase;letter-spacing:.06em;margin-top:2px}
+.stat-box .sb-t{font-size:10px;font-weight:600;margin-top:3px}
+
 /* ── ATTEND BANNER ── */
 .attend-banner{border-radius:var(--r-md);padding:14px 16px;display:flex;align-items:center;justify-content:space-between;margin-bottom:14px;gap:12px}
 .attend-banner.pending{background:#fefce8;border:1.5px solid #facc15}
@@ -489,8 +509,8 @@ body.embed .main{margin-left:0!important;padding-left:14px!important;padding-rig
     <div class="hbrand">
       <div class="hlogo" aria-hidden="true">🏪</div>
       <div>
-        <div class="hname">Rohit Computer</div>
-        <div class="hsub">Rath, Hamirpur (UP)</div>
+        <div class="hname" id="bizName">Rohit Computer</div>
+        <div class="hsub" id="bizSub">Rath, Hamirpur (UP)</div>
       </div>
     </div>
     <div class="hactions">
@@ -512,9 +532,16 @@ body.embed .main{margin-left:0!important;padding-left:14px!important;padding-rig
    Fully responsive: mobile / tablet / desktop
    ===================================================== */
 
+/* ─────────────────────────────────────────────────────────
+   DATA STORAGE KEY: Always 'rc8_' — NEVER change this prefix.
+   Changing it would orphan all customer data on upload.
+   Migrations handle schema changes safely via db_v counter.
+   ───────────────────────────────────────────────────────── */
+
 /* ── CONFIG ── */
 const C = {
-  ownerPIN: '1234', staffPIN: '5678',
+  get ownerPIN(){return DB.g('owner_pin')||'1234'},
+  get staffPIN(){return DB.g('staff_pin')||'5678'},
   pm: [{id:'cash',name:'Cash',icon:'💵'},{id:'online',name:'Online',icon:'📱'},{id:'udhar',name:'Udhar',icon:'📋'},{id:'partial',name:'Partial',icon:'🔢'}],
   qa: [10,20,30,50,100,120,150,200,300,500],
   svcs: [
@@ -579,6 +606,36 @@ const DB = {
   del(k,id){this.s(k,this.l(k).filter(x=>x.id!==id))},
   today(){const d=new Date();return d.getFullYear()+'-'+String(d.getMonth()+1).padStart(2,'0')+'-'+String(d.getDate()).padStart(2,'0')},
   dateOf(iso){try{const d=new Date(iso);return d.getFullYear()+'-'+String(d.getMonth()+1).padStart(2,'0')+'-'+String(d.getDate()).padStart(2,'0')}catch{return ''}},
+};
+
+/* ── MIGRATION ── */
+const Migration = {
+  V: 3, // Increment this when schema changes — NEVER change rc8_ prefix
+  run(){
+    const v = DB.g('db_v')||0;
+    if(v < 1) this._v1();
+    if(v < 2) this._v2();
+    if(v < 3) this._v3();
+    DB.s('db_v', this.V);
+  },
+  _v1(){
+    // Ensure every entry has 'type' field
+    const es=DB.l('entries');
+    let c=false;
+    es.forEach(e=>{if(!e.type){e.type='service';c=true}});
+    if(c)DB.s('entries',es);
+  },
+  _v2(){
+    // Ensure every udhar account has tx array
+    const ud=DB.l('udhar');
+    let c=false;
+    ud.forEach(a=>{if(!Array.isArray(a.tx)){a.tx=[];c=true}});
+    if(c)DB.s('udhar',ud);
+  },
+  _v3(){
+    // Copy biz name/subtitle to new keys if set on old keys
+    // (future-proof placeholder)
+  },
 };
 
 /* ── FORMAT ── */
@@ -1193,7 +1250,10 @@ const Entry = {
           <div style="margin-top:10px;font-size:10px;color:#94a3b8;">By: ${e.who||'—'} (${e.role||''})</div>
         </div>
         ${e.phone?`<button class="btn ghost mb8" style="background:#f0fdf4;color:#16a34a;" onclick="Entry._sendWA('${e.id}')">💬 WhatsApp Receipt</button>`:''}
-        ${Auth.isOwner()?`<button class="btn red" onclick="Entry._del('${e.id}')">🗑️ Delete Entry</button>`:''}
+        ${Auth.isOwner()?`
+          <button class="btn ghost mb8" style="background:#eff6ff;color:#2563eb;" onclick="Entry._edit('${e.id}')">✏️ Edit Entry</button>
+          <button class="btn red" onclick="Entry._del('${e.id}')">🗑️ Delete Entry</button>
+        `:''}
       </div>
     `);
   },
@@ -1215,6 +1275,80 @@ const Entry = {
     if(!Auth.isOwner())return;
     if(!confirm('Delete this entry?'))return;
     DB.del('entries',id);Modal.close();Toast.show('✅ Deleted');Router.go(Router.cur);
+  },
+
+  _edit(id){
+    if(!Auth.isOwner())return;
+    const e=DB.l('entries').find(x=>x.id===id);if(!e)return;
+    const lastPm=e.pm||'cash';
+    Modal.open(`
+      <div class="mhead">
+        <div><div class="mt">✏️ Edit Entry</div><div class="ms">${F.date(e.at)} · ${F.time(e.at)}</div></div>
+        <button class="mclose" onclick="Modal.close()" aria-label="Close">✕</button>
+      </div>
+      <div class="mbody">
+        <div class="fg">
+          <p class="flabel">Service</p>
+          <input type="text" class="inp" id="esvc" value="${e.svc||''}" placeholder="Service name">
+        </div>
+        <div class="fg">
+          <p class="flabel">Amount</p>
+          <div class="amtwrap">
+            <input type="number" class="inp big" id="eamt" inputmode="decimal" value="${e.amt||0}" aria-label="Amount">
+          </div>
+        </div>
+        <div class="fg">
+          <p class="flabel">Payment Mode</p>
+          <div class="pmgrid" id="epmg">
+            ${C.pm.map(p=>`<button class="pmbtn ${p.id===lastPm?'sel':''}" data-pm="${p.id}" onclick="Entry._epm(this,'${p.id}')">${p.icon} ${p.name}</button>`).join('')}
+          </div>
+          <input type="hidden" id="epm" value="${lastPm}">
+        </div>
+        <div class="fg">
+          <p class="flabel">Customer</p>
+          <input type="text" class="inp mb8" id="ecust" value="${e.cust||''}" placeholder="👤 Name">
+          <input type="tel" class="inp" id="ephone" inputmode="numeric" maxlength="10" value="${e.phone||''}" placeholder="📱 Mobile">
+        </div>
+        <div class="fg">
+          <p class="flabel">Notes</p>
+          <input type="text" class="inp" id="enotes2" value="${e.notes||''}" placeholder="📝 Notes">
+        </div>
+      </div>
+      <div class="mfoot">
+        <button class="btn blue" onclick="Entry._saveEdit('${id}')">✅ Save Changes</button>
+        <button class="btn ghost" onclick="Entry.detail('${id}')">Cancel</button>
+      </div>
+    `);
+  },
+
+  _epm(el,mode){
+    document.querySelectorAll('#epmg .pmbtn').forEach(b=>b.classList.remove('sel'));
+    el.classList.add('sel');
+    document.getElementById('epm').value=mode;
+  },
+
+  _saveEdit(id){
+    const svc=document.getElementById('esvc')?.value?.trim();
+    const amt=parseFloat(document.getElementById('eamt')?.value)||0;
+    if(!svc)return Toast.show('⚠️ Service name daalo');
+    if(!amt||amt<=0)return Toast.show('⚠️ Valid amount daalo');
+    const entries=DB.l('entries');
+    const idx=entries.findIndex(x=>x.id===id);
+    if(idx===-1)return Toast.show('❌ Entry not found');
+    entries[idx]={
+      ...entries[idx],
+      svc,amt,
+      pm:document.getElementById('epm')?.value||entries[idx].pm,
+      cust:document.getElementById('ecust')?.value?.trim()||'',
+      phone:document.getElementById('ephone')?.value?.trim()||'',
+      notes:document.getElementById('enotes2')?.value?.trim()||'',
+      editedAt:new Date().toISOString(),
+      editedBy:Auth.user().name,
+    };
+    DB.s('entries',entries);
+    Toast.show('✅ Entry updated!');
+    Modal.close();
+    Router.go(Router.cur);
   },
 };
 
@@ -1736,10 +1870,24 @@ const Home = {
     </div>`;
   },
 
-  renderOwner(){
+  _vday: null, // currently viewed day (null = today)
+  _dayOffset(n){
+    const d=new Date();
+    d.setDate(d.getDate()+n);
+    return d.getFullYear()+'-'+String(d.getMonth()+1).padStart(2,'0')+'-'+String(d.getDate()).padStart(2,'0');
+  },
+  renderOwner(dayOff=0){
+    this._vday=dayOff;
     const today=DB.today();
-    const es=DB.l('entries').filter(e=>e.day===today).reverse();
+    const viewDay=dayOff===0?today:this._dayOffset(dayOff);
+    const isToday=viewDay===today;
+    const allEs=DB.l('entries');
+    const es=allEs.filter(e=>e.day===viewDay).reverse();
+    // Yesterday / prev day for comparison
+    const prevDay=(()=>{const d=new Date(viewDay);d.setDate(d.getDate()-1);return d.getFullYear()+'-'+String(d.getMonth()+1).padStart(2,'0')+'-'+String(d.getDate()).padStart(2,'0')})();
+    const prevEs=allEs.filter(e=>e.day===prevDay);
     const total=es.reduce((s,e)=>s+e.amt,0);
+    const prevTotal=prevEs.reduce((s,e)=>s+e.amt,0);
     const cash=es.filter(e=>e.pm==='cash').reduce((s,e)=>s+e.amt,0);
     const online=es.filter(e=>e.pm==='online').reduce((s,e)=>s+e.amt,0);
     const udharAmt=es.filter(e=>e.pm==='udhar').reduce((s,e)=>s+e.amt,0);
@@ -1747,12 +1895,32 @@ const Home = {
     const hr=new Date().getHours();
     const greet=hr<12?'🌅 Good Morning':hr<17?'☀️ Good Afternoon':'🌙 Good Evening';
     const boxes=Money.boxes();
+    // Trend
+    const trend=prevTotal===0?null:((total-prevTotal)/prevTotal*100).toFixed(1);
+    const trendHtml=trend===null?'':(parseFloat(trend)>0?`<span class="trend-up">▲ ${trend}%</span>`:parseFloat(trend)<0?`<span class="trend-dn">▼ ${Math.abs(trend)}%</span>`:`<span class="trend-eq">→ 0%</span>`);
+    // Top service
+    const svcMap={};es.forEach(e=>{svcMap[e.svc]=(svcMap[e.svc]||0)+1});
+    const topSvc=Object.entries(svcMap).sort((a,b)=>b[1]-a[1])[0];
+    // Staff summary
+    const staffMap={};es.forEach(e=>{const k=e.who||'?';if(!staffMap[k])staffMap[k]=0;staffMap[k]+=e.amt});
+    // Day label
+    const dayLabel=isToday?'Today':viewDay===this._dayOffset(-1)?'Yesterday':new Date(viewDay).toLocaleDateString('en-IN',{day:'2-digit',month:'short',year:'numeric'});
 
     document.getElementById('main').innerHTML=`
+      <!-- Date Navigator -->
+      <div class="dnav">
+        <button class="dnavbtn" onclick="Home.renderOwner(${dayOff-1})" aria-label="Previous day">‹</button>
+        <div class="tc">
+          <div class="dnavlbl">${dayLabel}</div>
+          <div class="dnavsub">${viewDay}${!isToday?' · '+es.length+' entries':''}</div>
+        </div>
+        <button class="dnavbtn" onclick="Home.renderOwner(${dayOff+1})" ${isToday?'disabled':''} aria-label="Next day">›</button>
+      </div>
+
       <div class="hero">
-        <div class="hero-greet">${greet}, Rohit!</div>
-        <div class="hero-amt">${F.rs(total)}</div>
-        <div class="hero-lbl">Today · ${es.length} entries</div>
+        <div class="hero-greet">${isToday?greet:'📅 '+dayLabel}</div>
+        <div class="hero-amt" style="display:flex;align-items:baseline;gap:10px;">${F.rs(total)} ${trendHtml}</div>
+        <div class="hero-lbl">${es.length} entries · vs prev: ${F.rs(prevTotal)}</div>
         <div class="hero-stats">
           <div class="hstat"><div class="sl">💵 CASH</div><div class="sv">${F.short(cash)}</div></div>
           <div class="hstat"><div class="sl">📱 ONLINE</div><div class="sv">${F.short(online)}</div></div>
@@ -1760,7 +1928,14 @@ const Home = {
         </div>
       </div>
 
-      <div class="section">
+      ${topSvc||Object.keys(staffMap).length>0?`
+      <div class="stat-row">
+        ${topSvc?`<div class="stat-box"><div class="sb-v" style="font-size:13px;color:var(--blue);">${topSvc[0].length>12?topSvc[0].slice(0,12)+'…':topSvc[0]}</div><div class="sb-l">Top Service</div><div class="sb-t pill blue">${topSvc[1]}x</div></div>`:'<div class="stat-box"><div class="sb-v">—</div><div class="sb-l">Top Service</div></div>'}
+        <div class="stat-box"><div class="sb-v" style="color:var(--red);">${F.short(pendU)}</div><div class="sb-l">Udhar Due</div><div class="sb-t" onclick="Router.go('udhar')" style="color:var(--blue);cursor:pointer;">View →</div></div>
+        <div class="stat-box"><div class="sb-v" style="color:var(--green);">${Object.keys(staffMap).length}</div><div class="sb-l">Active Staff</div><div class="sb-t">${Object.entries(staffMap).sort((a,b)=>b[1]-a[1]).map(([n])=>n.split(' ')[0]).slice(0,2).join(', ')||'—'}</div></div>
+      </div>`:''}
+
+      ${isToday?`<div class="section">
         <p class="stitle">⚡ Quick Actions</p>
         <div class="qagrid">
           <button class="qabtn primary" onclick="Entry.show()"><span class="qi">➕</span><span class="ql">New Entry</span></button>
@@ -1782,21 +1957,18 @@ const Home = {
             const cls=diff===null?'':(diff===0?'ok':'bad');
             const icon=diff===null?'':(diff===0?'✅':diff>0?'🔺':'🔻');
             return `<div class="mbcard ${cls}" onclick="Money.showClosing()">
-              <div>
-                <div class="ml">${b.icon} ${b.name}</div>
-                <div class="ma">${F.short(b.act!==null?b.act:b.exp)}</div>
-              </div>
+              <div><div class="ml">${b.icon} ${b.name}</div><div class="ma">${F.short(b.act!==null?b.act:b.exp)}</div></div>
               <div class="mm">${icon} Op: ${F.short(b.op)}</div>
             </div>`;
           }).join('')}
         </div>
-      </div>
+      </div>`:''}
 
       <div class="section">
-        <p class="stitle">📋 Today's Entries ${es.length>0?`<span class="pill">${es.length}</span>`:''}</p>
+        <p class="stitle">📋 ${dayLabel}'s Entries ${es.length>0?`<span class="pill">${es.length}</span>`:''}</p>
         ${es.length===0?
-          `<div class="empty"><div class="ei">📝</div><div class="et">No entries yet</div><div class="es">Start adding entries!</div><button class="eb" onclick="Entry.show()">➕ First Entry</button></div>`:
-          `<div class="elist">${es.slice(0,25).map(e=>this._ecard(e)).join('')}</div>`}
+          `<div class="empty"><div class="ei">📝</div><div class="et">No entries ${isToday?'yet':'this day'}</div><div class="es">${isToday?'Start adding entries!':'No records found'}</div>${isToday?`<button class="eb" onclick="Entry.show()">➕ First Entry</button>`:''}</div>`:
+          `<div class="elist">${es.slice(0,50).map(e=>this._ecard(e)).join('')}</div>`}
       </div>
     `;
   },
@@ -1869,12 +2041,12 @@ const Home = {
 const Router = {
   cur:'home',
   go(view){
+    if(view==='home')Home._vday=0; // reset to today on explicit nav
     this.cur=view;
-    if(view==='home')Auth.isOwner()?Home.renderOwner():Home.renderStaff();
+    if(view==='home')Auth.isOwner()?Home.renderOwner(0):Home.renderStaff();
     else if(view==='udhar')Udhar.render();
     else if(view==='reports')Reports.render();
     this._nav();
-    // Scroll to top on view change
     const main=document.getElementById('main');
     if(main)main.scrollTop=0;
   },
@@ -1904,39 +2076,51 @@ const App = {
   },
   boot(){
     document.getElementById('roleBadge').textContent=Auth.isOwner()?'👑 Owner':'👤 Staff';
+    const bn=DB.g('biz_name');const bs=DB.g('biz_sub');
+    if(bn)document.getElementById('bizName').textContent=bn;
+    if(bs)document.getElementById('bizSub').textContent=bs;
     Router.go('home');
   },
   staffAttend(){this._attendance()},
   settings(){
     const isO=Auth.isOwner();
+    const totalEntries=DB.l('entries').length;
+    const dbV=DB.g('db_v')||0;
+    const bn=DB.g('biz_name')||'Rohit Computer';
+    const bs=DB.g('biz_sub')||'Rath, Hamirpur (UP)';
     Modal.open(`
       <div class="mhead">
-        <div><div class="mt">⚙️ Settings</div><div class="ms">${isO?'👑 Owner':'👤 Staff'}</div></div>
+        <div><div class="mt">⚙️ Settings</div><div class="ms">${isO?'👑 Owner Mode':'👤 Staff Mode'}</div></div>
         <button class="mclose" onclick="Modal.close()" aria-label="Close">✕</button>
       </div>
       <div class="mbody">
-        <div class="card mb12">
+        <div class="card mb12" style="background:linear-gradient(135deg,#f8fafc,#eff6ff);border:1.5px solid var(--blue-b);">
           <div class="spread">
             <div>
-              <div style="font-weight:700;font-size:14px;">${Auth.user().name}</div>
-              <div style="font-size:11px;color:#94a3b8;">${isO?'Owner Account':'Staff Account'}</div>
+              <div style="font-weight:800;font-size:15px;">${Auth.user().name}</div>
+              <div style="font-size:11px;color:#64748b;margin-top:2px;">${isO?'👑 Owner Account':'👤 Staff Account'} · ${totalEntries} entries</div>
             </div>
-            <button class="pill red" onclick="App._logout()" style="cursor:pointer;padding:5px 12px;">Logout</button>
+            <button class="btn red sm" onclick="App._logout()" style="width:auto;padding:8px 14px;min-height:auto;font-size:12px;">Logout</button>
           </div>
         </div>
 
         ${isO?`
-          <button class="btn ghost mb8" onclick="App._backup()" style="justify-content:flex-start;">📦 Backup (JSON Download)</button>
-          <button class="btn ghost mb8" onclick="Reports._export()" style="justify-content:flex-start;">📊 Export CSV</button>
-          <button class="btn ghost mb8" onclick="Import.show()" style="justify-content:flex-start;">📥 Import Data</button>
-          <button class="btn ghost mb8" onclick="App._attendance()" style="justify-content:flex-start;">👥 Staff Attendance</button>
-          <button class="btn ghost mb8" onclick="App._staffName()" style="justify-content:flex-start;">✏️ Set Staff Name</button>
-          <button class="btn ghost mb8" onclick="App._addService()" style="justify-content:flex-start;">➕ Add Custom Service</button>
-          <button class="btn ghost mb8" style="background:#fef2f2;color:#dc2626;justify-content:flex-start;" onclick="App._reset()">🗑️ Clear All Data</button>
+        <p style="font-size:10px;font-weight:700;color:var(--text-3);text-transform:uppercase;letter-spacing:.08em;margin:12px 0 6px;">🏪 Business</p>
+        <button class="btn ghost mb8" onclick="App._bizSetup()" style="justify-content:flex-start;">🏪 Shop Name &amp; Details</button>
+        <button class="btn ghost mb8" onclick="App._changePin()" style="justify-content:flex-start;">🔑 Change PINs</button>
+        <button class="btn ghost mb8" onclick="App._staffName()" style="justify-content:flex-start;">✏️ Staff Name / PIN</button>
+        <button class="btn ghost mb8" onclick="App._addService()" style="justify-content:flex-start;">➕ Add Custom Service</button>
+        <button class="btn ghost mb8" onclick="App._attendance()" style="justify-content:flex-start;">👥 Staff Attendance</button>
+
+        <p style="font-size:10px;font-weight:700;color:var(--text-3);text-transform:uppercase;letter-spacing:.08em;margin:12px 0 6px;">💾 Data</p>
+        <button class="btn ghost mb8" onclick="App._backup()" style="justify-content:flex-start;">📦 Backup (JSON Download)</button>
+        <button class="btn ghost mb8" onclick="Reports._export()" style="justify-content:flex-start;">📊 Export CSV</button>
+        <button class="btn ghost mb8" onclick="Import.show()" style="justify-content:flex-start;">📥 Import / Restore Backup</button>
+        <button class="btn ghost mb8" style="background:#fef2f2;color:#dc2626;justify-content:flex-start;" onclick="App._reset()">🗑️ Clear All Data</button>
         `:`<p style="text-align:center;color:#94a3b8;font-size:12px;padding:14px;">Staff ke liye limited settings hai.<br>Owner se contact karo changes ke liye.</p>`}
 
         <div style="text-align:center;font-size:10px;color:#94a3b8;margin-top:16px;padding-top:12px;border-top:1px solid #f1f5f9;">
-          Hisab v9 · Rohit Computer · Rath, Hamirpur
+          Hisab v9 · ${bn} · DB v${dbV}
         </div>
       </div>
     `);
@@ -1944,6 +2128,75 @@ const App = {
   _logout(){
     if(!confirm('Logout karna chahte ho?'))return;
     Auth.logout();Modal.close();Login.show();
+  },
+
+  _bizSetup(){
+    const bn=DB.g('biz_name')||'Rohit Computer';
+    const bs=DB.g('biz_sub')||'Rath, Hamirpur (UP)';
+    Modal.open(`
+      <div class="mhead">
+        <div><div class="mt">🏪 Shop Details</div><div class="ms">Header mein dikhega</div></div>
+        <button class="mclose" onclick="Modal.close()" aria-label="Close">✕</button>
+      </div>
+      <div class="mbody">
+        <div class="fg"><p class="flabel">Shop Name</p>
+          <input type="text" class="inp" id="bnInp" value="${bn}" placeholder="e.g. Rohit Computer" maxlength="30" autocomplete="off"></div>
+        <div class="fg"><p class="flabel">Tagline / Location</p>
+          <input type="text" class="inp" id="bsInp" value="${bs}" placeholder="e.g. Rath, Hamirpur (UP)" maxlength="40" autocomplete="off"></div>
+      </div>
+      <div class="mfoot">
+        <button class="btn blue" onclick="App._saveBiz()">✅ Save</button>
+        <button class="btn ghost" onclick="Modal.close()">Cancel</button>
+      </div>
+    `);
+    setTimeout(()=>document.getElementById('bnInp')?.focus(),200);
+  },
+  _saveBiz(){
+    const n=document.getElementById('bnInp')?.value?.trim();
+    const s=document.getElementById('bsInp')?.value?.trim();
+    if(!n)return Toast.show('⚠️ Name daalo');
+    DB.s('biz_name',n);DB.s('biz_sub',s||'');
+    const el1=document.getElementById('bizName');const el2=document.getElementById('bizSub');
+    if(el1)el1.textContent=n;if(el2)el2.textContent=s||'';
+    Toast.show('✅ Shop details updated!');Modal.close();
+  },
+
+  _changePin(){
+    Modal.open(`
+      <div class="mhead">
+        <div><div class="mt">🔑 Change PINs</div><div class="ms">4-digit PIN set karo</div></div>
+        <button class="mclose" onclick="Modal.close()" aria-label="Close">✕</button>
+      </div>
+      <div class="mbody">
+        <div style="padding:10px 12px;background:#fef9c3;border-radius:11px;border:1.5px solid #facc15;font-size:12px;color:#854d0e;margin-bottom:14px;">
+          ⚠️ Pehle apna current owner PIN verify karo. Naya PIN yaad rakh lo!
+        </div>
+        <div class="fg"><p class="flabel">Current Owner PIN</p>
+          <input type="password" class="inp" id="curPin" inputmode="numeric" maxlength="4" placeholder="Current PIN" autocomplete="current-password"></div>
+        <div class="divider"></div>
+        <div class="fg"><p class="flabel">New Owner PIN</p>
+          <input type="password" class="inp" id="newOPin" inputmode="numeric" maxlength="4" placeholder="4 digits" autocomplete="new-password"></div>
+        <div class="fg"><p class="flabel">New Staff PIN</p>
+          <input type="password" class="inp" id="newSPin" inputmode="numeric" maxlength="4" placeholder="4 digits (different from owner)" autocomplete="new-password"></div>
+      </div>
+      <div class="mfoot">
+        <button class="btn blue" onclick="App._savePins()">🔑 Update PINs</button>
+        <button class="btn ghost" onclick="Modal.close()">Cancel</button>
+      </div>
+    `);
+    setTimeout(()=>document.getElementById('curPin')?.focus(),200);
+  },
+  _savePins(){
+    const cur=document.getElementById('curPin')?.value;
+    const nO=document.getElementById('newOPin')?.value;
+    const nS=document.getElementById('newSPin')?.value;
+    if(cur!==C.ownerPIN)return Toast.show('❌ Current PIN galat hai');
+    if(!nO||nO.length<4)return Toast.show('⚠️ Owner PIN 4 digits chahiye');
+    if(!nS||nS.length<4)return Toast.show('⚠️ Staff PIN 4 digits chahiye');
+    if(nO===nS)return Toast.show('⚠️ Owner aur Staff PIN alag hone chahiye');
+    DB.s('owner_pin',nO);DB.s('staff_pin',nS);
+    Toast.show('✅ PINs updated! Next login mein use honge');
+    Modal.close();
   },
   _backup(){
     const keys=Object.keys(localStorage).filter(k=>k.startsWith('rc8_'));
@@ -2080,6 +2333,9 @@ window.addEventListener('DOMContentLoaded',()=>{
       try{parent.postMessage({hisabHeight:document.getElementById('app')?.offsetHeight||700},'*')}catch{}
     });
   }
+  // ── Run data migrations (safe, non-destructive) ──
+  Migration.run();
+  // ── Load custom services ──
   const custom=DB.l('custom_svcs');
   custom.forEach(s=>{if(!C.svcs.find(x=>x.id===s.id))C.svcs.push(s)});
   requestAnimationFrame(()=>App.init());
