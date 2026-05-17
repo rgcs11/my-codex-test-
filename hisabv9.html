@@ -440,6 +440,46 @@ img{max-width:100%;height:auto}
   .main{padding:10px 14px calc(var(--nav-h) + 10px)}
   .msheet{max-height:90vh}
 }
+
+/* ── EMBED / IFRAME MODE ──
+   Auto-applied when running inside an iframe (Hostinger, Wix, etc.)
+   Converts fixed-position overlays to absolute so they stay within
+   the container instead of escaping to the viewport.
+   ─────────────────────────────────────────────────────────────── */
+body.embed{overflow:hidden}
+body.embed #app{
+  position:relative!important;
+  height:var(--embed-h,700px);
+  overflow:hidden!important;
+  max-width:100%!important;
+  min-height:0!important;
+}
+body.embed .main{
+  max-height:calc(var(--embed-h,700px) - var(--header-h) - var(--nav-h));
+  overflow-y:auto;
+  padding-bottom:calc(var(--nav-h) + 8px)!important;
+}
+body.embed .header{position:sticky!important;top:0}
+body.embed .bnav{
+  position:absolute!important;
+  bottom:0!important;left:0!important;right:0!important;
+  width:100%!important;
+  transform:none!important;
+  max-width:100%!important;
+}
+body.embed #modal{position:absolute!important}
+body.embed .moverlay{position:absolute!important;overflow-y:auto}
+body.embed .msheet{max-height:calc(var(--embed-h,700px) - 20px)!important}
+body.embed #toast{position:absolute!important}
+body.embed #loginOverlay{position:absolute!important}
+/* disable sidebar on embed — always show bottom nav */
+body.embed .bnav{flex-direction:row!important;flex-wrap:nowrap!important;height:auto!important;width:100%!important;padding:6px 0 calc(6px + env(safe-area-inset-bottom))!important;border-right:none!important;border-top:1px solid var(--border)!important;top:auto!important}
+body.embed .nbtn{flex-direction:column!important;min-height:48px!important;justify-content:center!important;padding:6px 4px!important;font-size:10px!important;gap:2px!important;width:auto!important;flex:1!important;border-radius:0!important;margin:0!important}
+body.embed .nbtn .ni{font-size:21px!important;line-height:1!important}
+body.embed .nbtn.fab .ni{font-size:30px!important;line-height:.9!important}
+body.embed .nbtn.fab{background:transparent!important;box-shadow:none!important;border-radius:0!important;order:0!important}
+body.embed .header{padding-left:16px!important}
+body.embed .main{margin-left:0!important;padding-left:14px!important;padding-right:14px!important}
 </style>
 </head>
 <body>
@@ -2026,6 +2066,20 @@ document.addEventListener('keydown',e=>{
 
 /* ── BOOT ── */
 window.addEventListener('DOMContentLoaded',()=>{
+  // Embed mode: detect iframe OR ?embed param in URL
+  const inFrame=()=>{try{return window.self!==window.top}catch{return true}};
+  const params=new URLSearchParams(window.location.search);
+  if(inFrame()||params.has('embed')){
+    document.body.classList.add('embed');
+    // Allow caller to set height via ?h=800
+    if(params.get('h')){
+      document.documentElement.style.setProperty('--embed-h',params.get('h')+'px');
+    }
+    // Tell parent frame our natural scroll height (for auto-sizing iframes)
+    window.addEventListener('load',()=>{
+      try{parent.postMessage({hisabHeight:document.getElementById('app')?.offsetHeight||700},'*')}catch{}
+    });
+  }
   const custom=DB.l('custom_svcs');
   custom.forEach(s=>{if(!C.svcs.find(x=>x.id===s.id))C.svcs.push(s)});
   requestAnimationFrame(()=>App.init());
