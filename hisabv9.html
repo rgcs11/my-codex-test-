@@ -587,6 +587,49 @@ body.embed .nbtn.fab .ni{font-size:30px!important;line-height:.9!important}
 body.embed .nbtn.fab{background:transparent!important;box-shadow:none!important;border-radius:0!important;order:0!important}
 body.embed .header{padding-left:16px!important}
 body.embed .main{margin-left:0!important;padding-left:14px!important;padding-right:14px!important;padding-top:14px!important;margin-top:0!important}
+
+/* ── RESPONSIVE ENHANCEMENTS ── */
+/* Tablet 640–1023px: wider quick grids */
+@media(min-width:640px) and (max-width:1023px){
+  .qsgrid{grid-template-columns:repeat(6,1fr)}
+  .qagrid{grid-template-columns:repeat(5,1fr)}
+  .plcard .plv{font-size:18px}
+  .plcard .pli{font-size:10px}
+}
+/* Desktop: 2-column layout for owner and staff home */
+@media(min-width:1024px){
+  .owner-2col{display:grid;grid-template-columns:minmax(0,3fr) minmax(0,2fr);gap:22px;align-items:start}
+  .owner-main,.owner-entry-panel{min-width:0}
+  .owner-2col .hero{max-width:none}
+  .owner-entry-panel{position:sticky;top:16px;max-height:calc(100vh - 110px);overflow-y:auto;padding-right:2px}
+  .owner-entry-panel .section{margin-bottom:0}
+  .staff-2col{display:grid;grid-template-columns:minmax(0,1fr) minmax(0,1fr);gap:22px;align-items:start}
+  .staff-left,.staff-right{min-width:0}
+  .staff-right{position:sticky;top:16px;max-height:calc(100vh - 110px);overflow-y:auto}
+  .staff-right .section{margin-bottom:0}
+  .qsgrid{grid-template-columns:repeat(6,1fr)}
+  .qagrid{grid-template-columns:repeat(5,1fr);gap:10px}
+  .plcard .plv{font-size:19px}
+}
+/* Large desktop: 8-col grids */
+@media(min-width:1440px){
+  .qsgrid{grid-template-columns:repeat(8,1fr)}
+  .qagrid{grid-template-columns:repeat(6,1fr)}
+  .owner-2col{grid-template-columns:minmax(0,7fr) minmax(0,4fr)}
+}
+/* Small phone: prevent P&L + tile overflow */
+@media(max-width:374px){
+  .plcard{padding:7px 4px}
+  .plcard .plv{font-size:13px}
+  .plcard .pli{font-size:8px}
+  .qstile{min-height:56px;padding:6px 2px}
+  .qstile .qsi{font-size:18px}
+  .qstile .qsn,.qstile .qsr{font-size:8px}
+  .wkchart{height:48px}
+  .wkbar{min-height:2px}
+}
+/* Disable 2-col in embed mode */
+body.embed .owner-2col,body.embed .staff-2col{display:block!important}
 </style>
 </head>
 <body>
@@ -2576,7 +2619,7 @@ const Home = {
         </div>
         <button class="dnavbtn" onclick="Home.renderOwner(${dayOff+1})" ${isToday?'disabled':''} aria-label="Next day">›</button>
       </div>
-
+      <div class="owner-2col"><div class="owner-main">
       <div class="hero">
         <div class="hero-greet">${isToday?greet:'📅 '+dayLabel}</div>
         <div class="hero-amt" style="display:flex;align-items:baseline;gap:10px;">${F.rs(total)} ${trendHtml}</div>
@@ -2644,6 +2687,7 @@ const Home = {
         </div>
       </div>`:''}
 
+      </div><div class="owner-entry-panel">
       <div class="section">
         <p class="stitle">📋 ${dayLabel}'s Entries ${es.length>0?`<span class="pill">${es.length}</span>`:''}</p>
         <div class="fchips" id="fchips">
@@ -2665,6 +2709,7 @@ const Home = {
           return `<div class="elist">${filtered.slice(0,60).map(e=>this._ecard(e)).join('')}</div>`;
         })()}
       </div>
+      </div></div>
     `;
   },
   _setFilter(f){this._filter=f;Home.renderOwner(this._vday||0)},
@@ -2721,6 +2766,7 @@ const Home = {
     ];
 
     document.getElementById('main').innerHTML=`
+      <div class="staff-2col"><div class="staff-left">
       <div class="hero" style="background:linear-gradient(135deg,#0891b2,#0e7490);">
         <div style="display:flex;justify-content:space-between;align-items:flex-start;gap:8px;">
           <div>
@@ -2749,12 +2795,14 @@ const Home = {
         <button onclick="Entry.showSale()" style="background:#f0fdf4;border:1.5px solid #86efac;border-radius:var(--r-md);padding:11px 5px;display:flex;flex-direction:column;align-items:center;gap:4px;font-size:10px;font-weight:700;color:#15803d;cursor:pointer;"><span style="font-size:20px;">🛒</span>Product</button>
       </div>
 
+      </div><div class="staff-right">
       <div class="section">
         <p class="stitle">📋 Meri Entries ${myEs.length>0?`<span class="pill">${myEs.length}</span>`:''}</p>
         ${myEs.length===0?
           `<div class="empty"><div class="ei">📝</div><div class="et">Koi entry nahi</div><div class="es">Upar tiles se jaldi entry karo!</div></div>`:
           `<div class="elist">${myEs.map(e=>this._ecard(e)).join('')}</div>`}
       </div>
+      </div></div>
     `;
   },
 
