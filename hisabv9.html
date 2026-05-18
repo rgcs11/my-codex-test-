@@ -396,7 +396,7 @@ img{max-width:100%;height:auto}
 .wkchart{display:flex;align-items:flex-end;gap:3px;height:76px;padding:0 2px;margin-bottom:14px}
 .wkday{flex:1;display:flex;flex-direction:column;align-items:center;gap:2px}
 .wkbar{width:100%;background:linear-gradient(to top,var(--blue),#93c5fd);border-radius:4px 4px 0 0;min-height:3px;transition:height .3s}
-.wkbar.today{background:linear-gradient(to top,var(--green),#4ade80)}
+.wkbar.today{background:linear-gradient(to top,var(--green),#4ade80);min-height:8px}
 .wkbar.zero{background:#e2e8f0;min-height:3px}
 .wklbl{font-size:9px;color:var(--text-3);font-weight:700}
 .wkamt{font-size:8px;color:var(--text-3);white-space:nowrap;overflow:hidden;max-width:100%;text-align:center}
@@ -630,7 +630,7 @@ body.embed .main{margin-left:0!important;padding-left:14px!important;padding-rig
 /* Large desktop: 8-col grids, wider modal, content max-width */
 @media(min-width:1440px){
   .qsgrid{grid-template-columns:repeat(8,1fr)}
-  .qagrid{grid-template-columns:repeat(6,1fr)}
+  .qagrid{grid-template-columns:repeat(5,1fr)}
   .owner-2col{grid-template-columns:minmax(0,7fr) minmax(0,4fr)}
   .msheet{max-width:580px}
   .main{max-width:1600px}
@@ -2733,7 +2733,9 @@ const Home = {
       <div class="hero">
         <div class="hero-greet">${isToday?greet:'📅 '+dayLabel}</div>
         <div class="hero-amt" style="display:flex;align-items:baseline;gap:10px;">${F.rs(total)} ${trendHtml}</div>
-        <div class="hero-lbl">${revEs.length} entries · vs prev: ${F.rs(prevTotal)}</div>
+        <div class="hero-lbl">${revEs.length} ${revEs.length===1?'entry':'entries'}${revEs.length===0&&prevTotal===0?'':` · vs prev: ${F.rs(prevTotal)}`}</div>
+        ${isToday&&revEs.length===0?`<button onclick="Entry.show()" style="margin-top:10px;background:rgba(255,255,255,.2);border:1.5px solid rgba(255,255,255,.45);color:#fff;border-radius:20px;padding:6px 18px;font-size:13px;font-weight:700;cursor:pointer;letter-spacing:.2px;">➕ Pehli Entry Karo</button>`:''}
+
         <div class="hero-stats">
           <div class="hstat"><div class="sl">💵 CASH</div><div class="sv">${F.short(cash)}</div></div>
           <div class="hstat"><div class="sl">📱 ONLINE</div><div class="sv">${F.short(online)}</div></div>
@@ -2756,7 +2758,9 @@ const Home = {
           <div class="wkbar ${d.isT?'today':d.rev===0?'zero':''}" style="height:${Math.round((d.rev/maxRev)*56)+4}px;"></div>
           <div class="wklbl">${d.lbl}</div>
         </div>`).join('')}
-      </div>`:''}
+      </div>
+      ${days7.every(d=>d.rev===0)?`<div style="text-align:center;font-size:11px;color:var(--text-3);margin:-8px 0 10px;opacity:.8;">Pichle 7 din ka koi record nahi</div>`:``}
+      `:''}
 
       ${showClosingBanner?`<div class="close-banner">
         <div>
