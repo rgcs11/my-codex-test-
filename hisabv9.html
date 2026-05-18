@@ -595,6 +595,17 @@ body.embed .main{margin-left:0!important;padding-left:14px!important;padding-rig
   .qagrid{grid-template-columns:repeat(5,1fr)}
   .plcard .plv{font-size:18px}
   .plcard .pli{font-size:10px}
+  /* Tablet 2-col layout */
+  .owner-2col{display:grid;grid-template-columns:minmax(0,55fr) minmax(0,45fr);gap:16px;align-items:start}
+  .owner-main,.owner-entry-panel{min-width:0}
+  .owner-2col .hero{max-width:none}
+  .owner-entry-panel{position:sticky;top:8px;max-height:calc(100vh - 120px);overflow-y:auto}
+  .owner-entry-panel .section{margin-bottom:0}
+  .staff-2col{display:grid;grid-template-columns:1fr 1fr;gap:16px;align-items:start}
+  .staff-left,.staff-right{min-width:0}
+  .staff-right{position:sticky;top:8px;max-height:calc(100vh - 120px);overflow-y:auto}
+  .staff-right .section{margin-bottom:0}
+  .attend-banner{padding:16px 20px}
 }
 /* Desktop: 2-column layout for owner and staff home */
 @media(min-width:1024px){
@@ -610,12 +621,25 @@ body.embed .main{margin-left:0!important;padding-left:14px!important;padding-rig
   .qsgrid{grid-template-columns:repeat(6,1fr)}
   .qagrid{grid-template-columns:repeat(5,1fr);gap:10px}
   .plcard .plv{font-size:19px}
+  /* Hide redundant header buttons — sidebar handles nav/logout */
+  .header .hibtn{display:none}
+  /* Sidebar branding */
+  .snav-brand{display:flex;align-items:center;gap:10px;padding:0 4px 16px;border-bottom:1px solid var(--border);margin-bottom:8px;position:absolute;top:16px;left:12px;right:12px}
+  .snav-logo{width:36px;height:36px;min-width:36px;background:var(--blue-l);border-radius:10px;display:flex;align-items:center;justify-content:center;font-size:18px}
+  .snav-name{font-size:13px;font-weight:800;color:var(--text);white-space:nowrap;overflow:hidden;text-overflow:ellipsis;line-height:1.2}
+  .snav-sub{font-size:10px;color:var(--text-3)}
+  .snav-user{display:flex;flex-direction:column;gap:6px;margin-top:auto;padding-top:14px;border-top:1px solid var(--border);width:100%}
+  .snav-uname{font-size:11px;font-weight:700;color:var(--text-2);padding:0 4px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+  .snav-logout{background:#fef2f2;color:#dc2626;border:1.5px solid #fca5a5;border-radius:10px;padding:8px 12px;font-size:12px;font-weight:700;cursor:pointer;width:100%;text-align:left}
+  .snav-logout:hover{background:#fee2e2}
 }
-/* Large desktop: 8-col grids */
+/* Large desktop: 8-col grids, wider modal, content max-width */
 @media(min-width:1440px){
   .qsgrid{grid-template-columns:repeat(8,1fr)}
   .qagrid{grid-template-columns:repeat(6,1fr)}
   .owner-2col{grid-template-columns:minmax(0,7fr) minmax(0,4fr)}
+  .msheet{max-width:580px}
+  .main{max-width:1600px}
 }
 /* Small phone: prevent P&L + tile overflow */
 @media(max-width:374px){
@@ -630,6 +654,27 @@ body.embed .main{margin-left:0!important;padding-left:14px!important;padding-rig
 }
 /* Disable 2-col in embed mode */
 body.embed .owner-2col,body.embed .staff-2col{display:block!important}
+
+/* ── SIDEBAR BRAND/USER: hidden on mobile/tablet ── */
+.snav-brand,.snav-user{display:none}
+
+/* ── LOGIN BRAND PANEL: hidden on mobile ── */
+.login-brand{display:none}
+
+/* ── LOGIN DESKTOP: 2-panel ── */
+@media(min-width:1024px){
+  #loginOverlay{flex-direction:row;padding:0;align-items:stretch}
+  .login-brand{
+    flex:1;display:flex;flex-direction:column;align-items:center;justify-content:center;
+    color:#fff;padding:48px 40px;gap:18px;
+  }
+  .lbrand-logo{width:84px;height:84px;background:rgba(255,255,255,.2);border-radius:24px;display:flex;align-items:center;justify-content:center;font-size:42px;flex-shrink:0}
+  .lbrand-title{font-size:34px;font-weight:900;text-align:center}
+  .lbrand-sub{font-size:14px;opacity:.75;text-align:center;line-height:1.6}
+  .lbrand-pills{display:flex;gap:10px;flex-wrap:wrap;justify-content:center;margin-top:4px}
+  .lbrand-pill{background:rgba(255,255,255,.15);border:1px solid rgba(255,255,255,.25);border-radius:20px;padding:6px 16px;font-size:12px;font-weight:600}
+  .lcard{border-radius:0!important;box-shadow:none!important;max-width:400px;width:400px;flex-shrink:0;display:flex;flex-direction:column;justify-content:center;padding:48px 36px;margin:0}
+}
 </style>
 </head>
 <body>
@@ -873,11 +918,22 @@ const Login = {
     const el=document.getElementById('loginOverlay');
     if(!el) return;
     el.style.display='flex';
+    const bizN=DB.g('biz_name')||'Rohit Computer';
+    const bizS=DB.g('biz_sub')||'Rath, Hamirpur';
     el.innerHTML=`
+    <div class="login-brand">
+      <div class="lbrand-logo">🏪</div>
+      <div class="lbrand-title">${bizN}</div>
+      <div class="lbrand-sub">${bizS}<br>CSC Shop Management System</div>
+      <div class="lbrand-pills">
+        <span class="lbrand-pill">👑 Owner</span>
+        <span class="lbrand-pill">👤 Staff</span>
+      </div>
+    </div>
     <div class="lcard">
       <div class="llogo">🏪</div>
       <div class="ltitle">Hisab</div>
-      <div class="lsub">Rohit Computer, Rath</div>
+      <div class="lsub">${bizN}</div>
       <div class="pdots" id="pdots">
         ${[0,1,2,3].map(i=>`<div class="pdot" id="pd${i}"></div>`).join('')}
       </div>
@@ -888,8 +944,8 @@ const Login = {
         <button class="pkey act" onclick="Login.back()">⌫</button>
       </div>
       <div class="lroles">
-        <span class="lrpill">👑 Owner: 1234</span>
-        <span class="lrpill">👤 Staff: 5678</span>
+        <span class="lrpill">👑 Owner</span>
+        <span class="lrpill">👤 Staff</span>
       </div>
     </div>`;
   },
@@ -2843,18 +2899,36 @@ const Router = {
   },
   _nav(){
     const isO=Auth.isOwner();
+    const u=Auth.user();
+    const bizN=DB.g('biz_name')||'Rohit Computer';
     document.getElementById('bnav').innerHTML=isO?`
+      <div class="snav-brand">
+        <div class="snav-logo">🏪</div>
+        <div><div class="snav-name">${bizN}</div><div class="snav-sub">Hisab v9</div></div>
+      </div>
       <button class="nbtn ${this.cur==='home'?'active':''}" onclick="Router.go('home')"><span class="ni">🏠</span><span>Home</span></button>
       <button class="nbtn ${this.cur==='udhar'?'active':''}" onclick="Router.go('udhar')"><span class="ni">📋</span><span>Udhar</span></button>
       <button class="nbtn fab" onclick="Entry.show()" aria-label="New Entry"><span class="ni">＋</span><span>Entry</span></button>
       <button class="nbtn ${this.cur==='reports'?'active':''}" onclick="Router.go('reports')"><span class="ni">📊</span><span>Reports</span></button>
       <button class="nbtn" onclick="App.settings()"><span class="ni">⚙️</span><span>Settings</span></button>
+      <div class="snav-user">
+        <div class="snav-uname">👑 ${u?.name||'Owner'}</div>
+        <button class="snav-logout" onclick="App._logout()">🚪 Logout</button>
+      </div>
     `:`
+      <div class="snav-brand">
+        <div class="snav-logo">🏪</div>
+        <div><div class="snav-name">${bizN}</div><div class="snav-sub">Hisab v9</div></div>
+      </div>
       <button class="nbtn ${this.cur==='home'?'active':''}" onclick="Router.go('home')"><span class="ni">🏠</span><span>Home</span></button>
       <button class="nbtn ${this.cur==='udhar'?'active':''}" onclick="Router.go('udhar')"><span class="ni">📋</span><span>Udhar</span></button>
       <button class="nbtn fab" onclick="Entry.show()" aria-label="New Entry"><span class="ni">＋</span><span>Entry</span></button>
       <button class="nbtn" onclick="Entry.showSale()"><span class="ni">🛒</span><span>Sale</span></button>
       <button class="nbtn" onclick="App.settings()"><span class="ni">⚙️</span><span>Settings</span></button>
+      <div class="snav-user">
+        <div class="snav-uname">👤 ${u?.name||'Staff'}</div>
+        <button class="snav-logout" onclick="App._logout()">🚪 Logout</button>
+      </div>
     `;
   },
 };
