@@ -2819,26 +2819,15 @@ const Home = {
       </div>
       </div></div>
     `;
-    // Swipe left/right on date navigator to change day
+    // Swipe left/right on date navigator (safe: dnav is recreated each render)
     const dnav=document.querySelector('.dnav');
     if(dnav){
-      let sx=0;
-      dnav.addEventListener('touchstart',e=>{sx=e.touches[0].clientX},{passive:true});
+      let sx=0,st=0;
+      dnav.addEventListener('touchstart',e=>{sx=e.touches[0].clientX;st=Date.now()},{passive:true});
       dnav.addEventListener('touchend',e=>{
         const dx=e.changedTouches[0].clientX-sx;
-        if(Math.abs(dx)>50)Home.renderOwner(dx<0?dayOff-1:dayOff+1);
-      },{passive:true});
-    }
-    // Swipe on main content area
-    const main=document.getElementById('main');
-    if(main){
-      let sx=0,sy=0;
-      main.addEventListener('touchstart',e=>{sx=e.touches[0].clientX;sy=e.touches[0].clientY},{passive:true});
-      main.addEventListener('touchend',e=>{
-        const dx=e.changedTouches[0].clientX-sx;
-        const dy=e.changedTouches[0].clientY-sy;
-        if(Math.abs(dx)>60&&Math.abs(dx)>Math.abs(dy)*1.5)
-          Home.renderOwner(dx<0?dayOff-1:(dayOff<0?dayOff+1:dayOff));
+        const dt=Date.now()-st;
+        if(Math.abs(dx)>40&&dt<400)Home.renderOwner(dx<0?dayOff-1:dayOff+1);
       },{passive:true});
     }
   },
@@ -3027,18 +3016,25 @@ const App = {
     if(Auth.init())this.boot();
     else Login.show();
     document.addEventListener('keydown',e=>{
-      if(e.key==='Escape'){Modal.close();return}
+      if(e.repeat)return; // prevent key-repeat double-firing
+      const onLogin=document.getElementById('loginOverlay')?.style.display==='flex';
+      const modalOpen=!!document.getElementById('modal')?.innerHTML;
+      // Escape: clear PIN if on login, else close modal
+      if(e.key==='Escape'){if(onLogin)Login.clear();else if(modalOpen)Modal.close();return}
+      // Digit/backspace on PIN screen
+      if(onLogin){
+        if(e.key>='0'&&e.key<='9'){e.preventDefault();Login.tap(e.key);return}
+        if(e.key==='Backspace'){e.preventDefault();Login.back();return}
+        return; // block all other keys on login
+      }
       // Arrow keys navigate date when on home as owner
       if(Router.cur==='home'&&Auth.isOwner()){
         if(e.key==='ArrowLeft'){Home.renderOwner((Home._vday||0)-1);return}
         if(e.key==='ArrowRight'&&(Home._vday||0)<0){Home.renderOwner((Home._vday||0)+1);return}
       }
-      // PIN typing on login screen
-      const lo=document.getElementById('loginOverlay');
-      if(lo&&lo.style.display!=='none'){
-        if(e.key>='0'&&e.key<='9'){Login.tap(e.key);return}
-        if(e.key==='Backspace'){Login.back();return}
-        if(e.key==='Delete'||e.key==='Escape'){Login.clear();return}
+      // Global shortcuts
+      if(e.ctrlKey||e.metaKey){
+        if(e.key==='n'&&Auth.role()){e.preventDefault();Entry.show()}
       }
     });
   },
@@ -3047,6 +3043,21 @@ const App = {
     const bn=DB.g('biz_name');const bs=DB.g('biz_sub');
     if(bn)document.getElementById('bizName').textContent=bn;
     if(bs)document.getElementById('bizSub').textContent=bs;
+    // Attach main-area swipe ONCE (navigates dates when owner is on home)
+    const mainEl=document.getElementById('main');
+    if(mainEl&&!mainEl._swipeInit){
+      mainEl._swipeInit=true;
+      let sx=0,sy=0,st=0;
+      mainEl.addEventListener('touchstart',e=>{sx=e.touches[0].clientX;sy=e.touches[0].clientY;st=Date.now()},{passive:true});
+      mainEl.addEventListener('touchend',e=>{
+        if(Router.cur!=='home'||!Auth.isOwner())return;
+        const dx=e.changedTouches[0].clientX-sx;
+        const dy=e.changedTouches[0].clientY-sy;
+        const dt=Date.now()-st;
+        if(dt<400&&Math.abs(dx)>60&&Math.abs(dx)>Math.abs(dy)*1.8)
+          Home.renderOwner(dx<0?(Home._vday||0)-1:(Home._vday||0)<0?(Home._vday||0)+1:(Home._vday||0));
+      },{passive:true});
+    }
     Router.go('home');
   },
   staffAttend(){this._attendance()},
@@ -3393,32 +3404,7 @@ const App = {
   },
 };
 
-/* ── KEYBOARD HANDLER ── */
-document.addEventListener('keydown',e=>{
-  if(e.key==='Escape'&&document.getElementById('loginOverlay')?.style.display!=='flex'){
-    Modal.close();
-  }
-  // Keyboard shortcuts on desktop
-  if(e.ctrlKey||e.metaKey){
-    if(e.key==='n'&&Auth.role()){e.preventDefault();Entry.show()}
-  }
-});
-
-/* ── LOGIN KEYBOARD ── */
-document.addEventListener('keypress',e=>{
-  const overlay=document.getElementById('loginOverlay');
-  if(overlay&&overlay.style.display==='flex'){
-    if(e.key>='0'&&e.key<='9')Login.tap(e.key);
-    else if(e.key==='Backspace'||e.key==='\x08')Login.back();
-  }
-});
-document.addEventListener('keydown',e=>{
-  const overlay=document.getElementById('loginOverlay');
-  if(overlay&&overlay.style.display==='flex'){
-    if(e.key==='Backspace')Login.back();
-    else if(e.key==='Escape')Login.clear();
-  }
-});
+/* keyboard handler consolidated into App.init() above */
 
 /* ── BOOT ── */
 let _booted=false;
