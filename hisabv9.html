@@ -172,6 +172,8 @@ img{max-width:100%;height:auto}
 .qabtn.cyan2 .ql{color:#fff}
 .qabtn.violet{background:linear-gradient(135deg,#8b5cf6,#7c3aed);border:none;box-shadow:0 4px 12px rgba(139,92,246,.3)}
 .qabtn.violet .ql{color:#fff}
+.qabtn.rose{background:linear-gradient(135deg,#fb7185,#e11d48);border:none;box-shadow:0 4px 12px rgba(225,29,72,.28)}
+.qabtn.rose .ql{color:#fff}
 
 /* ── AEPS TOGGLE ── */
 .atog{display:flex;gap:6px;background:#f1f5f9;border-radius:13px;padding:4px;margin-bottom:14px}
@@ -269,7 +271,7 @@ img{max-width:100%;height:auto}
 
 /* ── PRODUCT CART ── */
 .pgrid{display:grid;grid-template-columns:repeat(3,1fr);gap:8px}
-.ptile{background:#f8fafc;border:2px solid #e8ecf1;border-radius:13px;padding:10px 5px;text-align:center;font-size:11px;font-weight:600;color:var(--text-2);transition:all .15s;cursor:pointer;width:100%}
+.ptile{background:#f8fafc;border:2px solid #e8ecf1;border-radius:13px;padding:10px 5px;text-align:center;font-size:11px;font-weight:600;color:var(--text-2);transition:all .15s;cursor:pointer;width:100%;position:relative;overflow:hidden}
 .ptile:hover{border-color:#93c5fd;background:var(--blue-l)}
 .ptile:active{transform:scale(.95)}
 .ptile .pi{font-size:24px;margin-bottom:4px}
@@ -592,7 +594,7 @@ body.embed .main{margin-left:0!important;padding-left:14px!important;padding-rig
 /* Tablet 640–1023px: wider quick grids */
 @media(min-width:640px) and (max-width:1023px){
   .qsgrid{grid-template-columns:repeat(6,1fr)}
-  .qagrid{grid-template-columns:repeat(5,1fr)}
+  .qagrid{grid-template-columns:repeat(6,1fr)}
   /* Tablet 2-col layout */
   .owner-2col{display:grid;grid-template-columns:minmax(0,55fr) minmax(0,45fr);gap:16px;align-items:start}
   .owner-main,.owner-entry-panel{min-width:0}
@@ -617,7 +619,7 @@ body.embed .main{margin-left:0!important;padding-left:14px!important;padding-rig
   .staff-right{position:sticky;top:16px;max-height:calc(100vh - 110px);overflow-y:auto;background:#f8fafc;border-radius:var(--r-lg);border:1px solid var(--border);padding:18px;box-shadow:0 2px 8px rgba(0,0,0,.04)}
   .staff-right .section{margin-bottom:0}
   .qsgrid{grid-template-columns:repeat(6,1fr)}
-  .qagrid{grid-template-columns:repeat(5,1fr);gap:12px}
+  .qagrid{grid-template-columns:repeat(6,1fr);gap:12px}
   .qabtn{min-height:92px;border-radius:14px}
   .qabtn .qi{font-size:30px}
   .plcard .plv{font-size:19px}
@@ -1454,7 +1456,13 @@ const Entry = {
           <div class="pgrid">
             ${visible.map(p=>{
               const ic=this.cart.find(c=>c.id===p.id);
+              const stk=Stock.get(p.id);
+              const stkBadge=stk===null?''
+                :stk===0?`<div style="position:absolute;inset:0;background:rgba(220,38,38,.08);border-radius:11px;display:flex;align-items:center;justify-content:center;pointer-events:none;"><span style="font-size:9px;font-weight:800;color:#dc2626;background:#fee2e2;border-radius:4px;padding:2px 5px;">Out of Stock</span></div>`
+                :stk<=3?`<div style="position:absolute;top:3px;right:3px;background:#f97316;color:#fff;font-size:8px;font-weight:800;border-radius:5px;padding:1px 4px;line-height:1.4;">⚠️${stk}</div>`
+                :`<div style="position:absolute;top:3px;right:3px;background:#dcfce7;color:#16a34a;font-size:8px;font-weight:700;border-radius:5px;padding:1px 4px;line-height:1.4;">${stk}</div>`;
               return `<div class="ptile ${ic?'sel':''}">
+                ${stkBadge}
                 <div class="pi">${p.icon}</div>
                 <div style="font-size:11px;font-weight:600;">${p.name}</div>
                 <div class="pp">₹${p.price}</div>
@@ -1557,6 +1565,7 @@ const Entry = {
     const total=this.cart.reduce((s,c)=>s+c.price*c.qty,0);
     const pm=document.getElementById('spv')?.value||'cash';
     DB.s('last_pm',pm);
+    const savedCart=[...this.cart];
     this.save({
       svc:'Sale: '+this.cart.map(c=>c.name+(c.qty>1?' ×'+c.qty:'')).join(', '),
       svcId:'product_sale',amt:total,pm,
@@ -1564,6 +1573,8 @@ const Entry = {
       phone:document.getElementById('scp')?.value?.trim()||'',
       type:'product',
     });
+    // Decrement stock for tracked products
+    savedCart.forEach(c=>Stock.dec(c.id,c.qty));
     this.cart=[];this._psq='';
   },
 
@@ -2016,6 +2027,113 @@ const MoneyTransfer = {
     if(navigator.vibrate)navigator.vibrate(10);
     Toast.show('✅ Transfer saved! Kamai: '+F.rs(comm));
     setTimeout(()=>{Modal.close();refresh()},400);
+  },
+};
+
+/* ── STOCK ────────────────────────────────────────────
+   Thin helper for product stock levels.
+   Key: rc8_prod_stock  {productId: qty}
+   null means "not tracked" (default, no alert shown).
+   ─────────────────────────────────────────────────────── */
+const Stock = {
+  _k:'prod_stock',
+  get(id){const s=DB.g(this._k)||{};return s.hasOwnProperty(id)?s[id]:null},
+  set(id,qty){const s=DB.g(this._k)||{};s[id]=Math.max(0,Math.round(qty));DB.s(this._k,s)},
+  del(id){const s=DB.g(this._k)||{};delete s[id];DB.s(this._k,s)},
+  dec(id,qty=1){const cur=this.get(id);if(cur===null)return;this.set(id,Math.max(0,cur-qty))},
+};
+
+/* ── CUSTOMER HISTORY ─────────────────────────────────
+   Derived view over entries — built on demand, never
+   stale. Searched by phone prefix or name substring.
+   ─────────────────────────────────────────────────────── */
+const CustomerDB = {
+  _build(){
+    const idx={};
+    DB.l('entries').filter(e=>e.phone&&e.phone.length>=7&&!e.cancelled&&e.type!=='expense').forEach(e=>{
+      const k=e.phone;
+      if(!idx[k])idx[k]={name:'',lastSeen:'',totalSpend:0,visitCount:0};
+      if(e.cust)idx[k].name=e.cust;
+      if(!idx[k].lastSeen||e.day>idx[k].lastSeen)idx[k].lastSeen=e.day;
+      idx[k].totalSpend+=e.amt||0;
+      idx[k].visitCount++;
+    });
+    return idx;
+  },
+  search(q){
+    const idx=this._build();
+    const qL=q.toLowerCase();
+    return Object.entries(idx)
+      .filter(([ph,c])=>ph.includes(q)||(c.name&&c.name.toLowerCase().includes(qL)))
+      .map(([phone,c])=>({phone,...c}))
+      .sort((a,b)=>(b.lastSeen||'').localeCompare(a.lastSeen||''))
+      .slice(0,20);
+  },
+  lookup(){this._renderSearch('')},
+  _renderSearch(q){
+    const results=q.length>=2?this.search(q):[];
+    const totalCustomers=Object.keys(this._build()).length;
+    Modal.open(`
+      <div class="mhead">
+        <div><div class="mt">👤 Customer History</div><div class="ms">${totalCustomers} customers found in entries</div></div>
+        <button class="mclose" onclick="Modal.close()" aria-label="Close">✕</button>
+      </div>
+      <div class="mbody">
+        <div class="fg" style="margin-bottom:10px;">
+          <input type="text" class="inp" id="custQ" placeholder="📱 Phone number ya 👤 naam" value="${q}"
+            oninput="CustomerDB._renderSearch(this.value)" autocomplete="off" inputmode="search">
+        </div>
+        ${!q?`<div style="text-align:center;padding:28px;color:var(--text-3);font-size:13px;">Naam ya number type karo<br><span style="font-size:10px;">(min. 2 characters)</span></div>`
+          :!results.length?`<div style="text-align:center;padding:24px;color:var(--text-3);font-size:13px;">Koi match nahi mila<br><span style="font-size:10px;">"${q}"</span></div>`
+          :results.map(c=>`<div class="card mb8" style="cursor:pointer;" onclick="CustomerDB._detail('${c.phone}')">
+            <div class="spread">
+              <div style="min-width:0;flex:1;">
+                <div style="font-weight:700;font-size:13px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;">👤 ${c.name||'(No name)'} · <span style="color:var(--text-3);font-size:11px;font-weight:400;">${c.phone}</span></div>
+                <div style="font-size:11px;color:var(--text-3);margin-top:2px;">${c.visitCount} visits · ${F.rs(c.totalSpend)} total · Last: ${c.lastSeen||'—'}</div>
+              </div>
+              <span style="color:var(--blue);font-size:20px;flex-shrink:0;">›</span>
+            </div>
+          </div>`).join('')}
+      </div>
+    `);
+    setTimeout(()=>{const e=document.getElementById('custQ');if(e){e.focus();const l=e.value.length;e.setSelectionRange(l,l)}},120);
+  },
+  _detail(phone){
+    const idx=this._build();
+    const c=idx[phone]||{name:'',lastSeen:'',totalSpend:0,visitCount:0};
+    const hist=DB.l('entries').filter(e=>e.phone===phone&&!e.cancelled&&e.type!=='expense').reverse();
+    Modal.open(`
+      <div class="mhead">
+        <div><div class="mt">👤 ${c.name||phone}</div><div class="ms">${phone} · ${c.visitCount||0} visits</div></div>
+        <button class="mclose" onclick="Modal.close()" aria-label="Close">✕</button>
+      </div>
+      <div class="mbody">
+        <div style="display:grid;grid-template-columns:repeat(3,1fr);gap:8px;margin-bottom:14px;">
+          <div style="text-align:center;padding:10px 6px;background:#f0fdf4;border-radius:10px;border:1.5px solid #86efac;">
+            <div style="font-size:17px;font-weight:900;color:#16a34a;">${F.rs(c.totalSpend||0)}</div>
+            <div style="font-size:10px;color:#15803d;margin-top:2px;">Total Spend</div>
+          </div>
+          <div style="text-align:center;padding:10px 6px;background:#eff6ff;border-radius:10px;border:1.5px solid #bfdbfe;">
+            <div style="font-size:17px;font-weight:900;color:#1d4ed8;">${c.visitCount||0}</div>
+            <div style="font-size:10px;color:#1e40af;margin-top:2px;">Visits</div>
+          </div>
+          <div style="text-align:center;padding:10px 6px;background:#f8fafc;border-radius:10px;border:1.5px solid var(--border);">
+            <div style="font-size:12px;font-weight:700;color:var(--text);">${c.lastSeen||'—'}</div>
+            <div style="font-size:10px;color:var(--text-3);margin-top:2px;">Last Visit</div>
+          </div>
+        </div>
+        ${hist.length?`<p style="font-size:10px;font-weight:700;color:var(--text-3);text-transform:uppercase;letter-spacing:.06em;margin-bottom:8px;">Transaction History (${hist.length})</p>
+          ${hist.slice(0,25).map(e=>`<div style="display:flex;justify-content:space-between;align-items:center;padding:7px 0;border-bottom:1px solid var(--border);">
+            <div><div style="font-size:12px;font-weight:600;">${e.svc}</div><div style="font-size:10px;color:var(--text-3);">${e.day} · ${F.time(e.at)}</div></div>
+            <div style="font-weight:700;font-size:13px;color:#16a34a;">${F.rs(e.amt)}</div>
+          </div>`).join('')}`
+          :`<div style="text-align:center;padding:20px;color:var(--text-3);">No transaction history</div>`}
+      </div>
+      <div class="mfoot">
+        <button class="btn ghost" style="background:#f0fdf4;color:#16a34a;" onclick="window.open('https://wa.me/91${phone}','_blank')">💬 WhatsApp</button>
+        <button class="btn ghost" onclick="CustomerDB._renderSearch('')">◂ Back</button>
+      </div>
+    `);
   },
 };
 
@@ -3165,6 +3283,7 @@ const Home = {
           <button class="qabtn slate" onclick="Money.showClosing()"><span class="qi">🔒</span><span class="ql">Closing</span></button>
           <button class="qabtn indigo" onclick="Router.go('reports')"><span class="qi">📊</span><span class="ql">Reports</span></button>
           <button class="qabtn cyan2" onclick="App.staffAttend()"><span class="qi">👥</span><span class="ql">Attendance</span></button>
+          <button class="qabtn rose" onclick="CustomerDB.lookup()"><span class="qi">🔍</span><span class="ql">Customers</span></button>
         </div>
       </div>
 
@@ -3726,15 +3845,29 @@ const App = {
     const allProds=[...C.prods.filter(p=>!hidden.includes(p.id)),...custom];
     Modal.open(`
       <div class="mhead">
-        <div><div class="mt">🛒 Manage Products</div><div class="ms">Add / remove products</div></div>
+        <div><div class="mt">🛒 Manage Products</div><div class="ms">Products + stock levels</div></div>
         <button class="mclose" onclick="Modal.close()">✕</button>
       </div>
       <div class="mbody">
         <p class="flabel" style="margin-bottom:6px;">Current Products</p>
-        ${allProds.map(p=>`<div class="card mb8 spread">
-          <div><div style="font-weight:700;font-size:13px;">${p.icon||'📦'} ${p.name}</div><div style="font-size:11px;color:#94a3b8;">₹${p.price}</div></div>
-          <button class="btn red sm" style="width:auto;padding:6px 12px;min-height:auto;font-size:12px;" onclick="App._delProduct('${p.id}')">🗑️</button>
-        </div>`).join('')}
+        ${allProds.map(p=>{
+          const stk=Stock.get(p.id);
+          const stkLabel=stk===null?'—':stk===0?'<span style="color:#dc2626;font-weight:700;">Out</span>'
+            :stk<=3?`<span style="color:#f97316;font-weight:700;">${stk} ⚠️</span>`
+            :`<span style="color:#16a34a;">${stk}</span>`;
+          return `<div class="card mb8">
+            <div class="spread">
+              <div style="flex:1;min-width:0;">
+                <div style="font-weight:700;font-size:13px;">${p.icon||'📦'} ${p.name}</div>
+                <div style="font-size:11px;color:var(--text-3);">₹${p.price} · Stock: ${stkLabel}</div>
+              </div>
+              <div style="display:flex;gap:4px;flex-shrink:0;">
+                <button class="btn ghost sm" style="width:auto;padding:5px 9px;min-height:auto;font-size:11px;" onclick="App._editStock('${p.id}','${p.name}')">📦</button>
+                <button class="btn red sm" style="width:auto;padding:5px 9px;min-height:auto;font-size:11px;" onclick="App._delProduct('${p.id}')">🗑️</button>
+              </div>
+            </div>
+          </div>`;
+        }).join('')}
         <div class="divider"></div>
         <p class="flabel" style="margin-bottom:8px;">➕ Add Product</p>
         <div class="fg"><p class="flabel">Icon (emoji)</p><input type="text" class="inp mb8" id="mpIcon" value="📦" maxlength="4" style="font-size:20px;text-align:center;width:60px;"></div>
@@ -3747,6 +3880,35 @@ const App = {
       </div>
     `);
     setTimeout(()=>document.getElementById('mpName')?.focus(),200);
+  },
+  _editStock(id,name){
+    const cur=Stock.get(id);
+    Modal.open(`
+      <div class="mhead">
+        <div><div class="mt">📦 Stock: ${name}</div><div class="ms">Current: ${cur===null?'not tracked':cur+' units'}</div></div>
+        <button class="mclose" onclick="Modal.close()" aria-label="Close">✕</button>
+      </div>
+      <div class="mbody">
+        <div class="fg">
+          <p class="flabel">Naya Stock Quantity</p>
+          <input type="number" class="inp big" id="stkQty" min="0" inputmode="numeric" placeholder="0" value="${cur===null?'':cur}">
+          <p style="font-size:11px;color:var(--text-3);margin-top:6px;">0 set karne par "Out of Stock" dikhega. Delete karne par alert band ho jayega.</p>
+        </div>
+      </div>
+      <div class="mfoot">
+        <button class="btn blue" onclick="App._saveStock('${id}')">✅ Set Stock</button>
+        ${cur!==null?`<button class="btn ghost" onclick="Stock.del('${id}');Toast.show('✅ Stock tracking off');App._manageProducts()">🔕 Stop Tracking</button>`:''}
+        <button class="btn ghost" onclick="App._manageProducts()">Back</button>
+      </div>
+    `);
+    setTimeout(()=>document.getElementById('stkQty')?.focus(),200);
+  },
+  _saveStock(id){
+    const qty=parseInt(document.getElementById('stkQty')?.value||'0',10);
+    if(isNaN(qty)||qty<0)return Toast.show('⚠️ Valid quantity daalo');
+    Stock.set(id,qty);
+    Toast.show('✅ Stock updated: '+qty+' units');
+    this._manageProducts();
   },
   _delProduct(id){
     const isDefault=C.prods.find(p=>p.id===id);
