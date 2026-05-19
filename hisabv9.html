@@ -1635,9 +1635,11 @@ const Entry = {
         ${e.phone?`<button class="btn ghost mb8" style="background:#f0fdf4;color:#16a34a;" onclick="Entry._sendWA('${e.id}')">💬 WhatsApp Receipt</button>`:''}
         ${(()=>{
           if(Auth.isOwner()) return `<button class="btn ghost mb8" style="background:#eff6ff;color:#2563eb;" onclick="Entry._edit('${e.id}')">✏️ Edit Entry</button><button class="btn red" onclick="Entry._del('${e.id}')">🗑️ Delete Entry</button>`;
+          const winMs=Entry._cancelWindow();
           const age=Date.now()-new Date(e.at).getTime();
-          const secsLeft=Math.max(0,Math.ceil((2*60*1000-age)/1000));
-          if(e.who===Auth.user()?.name&&age<2*60*1000) return `<button class="btn ghost mb8" style="background:#fef2f2;color:#dc2626;" onclick="Entry._del('${e.id}')">🗑️ Delete (${secsLeft}s left)</button>`;
+          const secsLeft=Math.max(0,Math.ceil((winMs-age)/1000));
+          const minLeft=secsLeft>60?Math.ceil(secsLeft/60)+'m':secsLeft+'s';
+          if(e.who===Auth.user()?.name&&age<winMs) return `<button class="btn ghost mb8" style="background:#fef2f2;color:#dc2626;" onclick="Entry._del('${e.id}')">🗑️ Delete (${minLeft} left)</button>`;
           return '';
         })()}
       </div>
@@ -1657,18 +1659,45 @@ const Entry = {
     return 'Receipt from Rohit Computer:\nService: '+e.svc+'\nAmount: '+F.rs(e.amt)+'\nPayment: '+pm.name+'\nDate: '+F.date(e.at)+'\n\nThank you! 🙏';
   },
 
+  _cancelWindow(){return(parseInt(DB.g('cancel_window')||30,10))*60*1000},
   _del(id){
     const e=DB.l('entries').find(x=>x.id===id);if(!e)return;
     if(!Auth.isOwner()){
+      const winMs=this._cancelWindow();
       const age=Date.now()-new Date(e.at).getTime();
-      if(e.who!==Auth.user()?.name||age>2*60*1000)return Toast.show('⚠️ Delete allowed only within 2 minutes');
-      if(!confirm('Entry hatao?'))return;
-      DB.upd('entries',id,{cancelled:true,cancelledBy:Auth.user().name,cancelledAt:new Date().toISOString()});
-      Modal.close();Toast.show('✅ Entry hatai gai');refresh();
+      if(e.who!==Auth.user()?.name||age>winMs){
+        const winMin=Math.round(winMs/60000);
+        return Toast.show(`⚠️ Delete allowed only within ${winMin} minutes`);
+      }
+      // Show reason picker before cancelling
+      this._delReason(id);
       return;
     }
     if(!confirm('Delete this entry?'))return;
     DB.del('entries',id);Modal.close();Toast.show('✅ Deleted');refresh();
+  },
+  _delReason(id){
+    const reasons=['Wrong amount','Wrong service','Customer changed mind','Other'];
+    Modal.open(`
+      <div class="mhead">
+        <div><div class="mt">🗑️ Cancel Entry</div><div class="ms">Reason batao</div></div>
+        <button class="mclose" onclick="Modal.close()" aria-label="Close">✕</button>
+      </div>
+      <div class="mbody">
+        <p style="font-size:13px;color:var(--text-2);margin-bottom:12px;">Yeh entry kyun cancel kar rahe ho?</p>
+        <div style="display:flex;flex-direction:column;gap:8px;">
+          ${reasons.map(r=>`<button onclick="Entry._confirmDel('${id}','${r}')"
+            style="background:var(--bg);border:1.5px solid var(--border);border-radius:10px;padding:11px 14px;text-align:left;font-size:13px;font-weight:600;color:var(--text);cursor:pointer;">${r}</button>`).join('')}
+        </div>
+      </div>
+      <div class="mfoot">
+        <button class="btn ghost" onclick="Modal.close()">Back</button>
+      </div>
+    `);
+  },
+  _confirmDel(id,reason){
+    DB.upd('entries',id,{cancelled:true,cancelledBy:Auth.user().name,cancelledAt:new Date().toISOString(),cancelledReason:reason});
+    Modal.close();Toast.show('✅ Entry cancelled: '+reason);refresh();
   },
 
   _edit(id){
@@ -2343,24 +2372,33 @@ const Expense = {
 
 /* ── UDHAR ── */
 const Udhar = {
+  _showArchived:false,
   render(){
-    const accts=DB.l('udhar').map(a=>({...a,pending:Math.max(0,(a.given||0)-(a.paid||0))})).sort((a,b)=>b.pending-a.pending);
-    const total=accts.reduce((s,a)=>s+a.pending,0);
+    const all=DB.l('udhar').map(a=>({...a,pending:Math.max(0,(a.given||0)-(a.paid||0))}));
+    const archived=all.filter(a=>a.archived);
+    const active=all.filter(a=>!a.archived).sort((a,b)=>b.pending-a.pending);
+    const shown=this._showArchived?archived:active;
+    const total=active.reduce((s,a)=>s+a.pending,0);
     document.getElementById('main').innerHTML=`
       <div class="hero" style="background:linear-gradient(135deg,#dc2626,#ea580c);">
         <div class="hero-greet">📋 Total Pending</div>
         <div class="hero-amt">${F.rs(total)}</div>
-        <div class="hero-lbl">${accts.filter(a=>a.pending>0).length} customers</div>
+        <div class="hero-lbl">${active.filter(a=>a.pending>0).length} customers</div>
       </div>
       <div class="section">
-        <p class="stitle">All Accounts</p>
-        ${accts.length===0?`<div class="empty"><div class="ei">✅</div><div class="et">All Clear!</div><div class="es">No pending udhar</div></div>`:
-          accts.map(a=>`
-            <div class="card mb8" style="cursor:pointer;" onclick="Udhar.detail('${a.phone}')">
+        <p class="stitle">${this._showArchived?'📦 Archived Accounts':'All Accounts'}
+          <span class="slink" onclick="Udhar._showArchived=!Udhar._showArchived;Udhar.render()">
+            ${this._showArchived?'← Active ('+active.length+')':'📦 Archived ('+archived.length+')'}
+          </span>
+        </p>
+        ${shown.length===0
+          ?`<div class="empty"><div class="ei">${this._showArchived?'📦':'✅'}</div><div class="et">${this._showArchived?'No archived accounts':'All Clear!'}</div><div class="es">${this._showArchived?'':'No pending udhar'}</div></div>`
+          :shown.map(a=>`
+            <div class="card mb8" style="cursor:pointer;${a.archived?'opacity:.7;':''}${a.pending===0&&!a.archived?'border-color:#86efac;':''}" onclick="Udhar.detail('${a.phone}')">
               <div class="spread">
                 <div>
-                  <div style="font-weight:700;font-size:14px;">${a.name||'Unknown'}</div>
-                  <div style="font-size:11px;color:#94a3b8;margin-top:2px;">📞 ${a.phone}</div>
+                  <div style="font-weight:700;font-size:14px;">${a.archived?'📦 ':''} ${a.name||'Unknown'}</div>
+                  <div style="font-size:11px;color:#94a3b8;margin-top:2px;">📞 ${a.phone}${a.archived?' · Archived':''}</div>
                 </div>
                 <div style="text-align:right;">
                   <div style="font-weight:800;font-size:18px;color:${a.pending>0?'#dc2626':'#16a34a'};">${F.rs(a.pending)}</div>
@@ -2420,8 +2458,27 @@ const Udhar = {
           <button class="btn ghost sm" onclick="window.open('tel:+91${a.phone}','_self')">📞 Call</button>
           <button class="btn ghost sm" style="background:#f0fdf4;color:#16a34a;" onclick="Udhar._wa('${a.phone.replace(/'/g,'&#39;')}')">💬 WA</button>
         </div>
+        ${pending===0&&!a.archived?`<button class="btn ghost" style="margin-top:10px;background:#f8fafc;color:var(--text-3);font-size:12px;" onclick="Udhar.archive('${a.phone}')">📦 Archive Account (fully paid)</button>`:''}
+        ${a.archived?`<div style="margin-top:10px;padding:8px 10px;background:#f8fafc;border-radius:8px;font-size:11px;color:var(--text-3);text-align:center;">📦 Archived ${a.archivedAt?'on '+F.date(a.archivedAt):''} · <button onclick="Udhar.unarchive('${a.phone}')" style="background:none;border:none;color:var(--blue);cursor:pointer;font-size:11px;font-weight:600;">Restore</button></div>`:''}
       </div>
     `);
+  },
+  archive(phone){
+    if(!confirm('Account archive karo? Main list se hatega.'))return;
+    const accts=DB.l('udhar');
+    const a=accts.find(x=>x.phone===phone);
+    if(!a)return;
+    a.archived=true;a.archivedAt=new Date().toISOString();
+    DB.s('udhar',accts);
+    Toast.show('📦 Account archived');Modal.close();Udhar.render();
+  },
+  unarchive(phone){
+    const accts=DB.l('udhar');
+    const a=accts.find(x=>x.phone===phone);
+    if(!a)return;
+    a.archived=false;delete a.archivedAt;
+    DB.s('udhar',accts);
+    Toast.show('✅ Account restored');Modal.close();Udhar.render();
   },
 
   _wa(phone){
