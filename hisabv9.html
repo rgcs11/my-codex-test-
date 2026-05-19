@@ -2695,14 +2695,17 @@ const Money = {
         ${boxes.map(b=>`
           <div class="card mb8">
             <p style="font-weight:700;font-size:13px;margin-bottom:8px;">${b.icon} ${b.name}</p>
-            <div style="display:grid;grid-template-columns:repeat(3,1fr);gap:6px;font-size:10px;color:#64748b;margin-bottom:8px;padding-bottom:8px;border-bottom:1px solid #f1f5f9;">
+            <div style="display:grid;grid-template-columns:repeat(3,1fr);gap:6px;font-size:10px;color:#64748b;margin-bottom:8px;padding-bottom:8px;border-bottom:1px solid var(--border);">
               <span>Open<br><b>${F.short(b.op)}</b></span>
               <span>In<br><b style="color:#16a34a;">${F.short(b.inf)}</b></span>
               <span>Expected<br><b style="color:#1d4ed8;">${F.rs(b.exp)}</b></span>
             </div>
             <input type="number" class="inp" id="cl_${b.id}" inputmode="decimal" value="${b.act!==null?b.act:''}" placeholder="Actual amount..."
               oninput="Money._diff('${b.id}',this.value,${b.exp})" aria-label="${b.name} actual amount">
-            <p id="dif_${b.id}" style="font-size:11px;font-weight:700;height:16px;margin-top:6px;"></p>
+            <div style="display:flex;align-items:center;justify-content:space-between;margin-top:6px;min-height:18px;">
+              <p id="dif_${b.id}" style="font-size:11px;font-weight:700;"></p>
+              <button id="drill_${b.id}" onclick="Money.drillDown('${b.id}')" style="display:none;font-size:10px;color:var(--blue);background:none;border:none;cursor:pointer;font-weight:600;white-space:nowrap;">🔍 Check entries</button>
+            </div>
           </div>`).join('')}
       </div>
       <div class="mfoot">
@@ -2713,35 +2716,103 @@ const Money = {
   },
   _diff(id,val,exp){
     const el=document.getElementById('dif_'+id);if(!el)return;
-    if(!val){el.textContent='';return}
-    const a=parseFloat(val);if(isNaN(a)){el.textContent='';return}
+    const drill=document.getElementById('drill_'+id);
+    if(!val){el.textContent='';if(drill)drill.style.display='none';return}
+    const a=parseFloat(val);if(isNaN(a)){el.textContent='';if(drill)drill.style.display='none';return}
     const d=a-exp;
-    if(d===0){el.textContent='✅ Perfect!';el.style.color='#16a34a'}
-    else if(d>0){el.textContent='🔺 +'+F.rs(d)+' extra';el.style.color='#ea580c'}
-    else{el.textContent='🔻 '+F.rs(Math.abs(d))+' short';el.style.color='#dc2626'}
+    if(d===0){el.textContent='✅ Perfect!';el.style.color='#16a34a';if(drill)drill.style.display='none'}
+    else if(d>0){el.textContent='🔺 +'+F.rs(d)+' extra';el.style.color='#ea580c';if(drill)drill.style.display='inline'}
+    else{el.textContent='🔻 '+F.rs(Math.abs(d))+' short';el.style.color='#dc2626';if(drill)drill.style.display='inline'}
+  },
+  drillDown(boxId){
+    const today=DB.today();
+    const box=C.boxes.find(b=>b.id===boxId)||{name:boxId,icon:'💰'};
+    const closing=this._closing();
+    const actual=closing[boxId]!==undefined?closing[boxId]:parseFloat(document.getElementById('cl_'+boxId)?.value||'NaN');
+    const boxes=this.boxes();
+    const b=boxes.find(x=>x.id===boxId)||{exp:0,op:0,inf:0};
+    // All non-cancelled entries for today matching this payment mode
+    const pmMap={cash:'cash',online:'online',bank:'online',aeps:'cash',csc:'online',pocket:'cash'};
+    const pm=pmMap[boxId]||boxId;
+    const es=DB.l('entries').filter(e=>e.day===today&&!e.cancelled&&e.type!=='expense'&&e.pm===pm)
+      .sort((a,c)=>c.amt-a.amt);
+    const entryTotal=es.reduce((s,e)=>s+e.amt,0);
+    Modal.open(`
+      <div class="mhead">
+        <div><div class="mt">🔍 ${box.icon} ${box.name} Drill-Down</div><div class="ms">Mismatch ka karan dhundo</div></div>
+        <button class="mclose" onclick="Modal.close()" aria-label="Close">✕</button>
+      </div>
+      <div class="mbody">
+        <div style="display:grid;grid-template-columns:repeat(3,1fr);gap:8px;margin-bottom:14px;">
+          <div style="text-align:center;padding:10px 6px;background:#eff6ff;border-radius:10px;border:1.5px solid #bfdbfe;">
+            <div style="font-size:15px;font-weight:900;color:#1d4ed8;">${F.rs(b.exp)}</div>
+            <div style="font-size:9px;color:#1e40af;margin-top:2px;">Expected</div>
+          </div>
+          <div style="text-align:center;padding:10px 6px;background:${isNaN(actual)?'#f8fafc':'#fef2f2'};border-radius:10px;border:1.5px solid ${isNaN(actual)?'var(--border)':'#fca5a5'};">
+            <div style="font-size:15px;font-weight:900;color:${isNaN(actual)?'var(--text-3)':'#dc2626'};">${isNaN(actual)?'—':F.rs(actual)}</div>
+            <div style="font-size:9px;color:${isNaN(actual)?'var(--text-3)':'#b91c1c'};margin-top:2px;">Actual</div>
+          </div>
+          <div style="text-align:center;padding:10px 6px;background:#f0fdf4;border-radius:10px;border:1.5px solid #86efac;">
+            <div style="font-size:15px;font-weight:900;color:#16a34a;">${F.rs(entryTotal)}</div>
+            <div style="font-size:9px;color:#15803d;margin-top:2px;">Entry Sum</div>
+          </div>
+        </div>
+        ${entryTotal!==b.exp?`<div style="padding:8px 10px;background:#fef9c3;border-radius:8px;border:1px solid #fde047;font-size:11px;color:#854d0e;margin-bottom:10px;">⚠️ Entry sum (${F.rs(entryTotal)}) ≠ Expected (${F.rs(b.exp)}) — gap: ${F.rs(b.exp-entryTotal)}. Ho sakta hai opening ya untracked transactions ka fark ho.</div>`:''}
+        <p style="font-size:10px;font-weight:700;color:var(--text-3);text-transform:uppercase;letter-spacing:.06em;margin-bottom:8px;">${pm.toUpperCase()} Entries Today (${es.length}) — High to Low</p>
+        ${!es.length?`<div style="text-align:center;padding:20px;color:var(--text-3);">Koi ${pm} entry nahi aaj</div>`
+          :es.map((e,i)=>`<div style="display:flex;justify-content:space-between;align-items:center;padding:7px 0;border-bottom:1px solid var(--border);" onclick="Entry.detail('${e.id}')">
+            <div style="flex:1;min-width:0;">
+              <div style="font-size:12px;font-weight:600;">${e.svc}</div>
+              <div style="font-size:10px;color:var(--text-3);">${e.cust?'👤 '+e.cust+' · ':''}${F.time(e.at)} · ${e.who}</div>
+            </div>
+            <div style="font-weight:700;font-size:13px;color:#16a34a;white-space:nowrap;margin-left:8px;">${F.rs(e.amt)}</div>
+          </div>`).join('')}
+      </div>
+      <div class="mfoot">
+        <button class="btn ghost" onclick="Money.showClosing()">◂ Back to Closing</button>
+      </div>
+    `);
   },
   _saveCl(){
-    const d={};let mm=0;
+    const d={};let mm=0;const mismatches=[];
     C.boxes.forEach(b=>{
       const v=parseFloat(document.getElementById('cl_'+b.id)?.value);
       if(!isNaN(v)&&v>=0){
         d[b.id]=v;
         const box=this.boxes().find(x=>x.id===b.id);
-        if(box&&Math.abs(v-box.exp)>0.01)mm++;
+        if(box&&Math.abs(v-box.exp)>0.01){mm++;mismatches.push({name:b.name,diff:v-box.exp,id:b.id})}
       }
     });
     if(!Object.keys(d).length)return Toast.show('⚠️ Kuch to daalo');
     DB.s('mbc_'+DB.today(),d);
-    // Show cancelled entries summary before closing
     const today=DB.today();
     const cancelled=DB.l('entries').filter(e=>e.day===today&&e.cancelled);
-    if(cancelled.length){
-      Toast.show(`⚠️ ${mm} mismatch · ${cancelled.length} cancelled entries!`,3500);
-    } else {
-      Toast.show(mm?`⚠️ ${mm} box mismatch!`:'✅ Sab match! Day closed 🎉');
-    }
     Modal.close();
-    refresh();
+    if(mm>0){
+      // Show mismatch summary modal instead of just a toast
+      Modal.open(`
+        <div class="mhead">
+          <div><div class="mt">⚠️ ${mm} Box Mismatch</div><div class="ms">Day closed with differences</div></div>
+          <button class="mclose" onclick="Modal.close()" aria-label="Close">✕</button>
+        </div>
+        <div class="mbody">
+          ${mismatches.map(m=>`<div class="card mb8" style="border-color:#fca5a5;">
+            <div class="spread">
+              <div style="font-weight:700;font-size:13px;">${m.name}</div>
+              <div style="font-weight:800;font-size:13px;color:${m.diff>0?'#ea580c':'#dc2626'};">${m.diff>0?'🔺 +':'🔻 '}${F.rs(Math.abs(m.diff))}</div>
+            </div>
+            <button onclick="Money.drillDown('${m.id}')" style="margin-top:8px;width:100%;background:#eff6ff;border:1px solid #bfdbfe;border-radius:8px;padding:6px;font-size:12px;color:#2563eb;font-weight:600;cursor:pointer;">🔍 Check ${m.name} Entries</button>
+          </div>`).join('')}
+          ${cancelled.length?`<div style="padding:8px 10px;background:#fef2f2;border-radius:8px;border:1px solid #fca5a5;font-size:11px;color:#dc2626;margin-top:8px;">⚠️ ${cancelled.length} cancelled entries bhi hain aaj — audit dekho</div>`:''}
+        </div>
+        <div class="mfoot">
+          <button class="btn ghost" onclick="Modal.close();refresh()">Close</button>
+        </div>
+      `);
+    } else {
+      Toast.show(cancelled.length?`✅ Sab match! (${cancelled.length} cancelled entries)`:'✅ Sab match! Day closed 🎉');
+      refresh();
+    }
   },
 };
 
@@ -3259,13 +3330,37 @@ const Home = {
         </details>`;
       })()}
 
-      ${showClosingBanner?`<div class="close-banner">
-        <div>
-          <div style="font-weight:700;font-size:13px;color:#dc2626;">⚠️ Closing Baaki Hai!</div>
-          <div style="font-size:11px;color:#b91c1c;margin-top:2px;">Dukaan band karne se pehle hisab milao</div>
-        </div>
-        <button class="btn red sm" style="width:auto;padding:8px 14px;min-height:auto;font-size:12px;white-space:nowrap;" onclick="Money.showClosing()">🔒 Band Karo</button>
-      </div>`:''}
+      ${isToday&&hr>=18?(()=>{
+        const eod=EOD.get(today);
+        const udharOverdue=DB.l('udhar').some(a=>(a.given||0)>(a.paid||0));
+        const attToday=DB.g('at_'+today)||{};
+        const accts=DB.l('staff_accounts');
+        const staffNames=accts.length?accts.map(a=>a.name):[DB.g('staff_name')||'Staff'];
+        const anyUnpunchedOut=staffNames.some(n=>attToday[n]?.punchIn&&!attToday[n]?.punchOut);
+        const items=[
+          {id:'cash',label:'Cash count karo',icon:'💵',auto:false},
+          {id:'udhar',label:'Udhar follow-up check karo'+(udharOverdue?' ⚠️':''),icon:'📋',auto:false},
+          {id:'attendance',label:'Staff punch-out karo'+(anyUnpunchedOut?' ⚠️':''),icon:'👥',auto:false},
+          {id:'closing',label:'Daily closing karo',icon:'🔒',auto:true,done:closingDone,action:"Money.showClosing()"},
+        ];
+        const doneCnt=items.filter(it=>it.auto?it.done:!!eod[it.id]).length;
+        const allDone=doneCnt===items.length;
+        return `<div class="close-banner" style="${allDone?'background:linear-gradient(135deg,#f0fdf4,#dcfce7);border-color:#86efac;':''}">
+          <div style="flex:1;">
+            <div style="font-weight:700;font-size:13px;color:${allDone?'#15803d':'#dc2626'};">${allDone?'✅ Day End Complete!':'📋 Day End Checklist ('+doneCnt+'/'+items.length+')'}</div>
+            <div style="margin-top:6px;display:flex;flex-direction:column;gap:4px;">
+              ${items.map(it=>{
+                const done=it.auto?it.done:!!eod[it.id];
+                return `<div style="display:flex;align-items:center;gap:7px;cursor:pointer;" ${it.auto?`onclick="${it.action}"`:(`onclick="EOD.toggle('${it.id}')"`)} >
+                  <span style="font-size:14px;">${done?'✅':'☐'}</span>
+                  <span style="font-size:12px;font-weight:600;color:${done?'#64748b':'var(--text)'};text-decoration:${done?'line-through':'none'};">${it.icon} ${it.label}</span>
+                </div>`;
+              }).join('')}
+            </div>
+          </div>
+          ${!closingDone?`<button class="btn red sm" style="width:auto;padding:8px 12px;min-height:auto;font-size:12px;white-space:nowrap;flex-shrink:0;" onclick="Money.showClosing()">🔒 Closing</button>`:''}
+        </div>`;
+      })():''}
 
       ${cancelledEs.length>0&&isToday?`<div style="padding:8px 12px;background:#fef2f2;border-radius:var(--r-md);border:1.5px solid #fca5a5;margin-bottom:12px;font-size:12px;color:#dc2626;font-weight:700;cursor:pointer;" onclick="Entry._cancelledAudit()">⚠️ ${cancelledEs.length} entry staff ne cancel ki — <u>details dekho</u></div>`:''}
 
@@ -3518,6 +3613,18 @@ const Router = {
         <button class="snav-logout" onclick="App._logout()">🚪 Logout</button>
       </div>
     `;
+  },
+};
+
+/* ── EOD CHECKLIST ────────────────────────────────────
+   Guided end-of-day checklist shown after 6 pm.
+   Key: rc8_eod_YYYY-MM-DD  {cash,udhar,attendance,closing}
+   ─────────────────────────────────────────────────────── */
+const EOD = {
+  _k(d){return'eod_'+(d||DB.today())},
+  get(d){return DB.g(this._k(d))||{}},
+  toggle(item){
+    const d=this.get();d[item]=!d[item];DB.s(this._k(),d);refresh();
   },
 };
 
