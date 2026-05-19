@@ -1615,7 +1615,11 @@ const Entry = {
           ${e.cust?`<div class="spread mb8"><span style="color:#64748b;font-size:12px;">Customer</span><span style="font-size:13px;font-weight:600;">${e.cust}</span></div>`:''}
           ${e.phone?`<div class="spread mb8"><span style="color:#64748b;font-size:12px;">Mobile</span><span style="font-size:13px;font-weight:600;">${e.phone}</span></div>`:''}
           ${e.notes?`<div style="margin-top:10px;padding:9px 11px;background:#fef9c3;border-radius:10px;font-size:12px;color:#713f12;">📝 ${e.notes}</div>`:''}
-          <div style="margin-top:10px;font-size:10px;color:#94a3b8;">By: ${e.who||'—'} (${e.role||''})${e.editedAt?' · ✏️ edited':''}</div>
+          <div style="margin-top:10px;border-top:1px solid var(--border);padding-top:8px;display:flex;flex-direction:column;gap:3px;">
+            <div style="font-size:10px;color:#94a3b8;">👤 Logged by: <b>${e.who||'—'}</b> (${e.role||''})</div>
+            ${e.editedAt?`<div style="font-size:10px;color:#f59e0b;">✏️ Edited by <b>${e.editedBy||'?'}</b> · ${F.date(e.editedAt)} ${F.time(e.editedAt)}</div>`:''}
+            ${e.cancelled?`<div style="font-size:10px;color:#dc2626;">🚫 Cancelled by <b>${e.cancelledBy||'?'}</b>${e.cancelledAt?' · '+F.date(e.cancelledAt)+' '+F.time(e.cancelledAt):''}</div>`:''}
+          </div>
         </div>
         ${e.phone?`<button class="btn ghost mb8" style="background:#f0fdf4;color:#16a34a;" onclick="Entry._sendWA('${e.id}')">💬 WhatsApp Receipt</button>`:''}
         ${(()=>{
@@ -1728,6 +1732,33 @@ const Entry = {
     Toast.show('✅ Entry updated!');
     Modal.close();
     refresh();
+  },
+
+  _cancelledAudit(){
+    const today=DB.today();
+    const cancelled=DB.l('entries').filter(e=>e.day===today&&e.cancelled);
+    if(!cancelled.length)return Toast.show('Koi cancelled entry nahi');
+    Modal.open(`
+      <div class="mhead">
+        <div><div class="mt">🚫 Cancelled Entries</div><div class="ms">Aaj ki ${cancelled.length} cancelled entries</div></div>
+        <button class="mclose" onclick="Modal.close()" aria-label="Close">✕</button>
+      </div>
+      <div class="mbody">
+        ${cancelled.map(e=>`<div class="card mb8" style="opacity:.85;">
+          <div class="spread mb4">
+            <div style="font-weight:700;font-size:13px;text-decoration:line-through;color:var(--text-2);">${e.svc}</div>
+            <div style="font-size:13px;font-weight:800;color:#dc2626;">−${F.rs(e.amt)}</div>
+          </div>
+          <div style="font-size:10px;color:#94a3b8;display:flex;flex-direction:column;gap:2px;">
+            <div>👤 Logged by: <b>${e.who||'—'}</b> · ${F.time(e.at)}</div>
+            <div style="color:#dc2626;">🚫 Cancelled by: <b>${e.cancelledBy||'?'}</b> · ${e.cancelledAt?F.time(e.cancelledAt):'—'}</div>
+          </div>
+        </div>`).join('')}
+      </div>
+      <div class="mfoot">
+        <button class="btn ghost" onclick="Modal.close()">Close</button>
+      </div>
+    `);
   },
 };
 
@@ -1985,6 +2016,113 @@ const MoneyTransfer = {
     if(navigator.vibrate)navigator.vibrate(10);
     Toast.show('✅ Transfer saved! Kamai: '+F.rs(comm));
     setTimeout(()=>{Modal.close();refresh()},400);
+  },
+};
+
+/* ── PENDING WORK QUEUE ───────────────────────────────
+   Tracks open tasks: form submissions, deliverables,
+   follow-ups. Owner sees all; staff sees their own.
+   Key: rc8_pending_tasks  [{id,title,cust,phone,
+        dueDate,status,createdAt,who,doneAt}]
+   ─────────────────────────────────────────────────────── */
+const Pending = {
+  show(){
+    Modal.open(`
+      <div class="mhead">
+        <div><div class="mt">⏳ Add Pending Task</div><div class="ms">Follow-up ya kaam note karo</div></div>
+        <button class="mclose" onclick="Modal.close()" aria-label="Close">✕</button>
+      </div>
+      <div class="mbody">
+        <div class="fg">
+          <p class="flabel">Kaam ka naam <span style="color:#dc2626;font-size:10px;">*</span></p>
+          <input type="text" class="inp" id="ptTitle" placeholder="e.g. Aadhar correction, Scholarship form" maxlength="60" autocomplete="off">
+        </div>
+        <div class="fg">
+          <p class="flabel">Customer <span style="text-transform:none;letter-spacing:0;font-weight:400;font-size:10px;">(optional)</span></p>
+          <input type="text" class="inp" id="ptCust" placeholder="👤 Customer name" autocomplete="off" style="margin-bottom:6px;">
+          <input type="tel" class="inp" id="ptPhone" inputmode="numeric" maxlength="10" placeholder="📱 Phone number">
+        </div>
+        <div class="fg">
+          <p class="flabel">Due Date <span style="text-transform:none;letter-spacing:0;font-weight:400;font-size:10px;">(optional)</span></p>
+          <input type="date" class="inp" id="ptDue" value="${DB.today()}">
+        </div>
+      </div>
+      <div class="mfoot">
+        <button class="btn blue" onclick="Pending.save()">⏳ Add Task</button>
+        <button class="btn ghost" onclick="Modal.close()">Cancel</button>
+      </div>
+    `);
+    setTimeout(()=>document.getElementById('ptTitle')?.focus(),200);
+  },
+  save(){
+    const title=document.getElementById('ptTitle')?.value?.trim();
+    if(!title)return Toast.show('⚠️ Kaam ka naam daalo');
+    const cust=document.getElementById('ptCust')?.value?.trim()||'';
+    const phone=document.getElementById('ptPhone')?.value?.trim()||'';
+    const dueDate=document.getElementById('ptDue')?.value||'';
+    const tasks=DB.l('pending_tasks');
+    tasks.push({id:'pt'+Date.now(),title,cust,phone,dueDate,status:'open',createdAt:new Date().toISOString(),who:Auth.user().name,doneAt:null});
+    DB.s('pending_tasks',tasks);
+    Toast.show('✅ Task added: '+title);
+    Modal.close();refresh();
+  },
+  markDone(id){
+    const tasks=DB.l('pending_tasks');
+    const t=tasks.find(x=>x.id===id);
+    if(!t)return;
+    t.status='done';t.doneAt=new Date().toISOString();
+    DB.s('pending_tasks',tasks);
+    Toast.show('✅ Task done!');refresh();
+  },
+  del(id){
+    if(!confirm('Yeh task delete karein?'))return;
+    DB.s('pending_tasks',DB.l('pending_tasks').filter(x=>x.id!==id));
+    Toast.show('🗑️ Task removed');refresh();
+  },
+  manage(){
+    const isOwner=Auth.isOwner();
+    const myName=Auth.user().name;
+    const all=DB.l('pending_tasks');
+    const tasks=isOwner?all:all.filter(t=>t.who===myName);
+    const open=tasks.filter(t=>t.status==='open');
+    const done=tasks.filter(t=>t.status==='done').slice(-5).reverse();
+    const today=DB.today();
+    Modal.open(`
+      <div class="mhead">
+        <div><div class="mt">⏳ Pending Work</div><div class="ms">${open.length} open · ${done.length} recently done</div></div>
+        <button class="mclose" onclick="Modal.close()" aria-label="Close">✕</button>
+      </div>
+      <div class="mbody">
+        ${!open.length?`<div style="text-align:center;padding:20px;color:var(--text-3);">🎉 Koi pending kaam nahi!</div>`
+          :open.map(t=>{
+            const overdue=t.dueDate&&t.dueDate<today;
+            return `<div class="card mb8" style="${overdue?'border-color:#fca5a5;background:#fef2f2;':''}">
+              <div class="spread">
+                <div style="flex:1;min-width:0;">
+                  <div style="font-weight:700;font-size:13px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;">${overdue?'⚠️ ':''} ${t.title}</div>
+                  <div style="font-size:11px;color:var(--text-3);margin-top:2px;">${t.cust?'👤 '+t.cust+' · ':''}${t.dueDate?'📅 '+t.dueDate:''} · 👤 ${t.who}</div>
+                </div>
+                <div style="display:flex;gap:4px;flex-shrink:0;margin-left:8px;">
+                  <button class="btn green sm" style="width:auto;padding:5px 10px;min-height:auto;font-size:11px;" onclick="Pending.markDone('${t.id}');Pending.manage()">✅</button>
+                  <button class="btn red sm" style="width:auto;padding:5px 10px;min-height:auto;font-size:11px;" onclick="Pending.del('${t.id}');Pending.manage()">🗑️</button>
+                </div>
+              </div>
+            </div>`;
+          }).join('')}
+        ${done.length?`<p style="font-size:10px;font-weight:700;color:var(--text-3);text-transform:uppercase;letter-spacing:.06em;margin:12px 0 6px;">✅ Recently Done</p>
+          ${done.map(t=>`<div style="display:flex;align-items:center;gap:8px;padding:6px 0;border-bottom:1px solid var(--border);">
+            <span style="font-size:14px;">✅</span>
+            <div style="flex:1;min-width:0;">
+              <div style="font-size:12px;font-weight:600;text-decoration:line-through;color:var(--text-2);">${t.title}</div>
+              <div style="font-size:10px;color:var(--text-3);">${t.cust?'👤 '+t.cust+' · ':''}Done: ${t.doneAt?F.date(t.doneAt):'-'}</div>
+            </div>
+          </div>`).join('')}`:''}`+`
+      </div>
+      <div class="mfoot">
+        <button class="btn blue" onclick="Modal.close();Pending.show()">➕ Add Task</button>
+        <button class="btn ghost" onclick="Modal.close()">Close</button>
+      </div>
+    `);
   },
 };
 
@@ -2976,6 +3114,33 @@ const Home = {
       ${days7.every(d=>d.rev===0)?`<div style="text-align:center;font-size:11px;color:var(--text-3);margin:-8px 0 10px;opacity:.8;">Pichle 7 din ka koi record nahi</div>`:``}
       `:''}
 
+      ${(()=>{
+        const openTasks=DB.l('pending_tasks').filter(t=>t.status==='open');
+        if(!openTasks.length)return'';
+        const today2=DB.today();
+        const overdueCnt=openTasks.filter(t=>t.dueDate&&t.dueDate<today2).length;
+        return `<details class="svc-breakdown" open>
+          <summary class="stitle" style="cursor:pointer;list-style:none;display:flex;align-items:center;justify-content:space-between;">
+            <span>⏳ Pending Work${overdueCnt>0?` <span style="background:#dc2626;color:#fff;border-radius:10px;font-size:9px;padding:1px 6px;font-weight:700;">${overdueCnt} overdue</span>`:''}</span>
+            <span style="display:flex;align-items:center;gap:8px;"><span style="font-size:11px;font-weight:400;color:var(--text-3);">${openTasks.length} open</span><button class="btn blue sm" style="width:auto;padding:4px 10px;min-height:auto;font-size:11px;" onclick="event.preventDefault();Pending.show()">➕ Add</button></span>
+          </summary>
+          <div style="margin-top:8px;display:flex;flex-direction:column;gap:5px;">
+            ${openTasks.slice(0,5).map(t=>{
+              const overdue=t.dueDate&&t.dueDate<today2;
+              return `<div style="display:grid;grid-template-columns:1fr auto;align-items:center;gap:8px;padding:6px 8px;border-radius:8px;background:${overdue?'#fef2f2':'var(--bg)'};border:1px solid ${overdue?'#fca5a5':'var(--border)'};">
+                <div>
+                  <div style="font-size:12px;font-weight:600;color:var(--text);">${overdue?'⚠️ ':''}${t.title}</div>
+                  <div style="font-size:10px;color:var(--text-3);">${t.cust?'👤 '+t.cust+' · ':''}${t.dueDate?'📅 '+t.dueDate:''}</div>
+                </div>
+                <button onclick="Pending.markDone('${t.id}')" style="background:#f0fdf4;border:1px solid #86efac;border-radius:6px;padding:4px 8px;font-size:11px;color:#16a34a;font-weight:700;white-space:nowrap;cursor:pointer;">✅ Done</button>
+              </div>`;
+            }).join('')}
+            ${openTasks.length>5?`<button onclick="Pending.manage()" style="font-size:11px;color:var(--blue);background:none;border:none;cursor:pointer;text-align:center;padding:4px;">+${openTasks.length-5} aur dekho →</button>`:
+              `<button onclick="Pending.manage()" style="font-size:11px;color:var(--blue);background:none;border:none;cursor:pointer;text-align:center;padding:4px;">Sab dekho / manage karo →</button>`}
+          </div>
+        </details>`;
+      })()}
+
       ${showClosingBanner?`<div class="close-banner">
         <div>
           <div style="font-weight:700;font-size:13px;color:#dc2626;">⚠️ Closing Baaki Hai!</div>
@@ -2984,7 +3149,7 @@ const Home = {
         <button class="btn red sm" style="width:auto;padding:8px 14px;min-height:auto;font-size:12px;white-space:nowrap;" onclick="Money.showClosing()">🔒 Band Karo</button>
       </div>`:''}
 
-      ${cancelledEs.length>0&&isToday?`<div style="padding:8px 12px;background:#fef2f2;border-radius:var(--r-md);border:1.5px solid #fca5a5;margin-bottom:12px;font-size:12px;color:#dc2626;font-weight:700;">⚠️ ${cancelledEs.length} entry staff ne cancel ki — closing mein check karo</div>`:''}
+      ${cancelledEs.length>0&&isToday?`<div style="padding:8px 12px;background:#fef2f2;border-radius:var(--r-md);border:1.5px solid #fca5a5;margin-bottom:12px;font-size:12px;color:#dc2626;font-weight:700;cursor:pointer;" onclick="Entry._cancelledAudit()">⚠️ ${cancelledEs.length} entry staff ne cancel ki — <u>details dekho</u></div>`:''}
 
       ${isToday?`<div class="section">
         <p class="stitle">⚡ Quick Actions</p>
@@ -3121,6 +3286,23 @@ const Home = {
       </div>
 
       ${attendHtml}
+
+      ${(()=>{
+        const myPending=DB.l('pending_tasks').filter(t=>t.status==='open'&&t.who===myName);
+        if(!myPending.length)return'';
+        const today3=DB.today();
+        return `<div style="background:#fefce8;border:1.5px solid #fde047;border-radius:var(--r-md);padding:10px 12px;margin-bottom:12px;">
+          <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:6px;">
+            <span style="font-size:12px;font-weight:700;color:#854d0e;">⏳ Mera Pending (${myPending.length})</span>
+            <button onclick="Pending.show()" style="font-size:11px;color:var(--blue);background:none;border:none;cursor:pointer;font-weight:600;">➕ Add</button>
+          </div>
+          ${myPending.slice(0,3).map(t=>`<div style="display:flex;align-items:center;justify-content:space-between;gap:6px;padding:4px 0;border-bottom:1px solid #fde047;">
+            <div style="font-size:12px;font-weight:600;color:#713f12;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;flex:1;">${t.dueDate&&t.dueDate<today3?'⚠️ ':''}${t.title}</div>
+            <button onclick="Pending.markDone('${t.id}')" style="background:#f0fdf4;border:1px solid #86efac;border-radius:6px;padding:3px 7px;font-size:11px;color:#16a34a;font-weight:700;flex-shrink:0;cursor:pointer;">✅</button>
+          </div>`).join('')}
+          ${myPending.length>3?`<div style="font-size:10px;color:#92400e;margin-top:4px;">+${myPending.length-3} aur...</div>`:''}
+        </div>`;
+      })()}
 
       <p class="stitle" style="margin-bottom:8px;">⚡ Jaldi Entry — Ek Tap</p>
       <div class="qsgrid">
