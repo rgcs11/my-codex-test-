@@ -392,6 +392,11 @@ img{max-width:100%;height:auto}
 .plcard .pli{font-size:10px;font-weight:700;opacity:.8;margin-bottom:4px;text-transform:uppercase}
 .plcard .plv{font-size:18px;font-weight:900;line-height:1}
 
+/* ── SERVICE BREAKDOWN ── */
+.svc-breakdown{border:1.5px solid var(--border);border-radius:var(--r-md);padding:10px 12px;margin-bottom:14px;background:var(--card)}
+.svc-breakdown summary::-webkit-details-marker{display:none}
+.svc-breakdown[open] summary{margin-bottom:0}
+
 /* ── 7-DAY CHART ── */
 .wkchart{display:flex;align-items:flex-end;gap:3px;height:76px;padding:0 2px;margin-bottom:14px}
 .wkday{flex:1;display:flex;flex-direction:column;align-items:center;gap:2px}
@@ -821,6 +826,12 @@ const C = {
     {id:'spiral',name:'Spiral Binding',rate:30,cat:'Print'},
     {id:'pvc',name:'PVC Card Print',rate:80,cat:'Print'},
     {id:'online_form',name:'Online Form Fill',rate:50,cat:'Forms'},
+    {id:'ayushman',name:'Ayushman Card',rate:50,cat:'CSC'},
+    {id:'fastag',name:'FASTag',rate:100,cat:'Vehicle'},
+    {id:'insurance',name:'Insurance',rate:200,cat:'Banking'},
+    {id:'estamp',name:'eStamp',rate:30,cat:'CSC'},
+    {id:'rc_dl',name:'RC/DL Services',rate:100,cat:'Vehicle'},
+    {id:'school',name:'School Work',rate:50,cat:'Forms'},
     {id:'other',name:'Other',rate:0,cat:'Other'},
   ],
   prods: [
@@ -1769,8 +1780,9 @@ const Aeps = {
         <div class="divider"></div>
 
         <div class="fg">
-          <p class="flabel"><span class="fnum" style="background:#94a3b8;">3</span> Customer Mobile <span style="text-transform:none;letter-spacing:0;font-weight:400;font-size:10px;">(optional)</span></p>
-          <input type="tel" class="inp" id="aePhone" inputmode="numeric" maxlength="10" placeholder="📱 Mobile number" aria-label="Customer mobile number">
+          <p class="flabel"><span class="fnum" style="background:#94a3b8;">3</span> Customer Details <span style="text-transform:none;letter-spacing:0;font-weight:400;font-size:10px;">(optional)</span></p>
+          <input type="tel" class="inp" id="aePhone" inputmode="numeric" maxlength="10" placeholder="📱 Mobile number" aria-label="Customer mobile number" oninput="Aeps._lookupCust(this.value)" style="margin-bottom:6px;">
+          <input type="text" class="inp" id="aeCust" placeholder="👤 Customer name" aria-label="Customer name" style="font-size:14px;">
         </div>
 
         <div class="calc-box teal">
@@ -1788,6 +1800,11 @@ const Aeps = {
 
   _setA(v){const e=document.getElementById('aeAmt');if(e){e.value=v;this._suggest()}},
   _setC(v){const e=document.getElementById('aeComm');if(e){e.value=v;this._calc()}},
+  _lookupCust(phone){
+    if(phone.length<10)return;
+    const udhar=DB.l('udhar').find(x=>x.phone===phone);
+    if(udhar){const c=document.getElementById('aeCust');if(c&&!c.value)c.value=udhar.name;}
+  },
 
   _suggest(){
     const amt=parseFloat(document.getElementById('aeAmt')?.value)||0;
@@ -1809,6 +1826,7 @@ const Aeps = {
     const amt=parseFloat(document.getElementById('aeAmt')?.value)||0;
     const comm=parseFloat(document.getElementById('aeComm')?.value)||0;
     const phone=document.getElementById('aePhone')?.value?.trim()||'';
+    const cust=document.getElementById('aeCust')?.value?.trim()||'';
     if(!amt||amt<=0){
       const e=document.getElementById('aeAmt');
       if(e){e.style.borderColor='#fca5a5';setTimeout(()=>e.style.borderColor='',1200)}
@@ -1819,7 +1837,7 @@ const Aeps = {
       type:'aeps', aepsType:this.mode, aepsAmt:amt,
       svcId:'aeps', svc:'AEPS '+(isW?'Withdrawal':'Deposit'),
       amt:comm, pm:'cash',
-      cust:'', phone, notes:'',
+      cust, phone, notes:'',
       day:DB.today(), role:Auth.role(), who:Auth.user().name,
     });
     const btn=document.getElementById('aeSaveBtn');
@@ -2774,6 +2792,35 @@ const Home = {
         <div class="plcard expense"><div class="pli">💸 Kharcha</div><div class="plv">${F.short(expTotal)}</div></div>
         <div class="plcard profit"><div class="pli">📈 Munaafa</div><div class="plv" style="color:${net>=0?'#1d4ed8':'#dc2626'};">${F.short(net)}</div></div>
       </div>
+
+      ${(()=>{
+        // Service breakdown — top 5 services by revenue for the day
+        const svcMap={};
+        revEs.forEach(e=>{
+          const k=e.svc||e.type||'Other';
+          if(!svcMap[k])svcMap[k]={svc:k,count:0,rev:0};
+          svcMap[k].count++;svcMap[k].rev+=e.amt;
+        });
+        const top5=Object.values(svcMap).sort((a,b)=>b.rev-a.rev).slice(0,5);
+        if(top5.length===0)return'';
+        const maxSvcRev=top5[0].rev||1;
+        return `<details class="svc-breakdown" ${revEs.length>0?'open':''}>
+          <summary class="stitle" style="cursor:pointer;list-style:none;display:flex;align-items:center;justify-content:space-between;">
+            <span>📊 Aaj Ki Services</span>
+            <span style="font-size:11px;font-weight:400;color:var(--text-3);">${top5.length} type · ${F.rs(total)}</span>
+          </summary>
+          <div style="margin-top:8px;display:flex;flex-direction:column;gap:5px;">
+            ${top5.map(s=>`<div style="display:grid;grid-template-columns:1fr auto auto;align-items:center;gap:8px;">
+              <div>
+                <div style="font-size:12px;font-weight:600;color:var(--text);white-space:nowrap;overflow:hidden;text-overflow:ellipsis;">${s.svc}</div>
+                <div style="height:4px;background:var(--border);border-radius:2px;margin-top:3px;"><div style="height:4px;background:var(--blue);border-radius:2px;width:${Math.round(s.rev/maxSvcRev*100)}%;"></div></div>
+              </div>
+              <div style="font-size:11px;color:var(--text-3);white-space:nowrap;">${s.count}×</div>
+              <div style="font-size:13px;font-weight:700;color:var(--blue);white-space:nowrap;">${F.rs(s.rev)}</div>
+            </div>`).join('')}
+          </div>
+        </details>`;
+      })()}
 
       ${isToday?`
       <div class="wkchart">
