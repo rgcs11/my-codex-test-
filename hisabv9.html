@@ -797,6 +797,14 @@ body.embed .owner-2col,body.embed .staff-2col{display:block!important}
    Migrations handle schema changes safely via db_v counter.
    ───────────────────────────────────────────────────────── */
 
+/* ── SHA-256 PIN HASHING ── */
+async function sha256hex(str){
+  try{
+    const buf=await crypto.subtle.digest('SHA-256',new TextEncoder().encode(str));
+    return Array.from(new Uint8Array(buf)).map(b=>b.toString(16).padStart(2,'0')).join('');
+  }catch{return str} // fallback for non-secure contexts: return plaintext
+}
+
 /* ── CONFIG ── */
 const C = {
   get ownerPIN(){return DB.g('owner_pin')||'1234'},
@@ -881,13 +889,14 @@ const DB = {
 
 /* ── MIGRATION ── */
 const Migration = {
-  V: 4, // Increment this when schema changes — NEVER change rc8_ prefix
-  run(){
+  V: 5, // Increment this when schema changes — NEVER change rc8_ prefix
+  async run(){
     const v = DB.g('db_v')||0;
     if(v < 1) this._v1();
     if(v < 2) this._v2();
     if(v < 3) this._v3();
     if(v < 4) this._v4();
+    if(v < 5) await this._v5();
     DB.s('db_v', this.V);
   },
   _v1(){
@@ -925,6 +934,16 @@ const Migration = {
       });
       if(changed)DB.s(key,val);
     }
+  },
+  async _v5(){
+    // Hash plaintext PINs using SHA-256 (64-char hex = already hashed)
+    const oPin=DB.g('owner_pin')||'1234';
+    if(oPin.length!==64)DB.s('owner_pin',await sha256hex(oPin));
+    const sPin=DB.g('staff_pin')||'5678';
+    if(sPin.length!==64)DB.s('staff_pin',await sha256hex(sPin));
+    const accts=DB.l('staff_accounts');let ac=false;
+    for(const a of accts){if(a.pin&&a.pin.length!==64){a.pin=await sha256hex(a.pin);ac=true;}}
+    if(ac)DB.s('staff_accounts',accts);
   },
 };
 
@@ -1060,8 +1079,9 @@ const Login = {
   back(){this.pin=this.pin.slice(0,-1);this._dots()},
   clear(){this.pin='';this._dots()},
   _dots(){for(let i=0;i<4;i++){const el=document.getElementById('pd'+i);if(el)el.classList.toggle('on',i<this.pin.length)}},
-  _check(){
-    if(Auth.login(this.pin)){this.hide();App.boot();Toast.show('✅ Welcome '+Auth.user().name+'!')}
+  async _check(){
+    const hash=await sha256hex(this.pin);
+    if(Auth.login(hash)){this.hide();App.boot();Toast.show('✅ Welcome '+Auth.user().name+'!')}
     else{
       const c=document.querySelector('.lcard');
       if(c){c.classList.add('shake');setTimeout(()=>c.classList.remove('shake'),500)}
@@ -1632,6 +1652,7 @@ const Entry = {
             ${e.cancelled?`<div style="font-size:10px;color:#dc2626;">🚫 Cancelled by <b>${e.cancelledBy||'?'}</b>${e.cancelledAt?' · '+F.date(e.cancelledAt)+' '+F.time(e.cancelledAt):''}</div>`:''}
           </div>
         </div>
+        <button class="btn ghost mb8" style="background:#eff6ff;color:#2563eb;" onclick="Entry._printReceipt('${e.id}')">🖨️ Print Receipt</button>
         ${e.phone?`<button class="btn ghost mb8" style="background:#f0fdf4;color:#16a34a;" onclick="Entry._sendWA('${e.id}')">💬 WhatsApp Receipt</button>`:''}
         ${(()=>{
           if(Auth.isOwner()) return `<button class="btn ghost mb8" style="background:#eff6ff;color:#2563eb;" onclick="Entry._edit('${e.id}')">✏️ Edit Entry</button><button class="btn red" onclick="Entry._del('${e.id}')">🗑️ Delete Entry</button>`;
@@ -1772,6 +1793,47 @@ const Entry = {
     Toast.show('✅ Entry updated!');
     Modal.close();
     refresh();
+  },
+
+  _printReceipt(id){
+    const e=DB.l('entries').find(x=>x.id===id);if(!e)return;
+    const pm=C.pm.find(p=>p.id===e.pm)||{name:e.pm||''};
+    const bn=DB.g('biz_name')||'Rohit Computer';
+    const bs=DB.g('biz_sub')||'Rath, Hamirpur';
+    const isAeps=e.type==='aeps',isTransfer=e.type==='transfer';
+    const amtLabel=isAeps?'AEPS Amount':isTransfer?'Transfer Amount':'Amount';
+    const amtVal=isAeps?F.rs(e.aepsAmt||0):isTransfer?F.rs(e.transferAmt||0):F.rs(e.amt);
+    const commRow=isAeps||isTransfer?`<div class="rw"><span>Commission</span><span>${F.rs(e.amt)}</span></div>`:'';
+    const html=`<!DOCTYPE html><html><head><meta charset="UTF-8"><title>Receipt</title><style>
+      *{box-sizing:border-box;margin:0;padding:0}body{font-family:Arial,sans-serif;padding:20px;max-width:300px;margin:auto}
+      .biz{font-size:18px;font-weight:900;text-align:center;margin-bottom:2px}
+      .sub{font-size:11px;text-align:center;color:#555;margin-bottom:14px}
+      .dash{border-top:1px dashed #999;margin:10px 0}
+      .rw{display:flex;justify-content:space-between;margin-bottom:5px;font-size:12px}
+      .rw span:last-child{font-weight:700}
+      .total{font-size:20px;font-weight:900;text-align:center;border:2px solid #333;border-radius:6px;padding:8px;margin:10px 0}
+      .foot{font-size:10px;text-align:center;color:#777;margin-top:12px}
+      .prbtn{display:block;margin:14px auto 0;padding:8px 20px;cursor:pointer;font-size:14px;background:#2563eb;color:#fff;border:none;border-radius:8px}
+      @media print{.prbtn{display:none}}
+    </style></head><body>
+    <div class="biz">${bn}</div>
+    <div class="sub">${bs}</div>
+    <div class="dash"></div>
+    <div class="rw"><span>Service</span><span>${e.svc}</span></div>
+    <div class="rw"><span>Date</span><span>${e.day} ${F.time(e.at)}</span></div>
+    ${e.cust?`<div class="rw"><span>Customer</span><span>${e.cust}</span></div>`:''}
+    ${e.phone?`<div class="rw"><span>Mobile</span><span>${e.phone}</span></div>`:''}
+    <div class="rw"><span>Payment</span><span>${pm.name}</span></div>
+    <div class="dash"></div>
+    <div class="rw"><span>${amtLabel}</span><span>${amtVal}</span></div>
+    ${commRow}
+    <div class="total">${amtVal}</div>
+    <div class="foot">Thank you! 🙏 &nbsp;|&nbsp; Ref: ${e.id.slice(-6).toUpperCase()}</div>
+    <button class="prbtn" onclick="window.print()">🖨️ Print</button>
+    </body></html>`;
+    const w=window.open('','_blank','width=360,height=520');
+    if(w){w.document.write(html);w.document.close();setTimeout(()=>w.print(),350);}
+    else Toast.show('⚠️ Popup blocked — please allow popups');
   },
 
   _cancelledAudit(){
@@ -3020,25 +3082,27 @@ const Reports = {
       const d=new Date(now);d.setDate(d.getDate()-30);
       es=all.filter(e=>e.day>=d.toISOString().split('T')[0]);label='30 Days';
     }
-    const revEs=es.filter(e=>e.type!=='expense'&&!e.cancelled);
-    const expEs=es.filter(e=>e.type==='expense'&&!e.cancelled);
-    const aepsEs=es.filter(e=>e.type==='aeps'&&!e.cancelled);
-    const total=revEs.reduce((s,e)=>s+e.amt,0);
-    const expTotal=expEs.reduce((s,e)=>s+e.amt,0);
+    // Single-pass reduce over all entries
+    let total=0,expTotal=0,cash=0,online=0,udhar=0,aepsVol=0,aepsComm=0;
+    const revEs=[],expEs=[],aepsEs=[];
+    const staffMap={},svcMap={},expMap={};
+    es.filter(e=>!e.cancelled).forEach(e=>{
+      if(e.type==='expense'){
+        expEs.push(e);expTotal+=e.amt;
+        const c=(e.svc||'Other').replace('Kharcha: ','');
+        expMap[c]=(expMap[c]||0)+e.amt;
+      }else{
+        revEs.push(e);total+=e.amt;
+        if(e.pm==='cash')cash+=e.amt;
+        else if(e.pm==='online')online+=e.amt;
+        else if(e.pm==='udhar')udhar+=e.amt;
+        if(e.type==='aeps'){aepsEs.push(e);aepsVol+=(e.aepsAmt||0);aepsComm+=(e.amt||0);}
+        const k=e.who||'Unknown';if(!staffMap[k])staffMap[k]={n:0,t:0};staffMap[k].n++;staffMap[k].t+=e.amt;
+        svcMap[e.svc]=(svcMap[e.svc]||0)+1;
+      }
+    });
     const net=total-expTotal;
-    const cash=revEs.filter(e=>e.pm==='cash').reduce((s,e)=>s+e.amt,0);
-    const online=revEs.filter(e=>e.pm==='online').reduce((s,e)=>s+e.amt,0);
-    const udhar=revEs.filter(e=>e.pm==='udhar').reduce((s,e)=>s+e.amt,0);
-    const aepsVol=aepsEs.reduce((s,e)=>s+(e.aepsAmt||0),0);
-    const aepsComm=aepsEs.reduce((s,e)=>s+(e.amt||0),0);
-    const staffMap={};
-    revEs.forEach(e=>{const k=e.who||'Unknown';if(!staffMap[k])staffMap[k]={n:0,t:0};staffMap[k].n++;staffMap[k].t+=e.amt});
-    const svcMap={};
-    revEs.forEach(e=>{svcMap[e.svc]=(svcMap[e.svc]||0)+1});
     const top=Object.entries(svcMap).sort((a,b)=>b[1]-a[1]).slice(0,5);
-    // Expense breakdown by category
-    const expMap={};
-    expEs.forEach(e=>{const c=(e.svc||'Other').replace('Kharcha: ','');expMap[c]=(expMap[c]||0)+e.amt});
     const expBreak=Object.entries(expMap).sort((a,b)=>b[1]-a[1]);
     const tabBtn=(t,l)=>`<button class="rtab ${this.tab===t?'active':''}" onclick="Reports.tab='${t}';Reports._draw()">${l}</button>`;
 
@@ -3421,6 +3485,29 @@ const Home = {
 
       ${cancelledEs.length>0&&isToday?`<div style="padding:8px 12px;background:#fef2f2;border-radius:var(--r-md);border:1.5px solid #fca5a5;margin-bottom:12px;font-size:12px;color:#dc2626;font-weight:700;cursor:pointer;" onclick="Entry._cancelledAudit()">⚠️ ${cancelledEs.length} entry staff ne cancel ki — <u>details dekho</u></div>`:''}
 
+      ${isToday?(()=>{
+        // Smart alerts
+        const sevenDaysAgo=new Date(Date.now()-7*24*60*60*1000).toISOString();
+        const overdueUdhar=DB.l('udhar').filter(a=>{
+          if(a.archived)return false;
+          const pend=Math.max(0,(a.given||0)-(a.paid||0));
+          if(!pend)return false;
+          const txs=a.tx||[];
+          const lastAt=txs.length?txs[txs.length-1].at:'';
+          return !lastAt||lastAt<sevenDaysAgo;
+        });
+        const lowStockProds=C.prods.filter(p=>{const s=Stock.get(p.id);return s!==null&&s<=3;});
+        const accts2=DB.l('staff_accounts');
+        const sNames=accts2.length?accts2.map(a=>a.name):[DB.g('staff_name')||'Staff'];
+        const attT=DB.g('at_'+today)||{};
+        const unpunched=hr>=21?sNames.filter(n=>attT[n]?.punchIn&&!attT[n]?.punchOut):[];
+        const alerts=[];
+        if(overdueUdhar.length)alerts.push(`<div style="display:flex;align-items:center;gap:8px;padding:8px 10px;background:#fef2f2;border:1.5px solid #fca5a5;border-radius:10px;font-size:12px;font-weight:700;color:#dc2626;cursor:pointer;" onclick="Router.go('udhar')">📋 ${overdueUdhar.length} Udhar 7+ din se baaki — <u>check karo</u></div>`);
+        if(lowStockProds.length)alerts.push(`<div style="display:flex;align-items:center;gap:8px;padding:8px 10px;background:#fff7ed;border:1.5px solid #fed7aa;border-radius:10px;font-size:12px;font-weight:700;color:#ea580c;cursor:pointer;" onclick="App._manageProducts()">📦 Low Stock: ${lowStockProds.map(p=>p.name).join(', ')}</div>`);
+        if(unpunched.length)alerts.push(`<div style="display:flex;align-items:center;gap:8px;padding:8px 10px;background:#fef9c3;border:1.5px solid #fde047;border-radius:10px;font-size:12px;font-weight:700;color:#854d0e;cursor:pointer;" onclick="App.staffAttend()">👥 ${unpunched.join(', ')} abhi punch-out nahi ki</div>`);
+        return alerts.length?`<div style="display:flex;flex-direction:column;gap:6px;margin-bottom:12px;">${alerts.join('')}</div>`:'';
+      })():''}
+
       ${isToday?`<div class="section">
         <p class="stitle">⚡ Quick Actions</p>
         <div class="qagrid">
@@ -3786,6 +3873,7 @@ const App = {
         <button class="btn ghost mb8" onclick="Reports._export()" style="justify-content:flex-start;">📊 Export CSV</button>
         <button class="btn ghost mb8" onclick="Import.show()" style="justify-content:flex-start;">📥 Import / Restore Backup</button>
         <button class="btn ghost mb8" style="background:#fef2f2;color:#dc2626;justify-content:flex-start;" onclick="App._reset()">🗑️ Clear All Data</button>
+        ${_deferredPrompt?`<button class="btn ghost mb8" onclick="App._installPWA()" style="justify-content:flex-start;background:#f0fdf4;color:#16a34a;">📲 Install App (Home Screen)</button>`:''}
         `:`<p style="text-align:center;color:#94a3b8;font-size:12px;padding:14px;">Staff ke liye limited settings hai.<br>Owner se contact karo changes ke liye.</p>`}
 
         <div style="text-align:center;font-size:10px;color:#94a3b8;margin-top:16px;padding-top:12px;border-top:1px solid #f1f5f9;">
@@ -3855,15 +3943,16 @@ const App = {
     `);
     setTimeout(()=>document.getElementById('curPin')?.focus(),200);
   },
-  _savePins(){
+  async _savePins(){
     const cur=document.getElementById('curPin')?.value;
     const nO=document.getElementById('newOPin')?.value;
     const nS=document.getElementById('newSPin')?.value;
-    if(cur!==C.ownerPIN)return Toast.show('❌ Current PIN galat hai');
+    const curHash=await sha256hex(cur||'');
+    if(curHash!==C.ownerPIN)return Toast.show('❌ Current PIN galat hai');
     if(!nO||nO.length<4)return Toast.show('⚠️ Owner PIN 4 digits chahiye');
     if(!nS||nS.length<4)return Toast.show('⚠️ Staff PIN 4 digits chahiye');
     if(nO===nS)return Toast.show('⚠️ Owner aur Staff PIN alag hone chahiye');
-    DB.s('owner_pin',nO);DB.s('staff_pin',nS);
+    DB.s('owner_pin',await sha256hex(nO));DB.s('staff_pin',await sha256hex(nS));
     Toast.show('✅ PINs updated! Next login mein use honge');
     Modal.close();
   },
@@ -4146,16 +4235,17 @@ const App = {
     `);
     setTimeout(()=>document.getElementById('nsName')?.focus(),200);
   },
-  _saveNewStaff(){
+  async _saveNewStaff(){
     const name=document.getElementById('nsName')?.value?.trim();
     const pin=document.getElementById('nsPin')?.value?.trim();
     if(!name)return Toast.show('⚠️ Staff naam daalo');
     if(!pin||pin.length<4)return Toast.show('⚠️ 4-digit PIN daalo');
-    if(pin===C.ownerPIN)return Toast.show('⚠️ Owner PIN use na karo');
+    const pinHash=await sha256hex(pin);
+    if(pinHash===C.ownerPIN)return Toast.show('⚠️ Owner PIN use na karo');
     const accts=DB.l('staff_accounts');
-    if(accts.find(a=>a.pin===pin))return Toast.show('⚠️ Yeh PIN already use ho raha hai');
+    if(accts.find(a=>a.pin===pinHash))return Toast.show('⚠️ Yeh PIN already use ho raha hai');
     if(accts.length>=3)return Toast.show('⚠️ Maximum 3 staff accounts allowed');
-    accts.push({id:'s'+Date.now(),name,pin,active:true});
+    accts.push({id:'s'+Date.now(),name,pin:pinHash,active:true});
     DB.s('staff_accounts',accts);
     Toast.show('✅ Staff added: '+name);
     this._manageStaff();
@@ -4182,18 +4272,19 @@ const App = {
     `);
     setTimeout(()=>document.getElementById('esName')?.focus(),200);
   },
-  _saveEditStaff(id){
+  async _saveEditStaff(id){
     const name=document.getElementById('esName')?.value?.trim();
     const pin=document.getElementById('esPin')?.value?.trim();
     if(!name)return Toast.show('⚠️ Naam daalo');
     if(pin&&pin.length<4)return Toast.show('⚠️ PIN 4 digits hona chahiye');
-    if(pin&&pin===C.ownerPIN)return Toast.show('⚠️ Owner PIN use na karo');
+    const pinHash=pin?await sha256hex(pin):'';
+    if(pinHash&&pinHash===C.ownerPIN)return Toast.show('⚠️ Owner PIN use na karo');
     const accts=DB.l('staff_accounts');
     const i=accts.findIndex(a=>a.id===id);
     if(i<0)return;
-    if(pin&&accts.find((a,j)=>j!==i&&a.pin===pin))return Toast.show('⚠️ Yeh PIN already use ho raha hai');
+    if(pinHash&&accts.find((a,j)=>j!==i&&a.pin===pinHash))return Toast.show('⚠️ Yeh PIN already use ho raha hai');
     accts[i]={...accts[i],name};
-    if(pin)accts[i].pin=pin;
+    if(pinHash)accts[i].pin=pinHash;
     DB.s('staff_accounts',accts);
     Toast.show('✅ Staff updated: '+name);
     this._manageStaff();
@@ -4212,13 +4303,21 @@ const App = {
     Toast.show('🗑️ Data cleared');Modal.close();
     setTimeout(()=>location.reload(),1500);
   },
+  _installPWA(){
+    if(!_deferredPrompt){return Toast.show('📲 Already installed or not available on this browser')}
+    _deferredPrompt.prompt();
+    _deferredPrompt.userChoice.then(c=>{
+      if(c.outcome==='accepted')Toast.show('✅ App install ho raha hai!');
+      _deferredPrompt=null;refresh();
+    });
+  },
 };
 
 /* keyboard handler consolidated into App.init() above */
 
 /* ── BOOT ── */
 let _booted=false;
-function _boot(){
+async function _boot(){
   if(_booted)return;
   _booted=true;
   // Embed mode: detect iframe OR ?embed param in URL
@@ -4234,7 +4333,7 @@ function _boot(){
     try{parent.postMessage({hisabHeight:document.getElementById('app')?.offsetHeight||820},'*')}catch{}
   }
   // ── Run data migrations (safe, non-destructive) ──
-  Migration.run();
+  await Migration.run();
   // ── Load custom services ──
   const custom=DB.l('custom_svcs');
   custom.forEach(s=>{if(!C.svcs.find(x=>x.id===s.id))C.svcs.push(s)});
