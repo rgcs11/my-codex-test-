@@ -141,6 +141,7 @@ img{max-width:100%;height:auto}
 /* ── AEPS / EXPENSE ENTRY STYLES ── */
 .ecard.aeps{border-left-color:#0891b2}
 .ecard.expense{border-left-color:#7c3aed}
+.ecard.transfer{border-left-color:#7c3aed}
 .eicon.aeps{background:#ecfeff}
 .eicon.expense{background:#f3f0ff}
 .epill.aeps{background:#ecfeff;color:#0891b2}
@@ -169,6 +170,8 @@ img{max-width:100%;height:auto}
 .qabtn.indigo .ql{color:#fff}
 .qabtn.cyan2{background:linear-gradient(135deg,#06b6d4,#0891b2);border:none;box-shadow:0 4px 12px rgba(6,182,212,.28)}
 .qabtn.cyan2 .ql{color:#fff}
+.qabtn.violet{background:linear-gradient(135deg,#8b5cf6,#7c3aed);border:none;box-shadow:0 4px 12px rgba(139,92,246,.3)}
+.qabtn.violet .ql{color:#fff}
 
 /* ── AEPS TOGGLE ── */
 .atog{display:flex;gap:6px;background:#f1f5f9;border-radius:13px;padding:4px;margin-bottom:14px}
@@ -637,7 +640,7 @@ body.embed .main{margin-left:0!important;padding-left:14px!important;padding-rig
 /* Large desktop: 8-col grids, wider modal, content max-width */
 @media(min-width:1440px){
   .qsgrid{grid-template-columns:repeat(8,1fr)}
-  .qagrid{grid-template-columns:repeat(5,1fr)}
+  .qagrid{grid-template-columns:repeat(6,1fr)}
   .owner-2col{grid-template-columns:minmax(0,7fr) minmax(0,4fr)}
   .msheet{max-width:580px}
   .main{max-width:1600px}
@@ -944,16 +947,29 @@ const Auth = {
   login(pin){
     if(pin===C.ownerPIN){
       this._r='owner';
-      this._u={name:'Rohit',role:'owner'};
+      this._u={name:DB.g('owner_name')||'Rohit',role:'owner'};
       DB.s('session',{role:'owner',user:this._u,at:new Date().toISOString()});
       return true;
     }
-    if(pin===C.staffPIN){
-      const staffName=DB.g('staff_name')||'Staff';
-      this._r='staff';
-      this._u={name:staffName,role:'staff'};
-      DB.s('session',{role:'staff',user:this._u,at:new Date().toISOString()});
-      return true;
+    // Multi-staff: check staff_accounts array first
+    const accts=DB.l('staff_accounts');
+    if(accts.length){
+      const match=accts.find(a=>a.active!==false&&a.pin===pin);
+      if(match){
+        this._r='staff';
+        this._u={name:match.name,role:'staff',staffId:match.id};
+        DB.s('session',{role:'staff',user:this._u,at:new Date().toISOString()});
+        return true;
+      }
+    } else {
+      // Legacy fallback: single staff_pin (installations without staff_accounts)
+      if(pin===C.staffPIN){
+        const staffName=DB.g('staff_name')||'Staff';
+        this._r='staff';
+        this._u={name:staffName,role:'staff'};
+        DB.s('session',{role:'staff',user:this._u,at:new Date().toISOString()});
+        return true;
+      }
     }
     return false;
   },
@@ -1011,7 +1027,7 @@ const Login = {
       <div class="lbrand-sub">${bizS}<br>CSC Shop Management System</div>
       <div class="lbrand-pills">
         <span class="lbrand-pill">👑 Owner</span>
-        <span class="lbrand-pill">👤 Staff</span>
+        ${(()=>{const accts=DB.l('staff_accounts');return accts.length?accts.map(a=>`<span class="lbrand-pill">👤 ${a.name}</span>`).join(''):`<span class="lbrand-pill">👤 Staff</span>`})()}
       </div>
     </div>
     <div class="lcard">
@@ -1029,7 +1045,7 @@ const Login = {
       </div>
       <div class="lroles">
         <span class="lrpill">👑 Owner</span>
-        <span class="lrpill">👤 Staff</span>
+        ${(()=>{const accts=DB.l('staff_accounts');return accts.length?accts.map(a=>`<span class="lrpill">👤 ${a.name}</span>`).join(''):`<span class="lrpill">👤 Staff</span>`})()}
       </div>
     </div>`;
   },
@@ -1555,8 +1571,8 @@ const Entry = {
     const e=DB.l('entries').find(x=>x.id===id);
     if(!e)return;
     const pm=C.pm.find(p=>p.id===e.pm)||{icon:'🔢',name:e.pm};
-    const isAeps=e.type==='aeps', isExp=e.type==='expense';
-    const titleIcon=isAeps?'🏧':isExp?'💸':'📋';
+    const isAeps=e.type==='aeps', isExp=e.type==='expense', isTransfer=e.type==='transfer';
+    const titleIcon=isAeps?'🏧':isExp?'💸':isTransfer?'💸':'📋';
     const amtColor=isExp?'#7c3aed':isAeps?'#0891b2':(e.pm==='udhar'?'#dc2626':'#16a34a');
     let amtBlock;
     if(isAeps){
@@ -1564,6 +1580,15 @@ const Entry = {
         <p style="font-size:10px;color:#94a3b8;text-transform:uppercase;">AEPS ${e.aepsType==='deposit'?'Deposit':'Withdrawal'}</p>
         <p style="font-size:32px;font-weight:900;letter-spacing:-1px;color:#0891b2;margin:4px 0 10px;">${F.rs(e.aepsAmt||0)}</p>
         <div class="spread mb8" style="padding:8px 11px;background:#f0fdf4;border-radius:10px;"><span style="color:#15803d;font-size:12px;font-weight:600;">💰 Aapki Kamai</span><span style="font-weight:800;color:#16a34a;font-size:15px;">+${F.rs(e.amt)}</span></div>`;
+    } else if(isTransfer){
+      amtBlock=`
+        <p style="font-size:10px;color:#94a3b8;text-transform:uppercase;">Money Transfer</p>
+        <p style="font-size:32px;font-weight:900;letter-spacing:-1px;color:#7c3aed;margin:4px 0 10px;">${F.rs(e.transferAmt||0)}</p>
+        <div class="spread mb8" style="padding:8px 11px;background:#f5f3ff;border-radius:10px;"><span style="color:#7c3aed;font-size:12px;font-weight:600;">💰 Aapki Kamai</span><span style="font-weight:800;color:#7c3aed;font-size:15px;">+${F.rs(e.amt)}</span></div>
+        ${e.sender?`<div class="spread mb8"><span style="color:#64748b;font-size:12px;">Sender</span><span style="font-size:13px;font-weight:600;">${e.sender}</span></div>`:''}
+        ${e.receiver?`<div class="spread mb8"><span style="color:#64748b;font-size:12px;">Receiver</span><span style="font-size:13px;font-weight:600;">${e.receiver}</span></div>`:''}
+        ${e.bank?`<div class="spread mb8"><span style="color:#64748b;font-size:12px;">Bank</span><span style="font-size:13px;font-weight:600;">${e.bank}</span></div>`:''}
+        ${e.utr?`<div class="spread mb8"><span style="color:#64748b;font-size:12px;">UTR/Ref</span><span style="font-size:13px;font-weight:600;font-family:monospace;">${e.utr}</span></div>`:''}`;
     } else if(isExp){
       amtBlock=`
         <p style="font-size:10px;color:#94a3b8;text-transform:uppercase;">Kharcha Amount</p>
@@ -1576,7 +1601,7 @@ const Entry = {
     Modal.open(`
       <div class="mhead">
         <div>
-          <div class="mt">${titleIcon} ${isAeps?'AEPS Entry':isExp?'Expense':'Entry'}</div>
+          <div class="mt">${titleIcon} ${isAeps?'AEPS Entry':isExp?'Expense':isTransfer?'Money Transfer':'Entry'}</div>
           <div class="ms">${F.date(e.at)} · ${F.time(e.at)}</div>
         </div>
         <button class="mclose" onclick="Modal.close()" aria-label="Close">✕</button>
@@ -1844,6 +1869,121 @@ const Aeps = {
     if(btn){btn.textContent='🎉 Saved!';btn.classList.add('success');btn.disabled=true}
     if(navigator.vibrate)navigator.vibrate(10);
     Toast.show('✅ AEPS saved! Kamai: '+F.rs(comm));
+    setTimeout(()=>{Modal.close();refresh()},400);
+  },
+};
+
+/* ── MONEY TRANSFER ───────────────────────────────────
+   Dedicated form for money transfer service — captures
+   sender, receiver, bank, UTR, commission separately.
+   Saves as type:'transfer'; amt = commission earned.
+   ─────────────────────────────────────────────────────── */
+const MoneyTransfer = {
+  _pm:'cash',
+  show(){
+    this._pm='cash';
+    Modal.open(`
+      <div class="mhead">
+        <div><div class="mt">💸 Money Transfer</div><div class="ms">Customer ka paisa transfer karo</div></div>
+        <button class="mclose" onclick="Modal.close()" aria-label="Close">✕</button>
+      </div>
+      <div class="mbody">
+        <div class="fg">
+          <p class="flabel"><span class="fnum" style="background:#7c3aed;">1</span> Transfer Amount <span style="color:#dc2626;font-size:10px;text-transform:none;letter-spacing:0;font-weight:400;">*required</span></p>
+          <div class="amtwrap">
+            <input type="number" class="inp big" id="mtAmt" min="0" inputmode="decimal" placeholder="0" oninput="MoneyTransfer._calc()" aria-label="Transfer amount">
+          </div>
+        </div>
+
+        <div class="fg">
+          <p class="flabel"><span class="fnum" style="background:#16a34a;">2</span> Aapki Kamai (Commission) <span style="color:#dc2626;font-size:10px;text-transform:none;letter-spacing:0;font-weight:400;">*required</span></p>
+          <div class="amtwrap">
+            <input type="number" class="inp big" id="mtComm" min="0" inputmode="decimal" placeholder="0" style="font-size:24px;" oninput="MoneyTransfer._calc()" aria-label="Commission">
+          </div>
+          <div class="chips mt8">
+            ${[10,15,20,25,30,40,50].map(v=>`<button class="chip sm" onclick="MoneyTransfer._setC(${v})">₹${v}</button>`).join('')}
+          </div>
+        </div>
+
+        <div class="divider"></div>
+
+        <div class="fg">
+          <p class="flabel">Payment Mode</p>
+          <div style="display:grid;grid-template-columns:repeat(2,1fr);gap:6px;">
+            <button class="pmbtn sel" id="mtPM_cash" onclick="MoneyTransfer._setPM('cash')">💵 Cash</button>
+            <button class="pmbtn" id="mtPM_online" onclick="MoneyTransfer._setPM('online')">📱 Online</button>
+          </div>
+        </div>
+
+        <div class="divider"></div>
+
+        <div class="fg">
+          <p class="flabel"><span class="fnum" style="background:#94a3b8;">3</span> Customer Details <span style="text-transform:none;letter-spacing:0;font-weight:400;font-size:10px;">(optional)</span></p>
+          <input type="text" class="inp" id="mtSender" placeholder="👤 Sender name" autocomplete="off" style="margin-bottom:6px;">
+          <input type="text" class="inp" id="mtReceiver" placeholder="👤 Receiver name" autocomplete="off" style="margin-bottom:6px;">
+          <input type="tel" class="inp" id="mtPhone" inputmode="numeric" maxlength="10" placeholder="📱 Receiver phone">
+        </div>
+
+        <div class="fg">
+          <p class="flabel">Bank &amp; Reference <span style="text-transform:none;letter-spacing:0;font-weight:400;font-size:10px;">(optional)</span></p>
+          <input type="text" class="inp" id="mtBank" placeholder="🏦 Bank name (e.g. SBI, HDFC)" autocomplete="off" style="margin-bottom:6px;">
+          <input type="text" class="inp" id="mtUTR" placeholder="🔗 UTR / Reference number" autocomplete="off">
+        </div>
+
+        <div class="calc-box" style="background:#f5f3ff;border-color:#c4b5fd;">
+          <div><div class="cb-l">💸 Transfer Amount</div><div class="cb-v" id="mtSumAmt" style="color:#7c3aed;">₹0</div></div>
+          <div style="text-align:right;"><div class="cb-l">💰 Aapki Kamai</div><div class="cb-v" id="mtSumComm" style="color:#16a34a;">₹0</div></div>
+        </div>
+      </div>
+      <div class="mfoot">
+        <button class="btn blue" id="mtSaveBtn" onclick="MoneyTransfer.save()" style="background:#7c3aed;">💸 Save Transfer</button>
+        <button class="btn ghost" onclick="Modal.close()">Cancel</button>
+      </div>
+    `);
+    setTimeout(()=>document.getElementById('mtAmt')?.focus(),200);
+  },
+  _setPM(pm){
+    this._pm=pm;
+    ['cash','online'].forEach(p=>{const b=document.getElementById('mtPM_'+p);if(b)b.classList.toggle('sel',p===pm)});
+  },
+  _setC(v){const e=document.getElementById('mtComm');if(e){e.value=v;this._calc()}},
+  _calc(){
+    const amt=parseFloat(document.getElementById('mtAmt')?.value)||0;
+    const comm=parseFloat(document.getElementById('mtComm')?.value)||0;
+    const sa=document.getElementById('mtSumAmt'),sc=document.getElementById('mtSumComm');
+    if(sa)sa.textContent=F.rs(amt);if(sc)sc.textContent=F.rs(comm);
+  },
+  save(){
+    const amt=parseFloat(document.getElementById('mtAmt')?.value)||0;
+    const comm=parseFloat(document.getElementById('mtComm')?.value)||0;
+    if(!amt||amt<=0){
+      const e=document.getElementById('mtAmt');
+      if(e){e.style.borderColor='#fca5a5';setTimeout(()=>e.style.borderColor='',1200)}
+      return Toast.show('⚠️ Transfer amount daalo');
+    }
+    if(!comm||comm<=0){
+      const e=document.getElementById('mtComm');
+      if(e){e.style.borderColor='#fca5a5';setTimeout(()=>e.style.borderColor='',1200)}
+      return Toast.show('⚠️ Commission daalo');
+    }
+    const sender=document.getElementById('mtSender')?.value?.trim()||'';
+    const receiver=document.getElementById('mtReceiver')?.value?.trim()||'';
+    const phone=document.getElementById('mtPhone')?.value?.trim()||'';
+    const bank=document.getElementById('mtBank')?.value?.trim()||'';
+    const utr=document.getElementById('mtUTR')?.value?.trim()||'';
+    const noteParts=[utr?'UTR: '+utr:'',bank].filter(Boolean);
+    DB.push('entries',{
+      type:'transfer', svcId:'mtransfer', svc:'Money Transfer',
+      amt:comm, transferAmt:amt, pm:this._pm,
+      cust:sender||receiver, phone,
+      notes:noteParts.join(' · '),
+      sender, receiver, bank, utr,
+      day:DB.today(), role:Auth.role(), who:Auth.user().name,
+    });
+    const btn=document.getElementById('mtSaveBtn');
+    if(btn){btn.textContent='🎉 Saved!';btn.disabled=true}
+    if(navigator.vibrate)navigator.vibrate(10);
+    Toast.show('✅ Transfer saved! Kamai: '+F.rs(comm));
     setTimeout(()=>{Modal.close();refresh()},400);
   },
 };
@@ -2671,17 +2811,20 @@ const Reports = {
 /* ── HOME ── */
 const Home = {
   _ecard(e){
-    const isAeps=e.type==='aeps', isExp=e.type==='expense', isBijli=e.type==='bijli';
+    const isAeps=e.type==='aeps', isExp=e.type==='expense', isBijli=e.type==='bijli', isTransfer=e.type==='transfer';
     const pm=C.pm.find(p=>p.id===e.pm)||{icon:'🔢',name:e.pm||''};
-    const iconBg={cash:'#f0fdf4',online:'#eff6ff',udhar:'#fef2f2',partial:'#fff7ed',aeps:'#ecfeff',expense:'#f3f0ff',bijli:'#fef9c3'};
+    const iconBg={cash:'#f0fdf4',online:'#eff6ff',udhar:'#fef2f2',partial:'#fff7ed',aeps:'#ecfeff',expense:'#f3f0ff',bijli:'#fef9c3',transfer:'#f5f3ff'};
     const showStaff=Auth.isOwner()&&e.who;
-    const kind=isAeps?'aeps':isExp?'expense':isBijli?'bijli':(e.pm||'');
-    const icon=isAeps?'🏧':isExp?'💸':isBijli?'💡':pm.icon;
+    const kind=isAeps?'aeps':isExp?'expense':isBijli?'bijli':isTransfer?'transfer':(e.pm||'');
+    const icon=isAeps?'🏧':isExp?'💸':isBijli?'💡':isTransfer?'💸':pm.icon;
     let pills,mainAmt;
     if(isAeps){
       pills=`<span class="epill aeps">AEPS ${e.aepsType==='deposit'?'Deposit':'Withdraw'}</span>`
         +(e.amt>0?`<span style="color:#16a34a;font-weight:700;">+${F.rs(e.amt)} kamai</span>`:'');
       mainAmt=`<div class="eamt aeps">${F.rs(e.aepsAmt||0)}</div>`;
+    } else if(isTransfer){
+      pills=`<span class="epill" style="background:#f5f3ff;color:#7c3aed;border:1px solid #c4b5fd;">💸 Transfer</span><span class="epill ${e.pm||''}">${pm.name}</span>`;
+      mainAmt=`<div class="eamt" style="color:#7c3aed;">${F.rs(e.amt)}<div style="font-size:9px;color:#94a3b8;">${F.short(e.transferAmt||0)} sent</div></div>`;
     } else if(isExp){
       pills=`<span class="epill expense">Kharcha</span><span class="epill ${e.pm||''}">${pm.name}</span>`;
       mainAmt=`<div class="eamt expense">−${F.rs(e.amt)}</div>`;
@@ -2848,6 +2991,7 @@ const Home = {
         <div class="qagrid">
           <button class="qabtn primary" onclick="Entry.show()"><span class="qi">➕</span><span class="ql">New Entry</span></button>
           <button class="qabtn teal" onclick="Aeps.show()"><span class="qi">🏧</span><span class="ql">AEPS Cash</span></button>
+          <button class="qabtn violet" onclick="MoneyTransfer.show()"><span class="qi">💸</span><span class="ql">Transfer</span></button>
           <button class="qabtn amber" onclick="BijliBill.show()"><span class="qi">💡</span><span class="ql">Light Bill</span></button>
           <button class="qabtn green2" onclick="Entry.showSale()"><span class="qi">🛒</span><span class="ql">Product Sale</span></button>
           <button class="qabtn orange2" onclick="Router.go('udhar')"><span class="qi">📋</span><span class="ql">${pendU>0?'Udhar<br><b style=\'color:#ffcb94;\'>'+F.rs(pendU)+'</b>':'Udhar'}</span></button>
@@ -3166,7 +3310,7 @@ const App = {
         <p style="font-size:10px;font-weight:700;color:var(--text-3);text-transform:uppercase;letter-spacing:.08em;margin:12px 0 6px;">🏪 Business</p>
         <button class="btn ghost mb8" onclick="App._bizSetup()" style="justify-content:flex-start;">🏪 Shop Name &amp; Details</button>
         <button class="btn ghost mb8" onclick="App._changePin()" style="justify-content:flex-start;">🔑 Change PINs</button>
-        <button class="btn ghost mb8" onclick="App._staffName()" style="justify-content:flex-start;">✏️ Staff Name / PIN</button>
+        <button class="btn ghost mb8" onclick="App._manageStaff()" style="justify-content:flex-start;">👥 Staff Accounts</button>
         <button class="btn ghost mb8" onclick="App._addService()" style="justify-content:flex-start;">⚙️ Manage Services</button>
         <button class="btn ghost mb8" onclick="App._manageProducts()" style="justify-content:flex-start;">🛒 Manage Products</button>
         <button class="btn ghost mb8" onclick="Printers.manage()" style="justify-content:flex-start;">🖨️ Manage Printers</button>
@@ -3446,33 +3590,112 @@ const App = {
     Toast.show('✅ Product added: '+name);this._manageProducts();
   },
 
-  _staffName(){
-    const cur=DB.g('staff_name')||'Staff';
+  _manageStaff(){
+    const accts=DB.l('staff_accounts');
+    const legacyNote=!accts.length&&DB.g('staff_pin')?`<div style="margin-top:10px;padding:10px 12px;background:#fef9c3;border-radius:var(--r-md);border:1.5px solid #facc15;font-size:11px;color:#854d0e;">ℹ️ Purana staff PIN (${C.staffPIN}) abhi bhi kaam karega. Naya account add karne par yeh disable ho jayega.</div>`:'';
     Modal.open(`
       <div class="mhead">
-        <div><div class="mt">✏️ Staff Name</div><div class="ms">Login ke liye naam set karo</div></div>
+        <div><div class="mt">👥 Staff Accounts</div><div class="ms">Maximum 3 staff accounts</div></div>
         <button class="mclose" onclick="Modal.close()" aria-label="Close">✕</button>
       </div>
       <div class="mbody">
-        <div class="fg">
-          <p class="flabel">Staff ka Naam</p>
-          <input type="text" class="inp" id="snInp" value="${cur}" placeholder="e.g. Ramu, Shyam, Laxmi" autocomplete="off">
-        </div>
-        <p style="font-size:12px;color:#94a3b8;margin-top:4px;">Yeh naam entries mein dikhega. Staff ko dobara login karna hoga.</p>
-      </div>
-      <div class="mfoot">
-        <button class="btn blue" onclick="App._saveStaffName()">✅ Save Name</button>
-        <button class="btn ghost" onclick="Modal.close()">Cancel</button>
+        ${!accts.length?`<div style="text-align:center;padding:20px;color:var(--text-3);font-size:13px;">Koi staff account nahi hai<br><span style="font-size:11px;">Neeche "Add Staff" button se add karo</span></div>`
+          :accts.map((a,i)=>`<div class="card mb8">
+            <div class="spread">
+              <div>
+                <div style="font-weight:700;font-size:14px;">👤 ${a.name}</div>
+                <div style="font-size:11px;color:var(--text-3);">PIN: ${'●'.repeat(a.pin?.length||4)}</div>
+              </div>
+              <div style="display:flex;gap:6px;">
+                <button class="btn ghost sm" style="width:auto;padding:6px 12px;min-height:auto;font-size:12px;" onclick="App._editStaff(${i})">✏️ Edit</button>
+                <button class="btn red sm" style="width:auto;padding:6px 12px;min-height:auto;font-size:12px;" onclick="App._removeStaff('${a.id}')">🗑️</button>
+              </div>
+            </div>
+          </div>`).join('')}
+        ${accts.length<3
+          ?`<button class="btn blue mt8" onclick="App._addStaff()">➕ Add Staff Account</button>`
+          :`<p style="text-align:center;font-size:12px;color:var(--text-3);margin-top:8px;">Maximum 3 accounts (limit reached)</p>`}
+        ${legacyNote}
       </div>
     `);
-    setTimeout(()=>document.getElementById('snInp')?.focus(),200);
   },
-  _saveStaffName(){
-    const name=document.getElementById('snInp')?.value?.trim();
+  _addStaff(){
+    Modal.open(`
+      <div class="mhead">
+        <div><div class="mt">➕ Add Staff</div><div class="ms">New staff account banao</div></div>
+        <button class="mclose" onclick="Modal.close()" aria-label="Close">✕</button>
+      </div>
+      <div class="mbody">
+        <div class="fg"><p class="flabel">Staff Name</p>
+          <input type="text" class="inp" id="nsName" placeholder="e.g. Ramu, Shyam, Laxmi" maxlength="20" autocomplete="off"></div>
+        <div class="fg"><p class="flabel">Staff PIN (4 digits)</p>
+          <input type="password" class="inp" id="nsPin" inputmode="numeric" maxlength="4" placeholder="4-digit PIN" autocomplete="new-password"></div>
+      </div>
+      <div class="mfoot">
+        <button class="btn blue" onclick="App._saveNewStaff()">✅ Add Staff</button>
+        <button class="btn ghost" onclick="App._manageStaff()">Back</button>
+      </div>
+    `);
+    setTimeout(()=>document.getElementById('nsName')?.focus(),200);
+  },
+  _saveNewStaff(){
+    const name=document.getElementById('nsName')?.value?.trim();
+    const pin=document.getElementById('nsPin')?.value?.trim();
+    if(!name)return Toast.show('⚠️ Staff naam daalo');
+    if(!pin||pin.length<4)return Toast.show('⚠️ 4-digit PIN daalo');
+    if(pin===C.ownerPIN)return Toast.show('⚠️ Owner PIN use na karo');
+    const accts=DB.l('staff_accounts');
+    if(accts.find(a=>a.pin===pin))return Toast.show('⚠️ Yeh PIN already use ho raha hai');
+    if(accts.length>=3)return Toast.show('⚠️ Maximum 3 staff accounts allowed');
+    accts.push({id:'s'+Date.now(),name,pin,active:true});
+    DB.s('staff_accounts',accts);
+    Toast.show('✅ Staff added: '+name);
+    this._manageStaff();
+  },
+  _editStaff(idx){
+    const accts=DB.l('staff_accounts');
+    const a=accts[idx];
+    if(!a)return;
+    Modal.open(`
+      <div class="mhead">
+        <div><div class="mt">✏️ Edit Staff</div><div class="ms">${a.name}</div></div>
+        <button class="mclose" onclick="Modal.close()" aria-label="Close">✕</button>
+      </div>
+      <div class="mbody">
+        <div class="fg"><p class="flabel">Staff Name</p>
+          <input type="text" class="inp" id="esName" value="${a.name}" maxlength="20" autocomplete="off"></div>
+        <div class="fg"><p class="flabel">New PIN <span style="text-transform:none;font-weight:400;font-size:10px;">(khali chhodo agar change na karna ho)</span></p>
+          <input type="password" class="inp" id="esPin" inputmode="numeric" maxlength="4" placeholder="New 4-digit PIN" autocomplete="new-password"></div>
+      </div>
+      <div class="mfoot">
+        <button class="btn blue" onclick="App._saveEditStaff('${a.id}')">✅ Save</button>
+        <button class="btn ghost" onclick="App._manageStaff()">Back</button>
+      </div>
+    `);
+    setTimeout(()=>document.getElementById('esName')?.focus(),200);
+  },
+  _saveEditStaff(id){
+    const name=document.getElementById('esName')?.value?.trim();
+    const pin=document.getElementById('esPin')?.value?.trim();
     if(!name)return Toast.show('⚠️ Naam daalo');
-    DB.s('staff_name',name);
-    Toast.show('✅ Staff name set: '+name);
-    Modal.close();
+    if(pin&&pin.length<4)return Toast.show('⚠️ PIN 4 digits hona chahiye');
+    if(pin&&pin===C.ownerPIN)return Toast.show('⚠️ Owner PIN use na karo');
+    const accts=DB.l('staff_accounts');
+    const i=accts.findIndex(a=>a.id===id);
+    if(i<0)return;
+    if(pin&&accts.find((a,j)=>j!==i&&a.pin===pin))return Toast.show('⚠️ Yeh PIN already use ho raha hai');
+    accts[i]={...accts[i],name};
+    if(pin)accts[i].pin=pin;
+    DB.s('staff_accounts',accts);
+    Toast.show('✅ Staff updated: '+name);
+    this._manageStaff();
+  },
+  _removeStaff(id){
+    if(!confirm('Yeh staff account delete karein?'))return;
+    const accts=DB.l('staff_accounts').filter(a=>a.id!==id);
+    DB.s('staff_accounts',accts);
+    Toast.show('✅ Staff removed');
+    this._manageStaff();
   },
   _reset(){
     if(!confirm('⚠️ DANGER: Sab data delete hoga!'))return;
