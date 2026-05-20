@@ -665,8 +665,17 @@ body.embed .main{margin-left:0!important;padding-left:14px!important;padding-rig
   .hstat:last-child{display:none}
   .mbgrid{grid-template-columns:repeat(2,1fr)}
 }
-/* Disable 2-col in embed mode */
+/* Disable 2-col in embed mode on small screens */
 body.embed .owner-2col,body.embed .staff-2col{display:block!important}
+/* Re-enable 2-col in embed on wider screens */
+@media(min-width:900px){
+  body.embed .owner-2col{display:grid!important;grid-template-columns:minmax(0,3fr) minmax(0,2fr);gap:22px;align-items:start}
+  body.embed .staff-2col{display:grid!important;grid-template-columns:1fr 1fr;gap:16px;align-items:start}
+  body.embed .owner-entry-panel{position:sticky;top:8px;max-height:calc(var(--embed-h,100vh) - 160px);overflow-y:auto;background:#f8fafc;border-radius:var(--r-lg);border:1px solid var(--border);padding:18px;box-shadow:0 2px 8px rgba(0,0,0,.04)}
+  body.embed .staff-right{position:sticky;top:8px;max-height:calc(var(--embed-h,100vh) - 160px);overflow-y:auto;background:#f8fafc;border-radius:var(--r-lg);border:1px solid var(--border);padding:18px;box-shadow:0 2px 8px rgba(0,0,0,.04)}
+}
+/* Prevent desktop sidebar elements leaking into embed nav */
+body.embed .snav-brand,body.embed .snav-user{display:none!important}
 
 /* ── SIDEBAR BRAND/USER: hidden on mobile/tablet ── */
 .snav-brand,.snav-user{display:none}
@@ -4325,9 +4334,13 @@ async function _boot(){
   const params=new URLSearchParams(window.location.search);
   if(inFrame()||params.has('embed')){
     document.body.classList.add('embed');
-    // Allow caller to set height via ?h=800
     if(params.get('h')){
       document.documentElement.style.setProperty('--embed-h',params.get('h')+'px');
+    } else {
+      // Use actual viewport height so embed fills the iframe correctly
+      const setEH=()=>document.documentElement.style.setProperty('--embed-h',window.innerHeight+'px');
+      setEH();
+      window.addEventListener('resize',setEH,{passive:true});
     }
     // Tell parent frame our natural scroll height (for auto-sizing iframes)
     try{parent.postMessage({hisabHeight:document.getElementById('app')?.offsetHeight||820},'*')}catch{}
