@@ -1,0 +1,568 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Private Jobs Career Guide | Rohit Computer</title>
+<link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;600;700;800&family=Noto+Sans+Devanagari:wght@400;600;700&display=swap" rel="stylesheet">
+<style>
+:root {
+  --bg:#071520; --bg2:#0B1E30; --card:#0E2236;
+  --cyan:#00D9FF; --gold:#FFD700; --green:#00E676;
+  --purple:#A855F7; --orange:#FF6B35; --red:#FF5252;
+  --text:#F0F4FF; --muted:#8BAED0; --border:rgba(0,217,255,0.2);
+  --radius:12px;
+}
+*{margin:0;padding:0;box-sizing:border-box;}
+html{scroll-behavior:smooth;}
+body{font-family:'Poppins',sans-serif;background:var(--bg);color:var(--text);}
+header{position:sticky;top:0;z-index:100;background:rgba(7,21,32,0.97);border-bottom:1px solid var(--border);backdrop-filter:blur(10px);padding:12px 20px;}
+.header-inner{max-width:1100px;margin:0 auto;display:flex;align-items:center;justify-content:space-between;gap:10px;flex-wrap:wrap;}
+.logo{display:flex;align-items:center;gap:10px;}
+.logo-icon{width:44px;height:44px;background:linear-gradient(135deg,#A855F7,#3B82F6);border-radius:10px;display:grid;place-items:center;font-size:22px;}
+.logo h1{font-size:18px;font-weight:800;color:var(--purple);}
+.logo p{font-size:11px;color:var(--muted);}
+.lang-btn{background:var(--purple);color:white;border:none;padding:8px 16px;border-radius:20px;font-weight:700;font-size:13px;cursor:pointer;transition:0.2s;}
+.lang-btn:hover{background:var(--gold);color:#000;}
+nav{background:var(--bg2);border-bottom:1px solid var(--border);overflow-x:auto;}
+nav .nav-inner{max-width:1100px;margin:0 auto;display:flex;gap:4px;padding:8px 16px;}
+nav button{flex:0 0 auto;background:transparent;border:none;color:var(--muted);padding:8px 14px;border-radius:20px;font-size:13px;font-weight:600;cursor:pointer;white-space:nowrap;transition:0.2s;font-family:'Poppins',sans-serif;}
+nav button:hover,nav button.active{background:var(--purple);color:white;}
+.hero{background:linear-gradient(135deg,#040d18,#0d1b2a,#040d18);padding:50px 20px 40px;text-align:center;position:relative;overflow:hidden;}
+.hero::before{content:'';position:absolute;top:-50%;left:-50%;width:200%;height:200%;background:radial-gradient(circle at 30% 50%,rgba(168,85,247,0.08) 0%,transparent 50%),radial-gradient(circle at 70% 30%,rgba(0,217,255,0.06) 0%,transparent 50%);animation:bgmove 8s ease-in-out infinite alternate;}
+@keyframes bgmove{from{transform:translate(0,0);}to{transform:translate(20px,20px);}}
+.hero-content{position:relative;z-index:1;}
+.hero h1{font-size:clamp(24px,5vw,50px);font-weight:800;color:var(--purple);line-height:1.1;margin-bottom:10px;}
+.hero h1 span{color:var(--gold);}
+.hero p{font-size:16px;color:var(--muted);margin-bottom:20px;}
+.quote-box{display:inline-block;background:rgba(168,85,247,0.1);border:1px solid rgba(168,85,247,0.3);border-radius:30px;padding:10px 24px;font-size:14px;color:var(--purple);margin-bottom:24px;max-width:600px;transition:0.3s;}
+.stats-row{display:flex;justify-content:center;gap:20px;flex-wrap:wrap;margin-top:24px;}
+.stat-box{background:rgba(255,255,255,0.05);border:1px solid var(--border);border-radius:12px;padding:14px 24px;text-align:center;min-width:120px;}
+.stat-box strong{display:block;font-size:28px;font-weight:800;color:var(--gold);}
+.stat-box span{font-size:12px;color:var(--muted);}
+.motive-strip{background:linear-gradient(90deg,rgba(168,85,247,0.1),rgba(0,217,255,0.1));border-top:1px solid var(--border);border-bottom:1px solid var(--border);padding:10px 20px;text-align:center;font-size:14px;color:var(--gold);font-weight:600;}
+main{max-width:1100px;margin:0 auto;padding:30px 16px 60px;}
+.section{display:none;}
+.section.active{display:block;animation:fadein 0.3s ease;}
+@keyframes fadein{from{opacity:0;transform:translateY(8px);}to{opacity:1;transform:none;}}
+.section-title{font-size:28px;font-weight:800;color:var(--purple);margin-bottom:6px;}
+.section-subtitle{color:var(--muted);font-size:14px;margin-bottom:24px;}
+.section-quote{background:rgba(255,215,0,0.08);border-left:4px solid var(--gold);padding:10px 16px;border-radius:0 8px 8px 0;font-size:13px;color:var(--gold);margin-bottom:24px;font-style:italic;}
+.careers-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(300px,1fr));gap:16px;}
+.career-card{background:var(--card);border:1px solid var(--border);border-radius:var(--radius);padding:20px;transition:0.25s;position:relative;overflow:hidden;cursor:pointer;}
+.career-card::before{content:'';position:absolute;left:0;top:0;bottom:0;width:4px;background:var(--tone,var(--purple));}
+.career-card:hover{transform:translateY(-3px);box-shadow:0 8px 30px rgba(168,85,247,0.2);border-color:rgba(168,85,247,0.5);}
+.career-card .emoji{font-size:36px;margin-bottom:10px;display:block;}
+.career-card h3{font-size:17px;font-weight:700;margin-bottom:4px;}
+.career-card .category{font-size:12px;color:var(--purple);font-weight:600;margin-bottom:10px;}
+.badge-row{display:flex;flex-wrap:wrap;gap:6px;margin-bottom:12px;}
+.badge{padding:4px 10px;border-radius:20px;font-size:11px;font-weight:700;}
+.badge.green{background:rgba(0,230,118,0.15);color:var(--green);border:1px solid rgba(0,230,118,0.3);}
+.badge.gold{background:rgba(255,215,0,0.12);color:var(--gold);border:1px solid rgba(255,215,0,0.3);}
+.badge.purple{background:rgba(168,85,247,0.12);color:var(--purple);border:1px solid rgba(168,85,247,0.3);}
+.badge.hot{background:rgba(255,82,82,0.12);color:var(--red);border:1px solid rgba(255,82,82,0.3);}
+.badge.cyan{background:rgba(0,217,255,0.12);color:var(--cyan);border:1px solid var(--border);}
+.info-row{display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-bottom:12px;}
+.info-box{background:rgba(255,255,255,0.04);border-radius:8px;padding:8px;}
+.info-box span{display:block;font-size:10px;color:var(--muted);text-transform:uppercase;font-weight:700;margin-bottom:2px;}
+.info-box strong{font-size:13px;color:var(--text);}
+.demand-bar{height:8px;background:rgba(255,255,255,0.1);border-radius:4px;margin-bottom:12px;overflow:hidden;}
+.demand-fill{height:100%;border-radius:4px;background:linear-gradient(90deg,var(--purple),var(--cyan));}
+.details-btn{width:100%;padding:10px;background:transparent;border:1px solid var(--purple);color:var(--purple);border-radius:8px;font-weight:700;font-size:13px;cursor:pointer;transition:0.2s;font-family:'Poppins',sans-serif;}
+.details-btn:hover{background:var(--purple);color:white;}
+.search-bar{display:flex;align-items:center;gap:10px;background:var(--card);border:1px solid var(--border);border-radius:10px;padding:0 16px;margin-bottom:16px;}
+.search-bar input{flex:1;background:transparent;border:none;outline:none;color:var(--text);font-family:'Poppins',sans-serif;font-size:14px;padding:12px 0;}
+.search-bar span{color:var(--muted);font-size:18px;}
+.cat-row{display:flex;gap:8px;flex-wrap:wrap;margin-bottom:20px;}
+.cat-btn{background:var(--card);border:1px solid var(--border);color:var(--muted);padding:8px 16px;border-radius:20px;font-size:13px;font-weight:600;cursor:pointer;transition:0.2s;font-family:'Poppins',sans-serif;}
+.cat-btn:hover,.cat-btn.active{background:var(--purple);color:white;border-color:var(--purple);}
+.modal-overlay{display:none;position:fixed;inset:0;background:rgba(0,0,0,0.8);z-index:200;align-items:center;justify-content:center;padding:16px;backdrop-filter:blur(6px);}
+.modal-overlay.open{display:flex;}
+.modal-box{background:var(--bg2);border:1px solid var(--border);border-radius:16px;width:min(720px,100%);max-height:88vh;overflow-y:auto;box-shadow:0 20px 60px rgba(0,0,0,0.5);}
+.modal-head{position:sticky;top:0;background:var(--bg2);border-bottom:1px solid var(--border);padding:16px 20px;display:flex;justify-content:space-between;align-items:flex-start;gap:10px;}
+.modal-head h2{font-size:22px;font-weight:800;color:var(--purple);}
+.modal-close{background:transparent;border:1px solid var(--border);color:var(--text);width:32px;height:32px;border-radius:8px;cursor:pointer;font-size:16px;flex-shrink:0;}
+.modal-body{padding:20px;}
+.modal-section{margin-bottom:20px;}
+.modal-section h4{color:var(--cyan);font-size:14px;font-weight:700;margin-bottom:10px;text-transform:uppercase;letter-spacing:0.5px;}
+.roadmap-step{display:flex;gap:12px;align-items:flex-start;margin-bottom:10px;padding:10px;background:rgba(255,255,255,0.03);border-radius:8px;border:1px solid var(--border);}
+.step-num{width:28px;height:28px;background:var(--purple);color:white;border-radius:50%;display:grid;place-items:center;font-weight:800;font-size:12px;flex-shrink:0;}
+.step-text{font-size:13px;color:var(--text);line-height:1.5;padding-top:4px;}
+.skill-tag{display:inline-block;background:rgba(168,85,247,0.1);border:1px solid rgba(168,85,247,0.3);color:var(--purple);padding:4px 10px;border-radius:20px;font-size:12px;font-weight:600;margin:3px;}
+.salary-row{display:flex;justify-content:space-between;align-items:center;padding:8px 12px;background:rgba(255,255,255,0.03);border-radius:8px;margin-bottom:6px;}
+.salary-label{font-size:13px;color:var(--muted);}
+.salary-val{font-size:14px;font-weight:700;color:var(--green);}
+.company-tag{display:inline-block;background:rgba(0,217,255,0.08);border:1px solid var(--border);color:var(--cyan);padding:4px 10px;border-radius:6px;font-size:12px;font-weight:600;margin:3px;}
+.tips-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(260px,1fr));gap:14px;}
+.tip-card{background:var(--card);border:1px solid var(--border);border-radius:var(--radius);padding:18px;}
+.tip-card h4{font-size:15px;font-weight:700;margin-bottom:6px;color:var(--text);}
+.tip-card p{font-size:13px;color:var(--muted);line-height:1.6;}
+footer{background:#04090f;border-top:1px solid var(--border);padding:30px 20px;text-align:center;}
+footer h3{color:var(--purple);font-size:20px;margin-bottom:8px;}
+footer p{color:var(--muted);font-size:13px;margin-bottom:4px;}
+.wa-btn{display:inline-flex;align-items:center;gap:8px;background:#25D366;color:white;padding:12px 24px;border-radius:30px;font-weight:700;font-size:14px;text-decoration:none;margin-top:16px;transition:0.2s;}
+.wa-btn:hover{background:#1ab955;transform:scale(1.05);}
+.wa-fab{position:fixed;bottom:20px;right:20px;z-index:150;width:54px;height:54px;background:#25D366;border-radius:50%;display:grid;place-items:center;font-size:24px;text-decoration:none;box-shadow:0 4px 20px rgba(37,211,102,0.4);transition:0.2s;}
+.wa-fab:hover{transform:scale(1.1);}
+@media(max-width:600px){.header-inner{flex-direction:column;align-items:flex-start;}.info-row{grid-template-columns:1fr;}.careers-grid{grid-template-columns:1fr;}}
+@media print{header,nav,.motive-strip,.wa-fab,footer{display:none;}.section{display:block!important;}body{background:white;color:black;}}
+</style>
+</head>
+<body>
+<header>
+  <div class="header-inner">
+    <div class="logo">
+      <div class="logo-icon">💼</div>
+      <div>
+        <h1>Rohit Computer</h1>
+        <p>Private Jobs Career Guide</p>
+      </div>
+    </div>
+    <div style="display:flex;gap:10px;align-items:center;flex-wrap:wrap;">
+      <a href="https://wa.me/919452305913" style="color:#25D366;font-size:13px;font-weight:700;text-decoration:none;">📞 9452305913</a>
+      <button class="lang-btn" onclick="toggleLang()" id="langBtn">🌐 हिंदी</button>
+    </div>
+  </div>
+</header>
+<nav>
+  <div class="nav-inner">
+    <button class="active" onclick="showSection('home')">🏠 Home</button>
+    <button onclick="showSection('tech')">💻 Technology</button>
+    <button onclick="showSection('finance')">📊 Finance</button>
+    <button onclick="showSection('healthcare')">⚕️ Healthcare</button>
+    <button onclick="showSection('creative')">🎨 Creative</button>
+    <button onclick="showSection('management')">👔 Management</button>
+    <button onclick="showSection('resume')">📄 Resume Tips</button>
+    <button onclick="showSection('interview')">🎯 Interview</button>
+  </div>
+</nav>
+<div class="hero">
+  <div class="hero-content">
+    <h1>💼 Private Jobs <span>Career Guide</span></h1>
+    <p>Tech se Design tak — har field mein private sector career ki puri jankari</p>
+    <div class="quote-box" id="heroQuote" style="transition:0.3s;">"Your career is the engine of your life. Start it right."</div>
+    <div class="stats-row">
+      <div class="stat-box"><strong>20+</strong><span>Career Paths</span></div>
+      <div class="stat-box"><strong>₹3L+</strong><span>Starting Salary</span></div>
+      <div class="stat-box"><strong>Free</strong><span>This Guide</span></div>
+      <div class="stat-box"><strong>2025</strong><span>Updated</span></div>
+    </div>
+  </div>
+</div>
+<div class="motive-strip" id="motiveStrip">✨ "Dream big, work hard, stay focused." ✨</div>
+
+<main>
+
+<!-- HOME -->
+<section class="section active" id="home">
+  <div class="section-quote">"Private sector mein talent hi teri salary decide karta hai — aage badhte raho।"</div>
+  <div class="section-title">Why Private Jobs?</div>
+  <div class="section-subtitle">Private sector mein growth fast hai, salary high hai, aur skills seekhne ka mauka bahut hota hai.</div>
+  <div class="tips-grid" style="margin-bottom:28px;">
+    <div class="tip-card"><h4>💰 Higher Salary</h4><p>Private companies talent ko zyada pay karti hain. Performance pe bonus bhi milta hai.</p></div>
+    <div class="tip-card"><h4>🚀 Fast Growth</h4><p>2-3 saal mein double promotion possible — kaam achha karo, aage badho.</p></div>
+    <div class="tip-card"><h4>🛠️ Skill Development</h4><p>Latest technologies aur tools ke saath kaam karne ka mauka milta hai — learning fast hoti hai.</p></div>
+    <div class="tip-card"><h4>🌍 Work From Home</h4><p>Tech, design, content — bahut saari private jobs ab remote/hybrid hain.</p></div>
+    <div class="tip-card"><h4>🔄 Job Change Freedom</h4><p>Better opportunity milne par job switch kar sakte ho — career control apne haath mein.</p></div>
+    <div class="tip-card"><h4>🏆 Merit Based</h4><p>Private sector mein kaam aur results ke hisab se recognition milti hai — cast/region nahi dekha jata.</p></div>
+  </div>
+  <div style="background:rgba(168,85,247,0.06);border:1px solid rgba(168,85,247,0.3);border-radius:12px;padding:20px;margin-bottom:24px;">
+    <h3 style="color:var(--gold);margin-bottom:14px;">📋 Private Job Kaise Milti Hai?</h3>
+    <div class="roadmap-step"><div class="step-num">1</div><div class="step-text">Apna interest identify karo — tech, finance, healthcare, creative, ya management?</div></div>
+    <div class="roadmap-step"><div class="step-num">2</div><div class="step-text">Relevant degree ya skill course karo — degree ya certificate chahiye hogi</div></div>
+    <div class="roadmap-step"><div class="step-num">3</div><div class="step-text">Projects aur portfolio banao — sirf marks se nahi, kaam se impress karo</div></div>
+    <div class="roadmap-step"><div class="step-num">4</div><div class="step-text">Internship lo — real experience se hi job milti hai</div></div>
+    <div class="roadmap-step"><div class="step-num">5</div><div class="step-text">LinkedIn profile banao aur professional network build karo</div></div>
+    <div class="roadmap-step"><div class="step-num">6</div><div class="step-text">Resume aur cover letter taiyar karo — Interview ke liye prepare karo</div></div>
+  </div>
+  <div style="text-align:center;">
+    <button onclick="showSection('tech')" style="background:var(--purple);color:white;border:none;padding:14px 28px;border-radius:30px;font-weight:800;font-size:15px;cursor:pointer;margin:6px;">💻 Tech Jobs</button>
+    <button onclick="showSection('finance')" style="background:var(--gold);color:#000;border:none;padding:14px 28px;border-radius:30px;font-weight:800;font-size:15px;cursor:pointer;margin:6px;">📊 Finance Jobs</button>
+    <button onclick="showSection('healthcare')" style="background:var(--green);color:#000;border:none;padding:14px 28px;border-radius:30px;font-weight:800;font-size:15px;cursor:pointer;margin:6px;">⚕️ Healthcare</button>
+    <button onclick="showSection('creative')" style="background:var(--orange);color:white;border:none;padding:14px 28px;border-radius:30px;font-weight:800;font-size:15px;cursor:pointer;margin:6px;">🎨 Creative</button>
+  </div>
+</section>
+
+<!-- TECH -->
+<section class="section" id="tech">
+  <div class="section-quote">"Technology is the fastest path from zero to hero in the private sector."</div>
+  <div class="section-title">💻 Technology Careers</div>
+  <div class="section-subtitle">Software, AI, Cybersecurity, Web Development — India ka fastest growing sector</div>
+  <div class="careers-grid" id="techGrid"></div>
+</section>
+
+<!-- FINANCE -->
+<section class="section" id="finance">
+  <div class="section-quote">"पैसे का खेल समझो — finance field mein career banao।"</div>
+  <div class="section-title">📊 Finance & Business Careers</div>
+  <div class="section-subtitle">Banking, CA, MBA, Stock Market — finance mein bahut scope hai</div>
+  <div class="careers-grid" id="finGrid"></div>
+</section>
+
+<!-- HEALTHCARE -->
+<section class="section" id="healthcare">
+  <div class="section-quote">"Healing others — this is the noblest career anyone can choose."</div>
+  <div class="section-title">⚕️ Healthcare Careers</div>
+  <div class="section-subtitle">Doctor, Nurse, Pharmacist, Physiotherapist — healthcare mein demand always high</div>
+  <div class="careers-grid" id="healthGrid"></div>
+</section>
+
+<!-- CREATIVE -->
+<section class="section" id="creative">
+  <div class="section-quote">"Creativity is intelligence having fun — aur isse bhi achha career ban sakta hai!"</div>
+  <div class="section-title">🎨 Creative Careers</div>
+  <div class="section-subtitle">Design, Video, Content, Photography — passion ko profession banao</div>
+  <div class="careers-grid" id="creativeGrid"></div>
+</section>
+
+<!-- MANAGEMENT -->
+<section class="section" id="management">
+  <div class="section-quote">"Leaders don't create followers — they create more leaders."</div>
+  <div class="section-title">👔 Management & Operations</div>
+  <div class="section-subtitle">HR, Marketing, Operations, MBA — corporate world ki duniya</div>
+  <div class="careers-grid" id="mgmtGrid"></div>
+</section>
+
+<!-- RESUME TIPS -->
+<section class="section" id="resume">
+  <div class="section-quote">"Your resume is your first handshake with the employer — make it count."</div>
+  <div class="section-title">📄 Resume Tips — Behtareen Resume Banao</div>
+  <div class="section-subtitle">Ek powerful resume hi aapko interview tak pahunchata hai</div>
+  <div class="tips-grid" id="resumeTips"></div>
+</section>
+
+<!-- INTERVIEW TIPS -->
+<section class="section" id="interview">
+  <div class="section-quote">"Confidence is not 'I will succeed' — it is 'I will not give up.'"</div>
+  <div class="section-title">🎯 Interview Tips — Interview Crack Karo</div>
+  <div class="section-subtitle">Interview se pehle, daraun, aur baad mein kya karein</div>
+  <div class="tips-grid" id="interviewTips"></div>
+</section>
+
+</main>
+
+<div class="modal-overlay" id="modal">
+  <div class="modal-box">
+    <div class="modal-head">
+      <h2 id="modalTitle">Career Details</h2>
+      <button class="modal-close" onclick="closeModal()">✕</button>
+    </div>
+    <div class="modal-body" id="modalBody"></div>
+  </div>
+</div>
+
+<footer>
+  <div style="max-width:1100px;margin:0 auto;">
+    <h3>💼 Rohit Computer — Career Guidance Center</h3>
+    <p>Rath, Hamirpur, Uttar Pradesh — 210431</p>
+    <p>Career Guidance Free | Computer Education | Job Assistance</p>
+    <div style="margin-top:16px;font-size:20px;color:var(--gold);">"Your future is created by what you do today, not tomorrow."</div>
+    <a href="https://wa.me/919452305913?text=Hello%20Rohit%20Computer,%20mujhe%20private%20job%20career%20guidance%20chahiye" class="wa-btn" target="_blank">💬 WhatsApp pe Poochho — FREE</a>
+    <p style="margin-top:20px;font-size:11px;color:var(--muted);">© 2025 Rohit Computer. Made with ❤️ for Indian Students.</p>
+  </div>
+</footer>
+<a href="https://wa.me/919452305913" class="wa-fab" target="_blank">💬</a>
+
+<script>
+const quotes = [
+  '"Your career is the engine of your life. Start it right."',
+  '"जहाँ चाह, वहाँ राह — private sector mein talent ki koi limit nahi।"',
+  '"Dream big, work hard, stay focused — success will follow."',
+  '"मेहनत करो, खुद को साबित करो — दुनिया झुकेगी।"',
+  '"Hard work beats talent when talent doesn\'t work hard."',
+  '"हर बड़ी सफलता छोटी शुरुआत से होती है।"',
+  '"Your skills are your most valuable asset — keep investing in them."',
+  '"Skills seekho, portfolio banao, job khud aayegi।"',
+];
+
+const CAREERS_DB = {
+  tech: [
+    { id:"sw_dev", emoji:"💻", name:"Software Developer", category:"Technology", tone:"#7c3aed",
+      salary:"₹3-50+ LPA", salaryN:300000, demand:95, time:"1-4 years",
+      fresher:"₹3-8 LPA", mid:"₹8-20 LPA", senior:"₹20-50+ LPA",
+      companies:["TCS","Infosys","Wipro","Google","Amazon","Flipkart","Startup"],
+      skills:["HTML/CSS","JavaScript","Python/Java","DSA","Git","Database"],
+      roadmap:["Programming basics seekho — Python ya JavaScript se start karo","DSA (Data Structures) practice karo — LeetCode daily karo","Ek web/mobile project banao aur GitHub pe daalo","Internship lo — real company mein experience lo","LinkedIn profile update karo aur job apply karo"],
+      tip:"Portfolio + DSA = Job. Degree se zyada projects matter karte hain."
+    },
+    { id:"data_sci", emoji:"📊", name:"Data Scientist", category:"Technology", tone:"#0ea5e9",
+      salary:"₹5-60+ LPA", salaryN:500000, demand:95, time:"1-3 years",
+      fresher:"₹5-10 LPA", mid:"₹10-25 LPA", senior:"₹25-60+ LPA",
+      companies:["Google","Amazon","Zomato","Paytm","Mu Sigma","Analytics firms"],
+      skills:["Python","SQL","Machine Learning","Statistics","Tableau","TensorFlow"],
+      roadmap:["Python aur Statistics seekho — Coursera free courses hain","Pandas, NumPy, Matplotlib master karo","Machine Learning algorithms seekho — Andrew Ng ka course karo","Kaggle pe competitions join karo — real data practice hogi","Portfolio: 3-5 ML projects GitHub pe daalo"],
+      tip:"Kaggle competitions + GitHub projects = best portfolio for data science."
+    },
+    { id:"ai_ml", emoji:"🤖", name:"AI / ML Engineer", category:"Technology", tone:"#8b5cf6",
+      salary:"₹8-1Cr+ LPA", salaryN:800000, demand:98, time:"2-4 years",
+      fresher:"₹8-15 LPA", mid:"₹15-40 LPA", senior:"₹40 LPA - 1Cr+",
+      companies:["Google","Microsoft","OpenAI","Meta","Indian AI startups"],
+      skills:["Python","Deep Learning","TensorFlow","PyTorch","NLP","Computer Vision"],
+      roadmap:["Strong Python + Mathematics (Linear Algebra, Calculus, Stats)","Deep Learning: Andrew Ng's Coursera specialization karo","TensorFlow ya PyTorch se models banao","Research papers padhna start karo (arxiv.org)","Real-world AI projects banao — Hugging Face explore karo"],
+      tip:"AI field mein 2030 tak demand 40%+ badhegi. Abhi seekhna start karo."
+    },
+    { id:"cybersec", emoji:"🔐", name:"Cyber Security Expert", category:"Technology", tone:"#0d9488",
+      salary:"₹4-40+ LPA", salaryN:400000, demand:90, time:"1-3 years",
+      fresher:"₹4-8 LPA", mid:"₹8-20 LPA", senior:"₹20-40+ LPA",
+      companies:["Banks","IT firms","Govt agencies","Consulting firms"],
+      skills:["Networking","Linux","Ethical Hacking","Python","SIEM","Pen Testing"],
+      roadmap:["Networking fundamentals samjho (CompTIA Network+)","Linux command line master karo","TryHackMe.com ya PortSwigger labs pe practice karo","CEH (Certified Ethical Hacker) certification lo","Bug bounty programs join karo (HackerOne, Bugcrowd)"],
+      tip:"Cyber security mein India mein 3 lakh jobs ki shortage hai — bahut scope hai."
+    },
+    { id:"web_dev", emoji:"🌐", name:"Web / App Developer", category:"Technology", tone:"#f97316",
+      salary:"₹2-30+ LPA", salaryN:200000, demand:85, time:"6-12 months",
+      fresher:"₹2-5 LPA", mid:"₹5-15 LPA", senior:"₹15-30+ LPA",
+      companies:["Digital agencies","Startups","Freelance clients","E-commerce companies"],
+      skills:["HTML","CSS","JavaScript","React/Next.js","Node.js","Firebase"],
+      roadmap:["HTML + CSS se static websites banana seekho (1 month)","JavaScript basics aur DOM manipulation seekho","React ya Next.js framework seekho","5 websites portfolio mein banao","Freelancing ya job ke liye apply karo"],
+      tip:"6 mahine mein web developer ban sakte ho — 10th/12th ke baad bhi."
+    },
+  ],
+  finance: [
+    { id:"ca_priv", emoji:"📈", name:"Chartered Accountant (CA)", category:"Finance", tone:"#f59e0b",
+      salary:"₹7-1Cr+ LPA", salaryN:700000, demand:90, time:"5-5.5 years",
+      fresher:"₹7-15 LPA", mid:"₹15-40 LPA", senior:"₹40 LPA - 1Cr+",
+      companies:["Deloitte","PwC","EY","KPMG","Banks","MNCs"],
+      skills:["Accounting","Taxation (GST)","Auditing","Tally","MS Excel","Financial Analysis"],
+      roadmap:["12th Commerce ke baad CA Foundation register karo (ICAI)","CA Foundation clear karo (4 papers)","CA Intermediate (8 papers) clear karo","3 years Articleship karo (practical experience)","CA Final clear karo — member bano"],
+      tip:"CA exam difficult hai, lekin ek baar clear hone ke baad life set ho jaati hai."
+    },
+    { id:"banker", emoji:"🏦", name:"Private Bank Officer / Manager", category:"Finance", tone:"#3b82f6",
+      salary:"₹3-25+ LPA", salaryN:300000, demand:80, time:"3-4 years",
+      fresher:"₹3-6 LPA", mid:"₹6-15 LPA", senior:"₹15-25+ LPA",
+      companies:["HDFC Bank","ICICI Bank","Axis Bank","Kotak Mahindra","Yes Bank"],
+      skills:["Banking Products","Sales","Communication","Excel","CRM Tools"],
+      roadmap:["Commerce ya Finance graduation karo","MBA Finance ya Banking course optional but helpful","Private bank ki recruitment drive ya direct apply karo","Bank Relationship Manager ya Branch Officer se start karo","Performance pe fast promotion milti hai"],
+      tip:"Private banks mein salary + incentives + growth — better than govt bank sometimes."
+    },
+    { id:"stock_broker", emoji:"📉", name:"Stock Market / Financial Analyst", category:"Finance", tone:"#10b981",
+      salary:"₹3-50+ LPA", salaryN:300000, demand:75, time:"1-2 years",
+      fresher:"₹3-6 LPA", mid:"₹6-20 LPA", senior:"₹20-50+ LPA",
+      companies:["Zerodha","Angel One","HDFC Securities","IIFL","Motilal Oswal"],
+      skills:["Fundamental Analysis","Technical Analysis","NSE/BSE","Excel","Financial Modeling"],
+      roadmap:["Stock market basics seekho — Zerodha Varsity (free)","NISM Series VIII (Equity Derivatives) certification lo","Paper trading practice karo pehle","Demat account kholo aur real trading start karo","CFA ya CFP certification se career boost hogi"],
+      tip:"NISM certification + practical knowledge = financial sector entry."
+    },
+  ],
+  health: [
+    { id:"mbbs_priv", emoji:"⚕️", name:"Doctor (Private Practice)", category:"Healthcare", tone:"#e11d48",
+      salary:"₹5-1Cr+ LPA", salaryN:500000, demand:90, time:"5.5-8 years",
+      fresher:"₹5-12 LPA (JR)", mid:"₹15-40 LPA", senior:"₹40 LPA - 1Cr+",
+      companies:["Apollo","Fortis","Max","Manipal","Private Clinic"],
+      skills:["Medical Diagnosis","Surgery","Patient Communication","Medical Ethics","Research"],
+      roadmap:["12th PCB + NEET UG qualify karo","MBBS (5.5 years) complete karo","1 year compulsory internship","NEET PG se MD/MS specialization karo","Private hospital join karo ya apna clinic kholo"],
+      tip:"Specialization ke baad private practice mein income unlimited ho sakti hai."
+    },
+    { id:"nursing_priv", emoji:"👩‍⚕️", name:"Staff Nurse / Nursing Manager", category:"Healthcare", tone:"#059669",
+      salary:"₹2-15+ LPA", salaryN:200000, demand:88, time:"3-4 years",
+      fresher:"₹2-4 LPA", mid:"₹4-10 LPA", senior:"₹10-15+ LPA",
+      companies:["Apollo","Fortis","Max","Medanta","Nursing homes","Abroad opportunities"],
+      skills:["Patient Care","ICU/CCU","IV Administration","Medical Documentation","Emergency Care"],
+      roadmap:["GNM (3 years) ya BSc Nursing (4 years) karo","State Nursing Council registration zaroori","ICU, OT, Emergency experience lo","Senior Nursing Officer ya Nurse Manager bano","Gulf/UK/Australia mein bhi bahut demand hai"],
+      tip:"Nursing mein India + abroad dono jagah demand bahut zyada hai — global career possible."
+    },
+    { id:"pharma", emoji:"💊", name:"Pharmacist / Pharma Sales", category:"Healthcare", tone:"#7c3aed",
+      salary:"₹2.5-20+ LPA", salaryN:250000, demand:78, time:"4 years",
+      fresher:"₹2.5-4 LPA", mid:"₹4-10 LPA", senior:"₹10-20+ LPA",
+      companies:["Sun Pharma","Cipla","Lupin","Dr. Reddy's","Medical stores"],
+      skills:["Pharmacology","Drug Interactions","Sales","Regulatory","Quality Control"],
+      roadmap:["12th PCB ke baad B.Pharm (4 years) karo","State Pharmacy Council registration lo","Medical store ya hospital pharmacy se start karo","Pharma MR (Medical Representative) field mein bhi scope hai","M.Pharm ya MBA Pharma se senior roles milte hain"],
+      tip:"Pharma industry growing hai — R&D, Sales, Quality — bahut options hain."
+    },
+  ],
+  creative: [
+    { id:"graphic_design", emoji:"🎨", name:"Graphic Designer / UI Designer", category:"Creative", tone:"#ec4899",
+      salary:"₹2-40+ LPA", salaryN:200000, demand:82, time:"3-12 months",
+      fresher:"₹2-5 LPA", mid:"₹5-15 LPA", senior:"₹15-40+ LPA",
+      companies:["Ad agencies","Tech companies","Startups","Freelance","Media"],
+      skills:["Canva","Photoshop","Illustrator","Figma","Typography","Color Theory"],
+      roadmap:["Canva se start karo — free tool hai, posters/banners banana seekho","Adobe Photoshop + Illustrator seekho","Figma seekho — UI/UX design ke liye industry standard","Behance pe portfolio banao (30+ designs)","Freelance projects lo — local businesses se start karo"],
+      tip:"Graphic design mein degree zaroor nahi — portfolio hi sab kuch hai."
+    },
+    { id:"video_editor", emoji:"🎬", name:"Video Editor / Content Creator", category:"Creative", tone:"#e11d48",
+      salary:"₹1.5-30+ LPA", salaryN:150000, demand:85, time:"2-6 months",
+      fresher:"₹1.5-4 LPA", mid:"₹4-12 LPA", senior:"₹12-30+ LPA (Freelance unlimited)",
+      companies:["YouTube channels","Production houses","News channels","Ad agencies","Freelance"],
+      skills:["CapCut","DaVinci Resolve","Premiere Pro","After Effects","Storytelling","Reels"],
+      roadmap:["CapCut (mobile) se basic editing start karo — free hai","20 Reels/Shorts banao aur portfolio mein daalo","DaVinci Resolve (free, professional) seekho","Local businesses, YouTubers, ko pitch karo","Apna YouTube channel bhi start karo — dual income"],
+      tip:"Mobile se start karke lakhon kamane wale log hain — aaj shuru karo."
+    },
+    { id:"digital_mkt", emoji:"📱", name:"Digital Marketing Specialist", category:"Creative", tone:"#f97316",
+      salary:"₹2.5-30+ LPA", salaryN:250000, demand:88, time:"3-6 months",
+      fresher:"₹2.5-5 LPA", mid:"₹5-15 LPA", senior:"₹15-30+ LPA",
+      companies:["Digital agencies","E-commerce","Startups","MNCs","Freelance"],
+      skills:["SEO","Google Ads","Facebook Ads","Content Marketing","Analytics","Email Marketing"],
+      roadmap:["Google Digital Garage (free course) se SEO/Ads seekho","Facebook/Instagram Ads practically run karo (₹500 se start)","Google Analytics samjho","Ek brand ka social media khud manage karo","HubSpot aur Google certificates lo — free hain"],
+      tip:"Google ki free certifications + real brand experience = job pakki."
+    },
+    { id:"photographer", emoji:"📸", name:"Photographer / Videographer", category:"Creative", tone:"#0ea5e9",
+      salary:"₹2-50+ LPA", salaryN:200000, demand:72, time:"1-2 years",
+      fresher:"₹2-4 LPA", mid:"₹4-15 LPA", senior:"₹15-50+ LPA (events/commercial)",
+      companies:["Event companies","News agencies","E-commerce brands","Freelance","Wedding photography"],
+      skills:["Camera operation","Lightroom","Photoshop","Composition","Lighting","Client handling"],
+      roadmap:["Camera basics seekho — even mobile photography se start karo","Lightroom editing seekho (free mobile app)","Portfolio: 50 best photos ka Instagram/website banao","Wedding/event photography assist karo","Brand photography ya stock photography se income"],
+      tip:"Wedding photography se Rs. 50K-2L per event kamana possible hai."
+    },
+  ],
+  management: [
+    { id:"mba_mgr", emoji:"📋", name:"MBA Manager / Business Analyst", category:"Management", tone:"#7c3aed",
+      salary:"₹5-50+ LPA", salaryN:500000, demand:80, time:"5 years (3+2)",
+      fresher:"₹5-12 LPA", mid:"₹12-30 LPA", senior:"₹30-50+ LPA",
+      companies:["MNCs","Consulting firms","IT companies","FMCG","E-commerce"],
+      skills:["Leadership","Excel","PowerPoint","Communication","Problem Solving","Data Analysis"],
+      roadmap:["Graduation mein marks aur communication strong karo","CAT/MAT/XAT exam de ke top MBA college mein jao","Summer internship real experience ke liye bahut important","Excel, PPT, communication daily improve karo","LinkedIn networking aur placement preparation saath mein karo"],
+      tip:"IIM MBA = fast track career. But local MBA + skills bhi kaam karta hai."
+    },
+    { id:"hr_manager", emoji:"👥", name:"HR Manager / Recruiter", category:"Management", tone:"#10b981",
+      salary:"₹2.5-25+ LPA", salaryN:250000, demand:75, time:"3-4 years",
+      fresher:"₹2.5-5 LPA", mid:"₹5-15 LPA", senior:"₹15-25+ LPA",
+      companies:["All corporate companies","IT firms","Banks","Manufacturing"],
+      skills:["Communication","People Management","Labor Laws","HRMS software","Recruitment"],
+      roadmap:["BBA/MBA HR ya Psychology graduation karo","SHRM ya XLRI HR certification helpful","Recruitment process seekho — LinkedIn Recruiter use karo","HR Operations ya Talent Acquisition se start karo","People analytics aur HRIS tools seekho"],
+      tip:"HR ek evergreen field hai — har company mein HR hoti hai."
+    },
+    { id:"mktg_mgr", emoji:"📣", name:"Marketing Manager / Brand Manager", category:"Management", tone:"#f59e0b",
+      salary:"₹3-40+ LPA", salaryN:300000, demand:82, time:"3-5 years",
+      fresher:"₹3-7 LPA", mid:"₹7-20 LPA", senior:"₹20-40+ LPA",
+      companies:["FMCG (HUL, P&G)","E-commerce","Startups","Media companies","Agencies"],
+      skills:["Market Research","Brand Strategy","Digital Marketing","Content","Analytics","Communication"],
+      roadmap:["MBA Marketing ya BBA + specialization","Digital marketing practically seekho saath mein","Brand campaign analysis karo — famous ads study karo","Internship at ad agency ya brand team","Field marketing + digital marketing dono seekho"],
+      tip:"Marketing mein creativity + data analysis = powerful combination."
+    },
+  ]
+};
+
+const resumeTipsData = [
+  { title:"1 Page Resume (Fresher)", desc:"Fresher ke liye 1 page enough hai. Zyada info confuse karta hai. Simple aur clean rakho." },
+  { title:"Action Verbs Use Karo", desc:"'Developed', 'Led', 'Improved', 'Achieved', 'Managed' — strong words se resume strong lagta hai." },
+  { title:"Numbers Se Prove Karo", desc:"'30% performance improve kiya' ya '500+ users ka app banaya' — numbers impressive lagte hain." },
+  { title:"ATS Friendly Format", desc:"Tables, columns, images avoid karo — plain text format use karo jo software read kar sake." },
+  { title:"Relevant Skills Highlight Karo", desc:"Job description padhke wahi skills daalo jo unhe chahiye — custom resume banao har company ke liye." },
+  { title:"GitHub / Portfolio Link", desc:"Tech jobs ke liye GitHub, design ke liye Behance — real work show karo." },
+  { title:"LinkedIn Profile Match Karo", desc:"Resume aur LinkedIn same hone chahiye — recruiter dono check karta hai." },
+  { title:"Proofread Zaroor Karo", desc:"Spelling mistakes aur grammar errors bahut buri impression dete hain — 3 baar check karo." },
+  { title:"Contact Info Sahi Rakho", desc:"Correct phone number, professional email (name@gmail.com), city ka naam daalo." },
+  { title:"Objective Statement Powerful", desc:"Resume ke top pe 2 lines mein batao tum kya ho aur kya achieve karna chahte ho." },
+];
+
+const interviewTipsData = [
+  { title:"Company Research Karo", desc:"Interview se pehle company ki website, products, recent news padhho — 'Why do you want to join us?' ka jawab ready rakhna." },
+  { title:"STAR Method Use Karo", desc:"Situation, Task, Action, Result — behavioral questions ke liye yeh format use karo." },
+  { title:"Mock Interview Practice Karo", desc:"Ghar pe aaine ke saamne practice karo ya friend ke saath. Baar baar bolne se confidence aata hai." },
+  { title:"Professional Dress Code", desc:"Job profile ke hisab se formal ya smart casual wear karo — first impression last karta hai." },
+  { title:"15 Min Pehle Pahuncho", desc:"Late aana bahut buri impression deta hai — hamesha early pahuncho." },
+  { title:"Smart Questions Poochho", desc:"'What does success look like in this role?' jaisi questions interviewers ko impressive lagti hain." },
+  { title:"Body Language Confident", desc:"Straight baithna, eye contact rakhna, confident but polite tone — sab matter karta hai." },
+  { title:"Salary Negotiate Karo", desc:"Research karo market rates — confidently negotiate karo. First offer usually negotiable hota hai." },
+  { title:"Thank You Email Bhejo", desc:"Interview ke 24 hours mein recruiter ko thank you email bhejo — yeh professional touch add karta hai." },
+  { title:"Rejection Se Mat Darana", desc:"Har rejection ek learning hai. Analyse karo kya galat hua, improve karo, aur fir try karo." },
+];
+
+let currentLang = localStorage.getItem('rclang_p') || 'en';
+let quoteIdx = 0;
+
+const allCareers = [...CAREERS_DB.tech,...CAREERS_DB.finance,...CAREERS_DB.health,...CAREERS_DB.creative,...CAREERS_DB.management];
+
+function renderGrid(containerId, data) {
+  const el = document.getElementById(containerId);
+  if (!el) return;
+  el.innerHTML = data.map(c => `
+    <div class="career-card" style="--tone:${c.tone}">
+      <span class="emoji">${c.emoji}</span>
+      <h3>${c.name}</h3>
+      <div class="category">${c.category}</div>
+      <div class="badge-row">
+        <span class="badge hot">💰 ${c.salary}</span>
+        <span class="badge purple">⏱️ ${c.time}</span>
+      </div>
+      <div class="info-row">
+        <div class="info-box"><span>Fresher</span><strong>${c.fresher}</strong></div>
+        <div class="info-box"><span>Senior</span><strong>${c.senior}</strong></div>
+      </div>
+      <div style="margin-bottom:12px;">
+        <div style="font-size:11px;color:var(--muted);margin-bottom:4px;">Demand ${c.demand}%</div>
+        <div class="demand-bar"><div class="demand-fill" style="width:${c.demand}%"></div></div>
+      </div>
+      <button class="details-btn" onclick="openModal('${c.id}')">📖 Full Details & Roadmap</button>
+    </div>
+  `).join('');
+}
+
+function openModal(id) {
+  const c = allCareers.find(x => x.id === id);
+  if (!c) return;
+  document.getElementById('modalTitle').textContent = c.emoji + ' ' + c.name;
+  document.getElementById('modalBody').innerHTML = `
+    <div class="modal-section">
+      <h4>💰 Salary Range</h4>
+      <div class="salary-row"><span class="salary-label">Fresher</span><span class="salary-val">${c.fresher}</span></div>
+      <div class="salary-row"><span class="salary-label">Mid Level (3-5 years)</span><span class="salary-val">${c.mid}</span></div>
+      <div class="salary-row"><span class="salary-label">Senior Level</span><span class="salary-val">${c.senior}</span></div>
+    </div>
+    <div class="modal-section">
+      <h4>🛠️ Required Skills</h4>
+      <div>${c.skills.map(s=>`<span class="skill-tag">${s}</span>`).join('')}</div>
+    </div>
+    <div class="modal-section">
+      <h4>🏢 Top Companies</h4>
+      <div>${c.companies.map(co=>`<span class="company-tag">${co}</span>`).join('')}</div>
+    </div>
+    <div class="modal-section">
+      <h4>🗺️ Step-by-Step Roadmap</h4>
+      ${c.roadmap.map((s,i)=>`<div class="roadmap-step"><div class="step-num">${i+1}</div><div class="step-text">${s}</div></div>`).join('')}
+    </div>
+    <div style="background:rgba(255,215,0,0.08);border:1px solid rgba(255,215,0,0.3);border-radius:8px;padding:12px;margin-top:10px;">
+      <span style="color:var(--gold);font-weight:700;">💡 Pro Tip: </span><span style="font-size:13px;color:var(--text);">${c.tip}</span>
+    </div>
+  `;
+  document.getElementById('modal').classList.add('open');
+}
+
+function closeModal() { document.getElementById('modal').classList.remove('open'); }
+
+function renderTipCards(containerId, data) {
+  const el = document.getElementById(containerId);
+  if (!el) return;
+  el.innerHTML = data.map((t,i) => `
+    <div class="tip-card">
+      <div style="width:32px;height:32px;background:var(--purple);color:white;border-radius:50%;display:grid;place-items:center;font-weight:800;font-size:14px;margin-bottom:10px;">${i+1}</div>
+      <h4>${t.title}</h4><p>${t.desc}</p>
+    </div>
+  `).join('');
+}
+
+function showSection(id) {
+  document.querySelectorAll('.section').forEach(s=>s.classList.remove('active'));
+  document.querySelectorAll('nav button').forEach(b=>b.classList.remove('active'));
+  document.getElementById(id)?.classList.add('active');
+  const navMap = ['home','tech','finance','healthcare','creative','management','resume','interview'];
+  document.querySelectorAll('nav button')[navMap.indexOf(id)]?.classList.add('active');
+  window.scrollTo({top:0,behavior:'smooth'});
+}
+
+function toggleLang() {
+  currentLang = currentLang === 'en' ? 'hi' : 'en';
+  localStorage.setItem('rclang_p', currentLang);
+  document.getElementById('langBtn').textContent = currentLang === 'en' ? '🌐 हिंदी' : '🌐 English';
+}
+
+function rotateQuote() {
+  quoteIdx = (quoteIdx + 1) % quotes.length;
+  const el = document.getElementById('heroQuote');
+  const strip = document.getElementById('motiveStrip');
+  if (el) { el.style.opacity=0; setTimeout(()=>{ el.textContent=quotes[quoteIdx]; el.style.opacity=1; },300); }
+  if (strip) strip.textContent = '✨ ' + quotes[(quoteIdx+2)%quotes.length] + ' ✨';
+}
+
+renderGrid('techGrid', CAREERS_DB.tech);
+renderGrid('finGrid', CAREERS_DB.finance);
+renderGrid('healthGrid', CAREERS_DB.health);
+renderGrid('creativeGrid', CAREERS_DB.creative);
+renderGrid('mgmtGrid', CAREERS_DB.management);
+renderTipCards('resumeTips', resumeTipsData);
+renderTipCards('interviewTips', interviewTipsData);
+setInterval(rotateQuote, 4000);
+document.getElementById('modal').addEventListener('click', e=>{ if(e.target.id==='modal') closeModal(); });
+</script>
+</body>
+</html>

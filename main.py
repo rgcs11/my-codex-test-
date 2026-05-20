@@ -1,2 +1,4 @@
-print("✅ Codex is working!")
+from career_guide import main
 
+if __name__ == "__main__":
+    main()

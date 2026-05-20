@@ -1,0 +1,613 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Business Guide — Apna Kaam Start Karo | Rohit Computer</title>
+<link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;600;700;800&family=Noto+Sans+Devanagari:wght@400;600;700&display=swap" rel="stylesheet">
+<style>
+:root{
+  --bg:#071510;--bg2:#0B1E14;--card:#0E2418;
+  --green:#00E676;--gold:#FFD700;--cyan:#00D9FF;
+  --orange:#FF6B35;--red:#FF5252;--purple:#A855F7;
+  --text:#F0F4FF;--muted:#8BAED0;--border:rgba(0,230,118,0.2);
+  --radius:12px;
+}
+*{margin:0;padding:0;box-sizing:border-box;}
+html{scroll-behavior:smooth;}
+body{font-family:'Poppins',sans-serif;background:var(--bg);color:var(--text);}
+header{position:sticky;top:0;z-index:100;background:rgba(7,21,16,0.97);border-bottom:1px solid var(--border);backdrop-filter:blur(10px);padding:12px 20px;}
+.header-inner{max-width:1100px;margin:0 auto;display:flex;align-items:center;justify-content:space-between;gap:10px;flex-wrap:wrap;}
+.logo{display:flex;align-items:center;gap:10px;}
+.logo-icon{width:44px;height:44px;background:linear-gradient(135deg,#00E676,#FFD700);border-radius:10px;display:grid;place-items:center;font-size:22px;}
+.logo h1{font-size:18px;font-weight:800;color:var(--green);}
+.logo p{font-size:11px;color:var(--muted);}
+.lang-btn{background:var(--green);color:#071510;border:none;padding:8px 16px;border-radius:20px;font-weight:700;font-size:13px;cursor:pointer;transition:0.2s;}
+.lang-btn:hover{background:var(--gold);}
+nav{background:var(--bg2);border-bottom:1px solid var(--border);overflow-x:auto;}
+nav .nav-inner{max-width:1100px;margin:0 auto;display:flex;gap:4px;padding:8px 16px;}
+nav button{flex:0 0 auto;background:transparent;border:none;color:var(--muted);padding:8px 14px;border-radius:20px;font-size:13px;font-weight:600;cursor:pointer;white-space:nowrap;transition:0.2s;font-family:'Poppins',sans-serif;}
+nav button:hover,nav button.active{background:var(--green);color:#071510;}
+.hero{background:linear-gradient(135deg,#030f07,#091a0d,#030f07);padding:50px 20px 40px;text-align:center;position:relative;overflow:hidden;}
+.hero::before{content:'';position:absolute;top:-50%;left:-50%;width:200%;height:200%;background:radial-gradient(circle at 30% 50%,rgba(0,230,118,0.08) 0%,transparent 50%),radial-gradient(circle at 70% 30%,rgba(255,215,0,0.06) 0%,transparent 50%);animation:bgmove 8s ease-in-out infinite alternate;}
+@keyframes bgmove{from{transform:translate(0,0);}to{transform:translate(20px,20px);}}
+.hero-content{position:relative;z-index:1;}
+.hero h1{font-size:clamp(24px,5vw,50px);font-weight:800;color:var(--green);line-height:1.1;margin-bottom:10px;}
+.hero h1 span{color:var(--gold);}
+.hero p{font-size:16px;color:var(--muted);margin-bottom:20px;}
+.quote-box{display:inline-block;background:rgba(0,230,118,0.08);border:1px solid rgba(0,230,118,0.3);border-radius:30px;padding:10px 24px;font-size:14px;color:var(--green);margin-bottom:24px;max-width:600px;transition:0.3s;}
+.stats-row{display:flex;justify-content:center;gap:20px;flex-wrap:wrap;margin-top:24px;}
+.stat-box{background:rgba(255,255,255,0.05);border:1px solid var(--border);border-radius:12px;padding:14px 24px;text-align:center;min-width:120px;}
+.stat-box strong{display:block;font-size:28px;font-weight:800;color:var(--gold);}
+.stat-box span{font-size:12px;color:var(--muted);}
+.motive-strip{background:linear-gradient(90deg,rgba(0,230,118,0.1),rgba(255,215,0,0.1));border-top:1px solid var(--border);border-bottom:1px solid var(--border);padding:10px 20px;text-align:center;font-size:14px;color:var(--gold);font-weight:600;}
+main{max-width:1100px;margin:0 auto;padding:30px 16px 60px;}
+.section{display:none;}
+.section.active{display:block;animation:fadein 0.3s ease;}
+@keyframes fadein{from{opacity:0;transform:translateY(8px);}to{opacity:1;transform:none;}}
+.section-title{font-size:28px;font-weight:800;color:var(--green);margin-bottom:6px;}
+.section-subtitle{color:var(--muted);font-size:14px;margin-bottom:24px;}
+.section-quote{background:rgba(255,215,0,0.08);border-left:4px solid var(--gold);padding:10px 16px;border-radius:0 8px 8px 0;font-size:13px;color:var(--gold);margin-bottom:24px;font-style:italic;}
+
+/* INVEST SELECTOR */
+.invest-row{display:flex;gap:12px;flex-wrap:wrap;margin-bottom:24px;}
+.invest-btn{flex:1;min-width:160px;background:var(--card);border:2px solid var(--border);border-radius:var(--radius);padding:18px;text-align:center;cursor:pointer;transition:0.25s;}
+.invest-btn:hover,.invest-btn.active{border-color:var(--green);background:rgba(0,230,118,0.08);transform:translateY(-2px);}
+.invest-btn .i-icon{font-size:36px;margin-bottom:8px;}
+.invest-btn h3{font-size:16px;font-weight:700;margin-bottom:4px;}
+.invest-btn p{font-size:12px;color:var(--muted);}
+
+/* BIZ CARDS */
+.biz-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(300px,1fr));gap:16px;}
+.biz-card{background:var(--card);border:1px solid var(--border);border-radius:var(--radius);padding:20px;transition:0.25s;position:relative;overflow:hidden;}
+.biz-card::before{content:'';position:absolute;left:0;top:0;bottom:0;width:4px;background:var(--tone,var(--green));}
+.biz-card:hover{transform:translateY(-3px);box-shadow:0 8px 30px rgba(0,230,118,0.15);border-color:rgba(0,230,118,0.5);}
+.biz-card .emoji{font-size:36px;margin-bottom:10px;display:block;}
+.biz-card h3{font-size:17px;font-weight:700;margin-bottom:4px;}
+.biz-card .bcat{font-size:12px;color:var(--green);font-weight:600;margin-bottom:10px;}
+.badge-row{display:flex;flex-wrap:wrap;gap:6px;margin-bottom:12px;}
+.badge{padding:4px 10px;border-radius:20px;font-size:11px;font-weight:700;}
+.badge.green{background:rgba(0,230,118,0.15);color:var(--green);border:1px solid rgba(0,230,118,0.3);}
+.badge.gold{background:rgba(255,215,0,0.12);color:var(--gold);border:1px solid rgba(255,215,0,0.3);}
+.badge.orange{background:rgba(255,107,53,0.12);color:var(--orange);border:1px solid rgba(255,107,53,0.3);}
+.badge.cyan{background:rgba(0,217,255,0.12);color:var(--cyan);border:1px solid rgba(0,217,255,0.3);}
+.info-2{display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-bottom:12px;}
+.info-box{background:rgba(255,255,255,0.04);border-radius:8px;padding:8px;}
+.info-box span{display:block;font-size:10px;color:var(--muted);text-transform:uppercase;font-weight:700;margin-bottom:2px;}
+.info-box strong{font-size:13px;color:var(--text);}
+.risk-row{margin-bottom:12px;}
+.risk-row label{font-size:11px;color:var(--muted);display:block;margin-bottom:4px;}
+.risk-bar{height:8px;background:rgba(255,255,255,0.1);border-radius:4px;overflow:hidden;}
+.risk-fill{height:100%;border-radius:4px;}
+.details-btn{width:100%;padding:10px;background:transparent;border:1px solid var(--green);color:var(--green);border-radius:8px;font-weight:700;font-size:13px;cursor:pointer;transition:0.2s;font-family:'Poppins',sans-serif;}
+.details-btn:hover{background:var(--green);color:#071510;}
+
+/* SUCCESS TIPS */
+.tips-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(260px,1fr));gap:14px;}
+.tip-card{background:var(--card);border:1px solid var(--border);border-radius:var(--radius);padding:18px;}
+.tip-card h4{font-size:15px;font-weight:700;margin-bottom:6px;}
+.tip-card p{font-size:13px;color:var(--muted);line-height:1.6;}
+
+/* MODAL */
+.modal-overlay{display:none;position:fixed;inset:0;background:rgba(0,0,0,0.8);z-index:200;align-items:center;justify-content:center;padding:16px;backdrop-filter:blur(6px);}
+.modal-overlay.open{display:flex;}
+.modal-box{background:var(--bg2);border:1px solid var(--border);border-radius:16px;width:min(720px,100%);max-height:88vh;overflow-y:auto;box-shadow:0 20px 60px rgba(0,0,0,0.5);}
+.modal-head{position:sticky;top:0;background:var(--bg2);border-bottom:1px solid var(--border);padding:16px 20px;display:flex;justify-content:space-between;align-items:flex-start;gap:10px;}
+.modal-head h2{font-size:22px;font-weight:800;color:var(--green);}
+.modal-close{background:transparent;border:1px solid var(--border);color:var(--text);width:32px;height:32px;border-radius:8px;cursor:pointer;font-size:16px;flex-shrink:0;}
+.modal-body{padding:20px;}
+.modal-section{margin-bottom:20px;}
+.modal-section h4{color:var(--gold);font-size:14px;font-weight:700;margin-bottom:10px;text-transform:uppercase;}
+.roadmap-step{display:flex;gap:12px;align-items:flex-start;margin-bottom:10px;padding:10px;background:rgba(255,255,255,0.03);border-radius:8px;border:1px solid var(--border);}
+.step-num{width:28px;height:28px;background:var(--green);color:#071510;border-radius:50%;display:grid;place-items:center;font-weight:800;font-size:12px;flex-shrink:0;}
+.step-text{font-size:13px;color:var(--text);line-height:1.5;padding-top:4px;}
+.skill-tag{display:inline-block;background:rgba(0,230,118,0.1);border:1px solid rgba(0,230,118,0.3);color:var(--green);padding:4px 10px;border-radius:20px;font-size:12px;font-weight:600;margin:3px;}
+.detail-grid{display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-bottom:16px;}
+.detail-box{background:rgba(255,255,255,0.04);border:1px solid var(--border);border-radius:8px;padding:12px;}
+.detail-box span{display:block;font-size:11px;color:var(--muted);text-transform:uppercase;font-weight:700;margin-bottom:4px;}
+.detail-box strong{font-size:15px;color:var(--text);}
+footer{background:#030f07;border-top:1px solid var(--border);padding:30px 20px;text-align:center;}
+footer h3{color:var(--green);font-size:20px;margin-bottom:8px;}
+footer p{color:var(--muted);font-size:13px;margin-bottom:4px;}
+.wa-btn{display:inline-flex;align-items:center;gap:8px;background:#25D366;color:white;padding:12px 24px;border-radius:30px;font-weight:700;font-size:14px;text-decoration:none;margin-top:16px;transition:0.2s;}
+.wa-btn:hover{background:#1ab955;transform:scale(1.05);}
+.wa-fab{position:fixed;bottom:20px;right:20px;z-index:150;width:54px;height:54px;background:#25D366;border-radius:50%;display:grid;place-items:center;font-size:24px;text-decoration:none;box-shadow:0 4px 20px rgba(37,211,102,0.4);transition:0.2s;}
+.wa-fab:hover{transform:scale(1.1);}
+@media(max-width:600px){.header-inner{flex-direction:column;align-items:flex-start;}.info-2,.detail-grid{grid-template-columns:1fr;}.biz-grid,.invest-row{grid-template-columns:1fr;display:grid;}}
+@media print{header,nav,.motive-strip,.wa-fab,footer{display:none;}.section{display:block!important;}body{background:white;color:black;}}
+</style>
+</head>
+<body>
+<header>
+  <div class="header-inner">
+    <div class="logo">
+      <div class="logo-icon">💰</div>
+      <div>
+        <h1>Rohit Computer</h1>
+        <p>Business Guide — Apna Kaam Start Karo</p>
+      </div>
+    </div>
+    <div style="display:flex;gap:10px;align-items:center;flex-wrap:wrap;">
+      <a href="https://wa.me/919452305913" style="color:#25D366;font-size:13px;font-weight:700;text-decoration:none;">📞 9452305913</a>
+      <button class="lang-btn" onclick="toggleLang()" id="langBtn">🌐 हिंदी</button>
+    </div>
+  </div>
+</header>
+<nav>
+  <div class="nav-inner">
+    <button class="active" onclick="showSection('home')">🏠 Home</button>
+    <button onclick="showSection('low')">🪙 Low Budget</button>
+    <button onclick="showSection('medium')">💵 Medium</button>
+    <button onclick="showSection('high')">💎 High Invest</button>
+    <button onclick="showSection('online')">🌐 Online Business</button>
+    <button onclick="showSection('rural')">🌿 Rural Business</button>
+    <button onclick="showSection('franchise')">🏪 Franchise</button>
+    <button onclick="showSection('tips')">💡 Success Tips</button>
+  </div>
+</nav>
+<div class="hero">
+  <div class="hero-content">
+    <h1>💰 Business Guide — <span>Apna Kaam Start Karo</span></h1>
+    <p>Zero investment se bade business tak — har level ke liye ideas aur roadmap</p>
+    <div class="quote-box" id="heroQuote" style="transition:0.3s;">"The best time to start a business was yesterday. The next best time is NOW."</div>
+    <div class="stats-row">
+      <div class="stat-box"><strong>40+</strong><span>Business Ideas</span></div>
+      <div class="stat-box"><strong>₹0</strong><span>Min Investment</span></div>
+      <div class="stat-box"><strong>₹1L+</strong><span>Monthly Possible</span></div>
+      <div class="stat-box"><strong>Free</strong><span>This Guide</span></div>
+    </div>
+  </div>
+</div>
+<div class="motive-strip" id="motiveStrip">✨ "Risk lena seekho — comfort zone mein sapne nahi milte।" ✨</div>
+
+<main>
+
+<!-- HOME -->
+<section class="section active" id="home">
+  <div class="section-quote">"नौकरी karo boss ke liye, business karo apne liye।"</div>
+  <div class="section-title">Apna Business Kyun Shuru Karo?</div>
+  <div class="section-subtitle">Job se zindagi chalti hai, business se zindagi banti hai. Apna kaam = apni marzi.</div>
+  <div class="tips-grid" style="margin-bottom:28px;">
+    <div class="tip-card"><h4>🚀 Unlimited Income</h4><p>Job mein salary fixed hoti hai — business mein income ki koi limit nahi. Mehnat se crores tak jaao.</p></div>
+    <div class="tip-card"><h4>🕐 Time Freedom</h4><p>Apne time pe kaam karo — koi boss nahi, koi fixed timing nahi. Apni life apne hisab se.</p></div>
+    <div class="tip-card"><h4>👨‍👩‍👧 Family Business</h4><p>Poora parivaar saath kaam kar sakta hai — family income aur family time dono saath.</p></div>
+    <div class="tip-card"><h4>🌍 Job Creator Bano</h4><p>Business se tum doosron ko bhi jobs de sakte ho — ek se zyada families ki madad karo.</p></div>
+    <div class="tip-card"><h4>📈 Asset Banao</h4><p>Job ek income hai, business ek asset hai — bechne pe bhi value milti hai. Wealth build hoti hai.</p></div>
+    <div class="tip-card"><h4>💡 Apni Idea Test Karo</h4><p>Jo product ya service tumhe pasand hai usse business bana sakte ho — passion se profit.</p></div>
+  </div>
+  <div style="background:rgba(0,230,118,0.06);border:1px solid rgba(0,230,118,0.3);border-radius:12px;padding:20px;margin-bottom:24px;">
+    <h3 style="color:var(--gold);margin-bottom:14px;">📋 Business Shuru Karne Ka Sahi Tarika</h3>
+    <div class="roadmap-step"><div class="step-num">1</div><div class="step-text">Pehle apna interest aur skill identify karo — passion + skill = best business idea</div></div>
+    <div class="roadmap-step"><div class="step-num">2</div><div class="step-text">Market research karo — kya log khareed rahe hain? Competition kitna hai?</div></div>
+    <div class="roadmap-step"><div class="step-num">3</div><div class="step-text">Small scale pe test karo — pehle 10 customers se shuru karo, investment zyada mat lagao</div></div>
+    <div class="roadmap-step"><div class="step-num">4</div><div class="step-text">Legal formalities: GST registration, MSME certificate, bank account — sab time pe karo</div></div>
+    <div class="roadmap-step"><div class="step-num">5</div><div class="step-text">Marketing: Word of mouth + WhatsApp + Social media se pehle customers lao</div></div>
+    <div class="roadmap-step"><div class="step-num">6</div><div class="step-text">Profit reinvest karo business badhao — ek baar momentum aaya toh growth natural hai</div></div>
+  </div>
+  <h3 style="color:var(--cyan);margin-bottom:16px;">💰 Investment ke Hisab se Choose Karo:</h3>
+  <div class="invest-row">
+    <div class="invest-btn" onclick="showSection('low')"><div class="i-icon">🪙</div><h3>Low Budget</h3><p>₹0 – ₹50,000</p></div>
+    <div class="invest-btn" onclick="showSection('medium')"><div class="i-icon">💵</div><h3>Medium</h3><p>₹50K – ₹5 Lakh</p></div>
+    <div class="invest-btn" onclick="showSection('high')"><div class="i-icon">💎</div><h3>High Invest</h3><p>₹5 Lakh+</p></div>
+    <div class="invest-btn" onclick="showSection('online')"><div class="i-icon">🌐</div><h3>Online</h3><p>Mobile/Laptop se</p></div>
+    <div class="invest-btn" onclick="showSection('rural')"><div class="i-icon">🌿</div><h3>Village/Town</h3><p>Gaon mein bhi chalega</p></div>
+  </div>
+</section>
+
+<!-- LOW BUDGET -->
+<section class="section" id="low">
+  <div class="section-quote">"Paise nahi hain — koi baat nahi. Skill se shuru karo।"</div>
+  <div class="section-title">🪙 Low Budget Business (₹0 – ₹50,000)</div>
+  <div class="section-subtitle">Khaali haath se bhi shuru ho sakta hai — skill hi tumhari capital hai</div>
+  <div class="biz-grid" id="lowGrid"></div>
+</section>
+
+<!-- MEDIUM -->
+<section class="section" id="medium">
+  <div class="section-quote">"Thoda invest karo, bahut kamaao — right business = multiplier effect।"</div>
+  <div class="section-title">💵 Medium Investment Business (₹50K – ₹5 Lakh)</div>
+  <div class="section-subtitle">Ek baar invest karo, saalon tak kamaao</div>
+  <div class="biz-grid" id="medGrid"></div>
+</section>
+
+<!-- HIGH -->
+<section class="section" id="high">
+  <div class="section-quote">"Bade investment mein bade returns hain — soch samajhkar lagao।"</div>
+  <div class="section-title">💎 High Investment Business (₹5 Lakh+)</div>
+  <div class="section-subtitle">Serious investment ke liye serious planning zaroori hai</div>
+  <div class="biz-grid" id="highGrid"></div>
+</section>
+
+<!-- ONLINE -->
+<section class="section" id="online">
+  <div class="section-quote">"Internet ne business ka darwaza khol diya — ghar baithe duniya se kamaao।"</div>
+  <div class="section-title">🌐 Online Business</div>
+  <div class="section-subtitle">Mobile ya laptop se — ghar baithe ya kahi se bhi chalao</div>
+  <div class="biz-grid" id="onlineGrid"></div>
+</section>
+
+<!-- RURAL -->
+<section class="section" id="rural">
+  <div class="section-quote">"Gaon ki mitti mein bhi sona hai — bas pehchaan ki zaroorat hai।"</div>
+  <div class="section-title">🌿 Rural & Small Town Business</div>
+  <div class="section-subtitle">Chhote shahar aur gaon ke liye best business ideas</div>
+  <div class="biz-grid" id="ruralGrid"></div>
+</section>
+
+<!-- FRANCHISE -->
+<section class="section" id="franchise">
+  <div class="section-quote">"Kisi badi brand ke naam se business karo — brand trust already hai।"</div>
+  <div class="section-title">🏪 Franchise Business</div>
+  <div class="section-subtitle">Established brand ke saath kaam karo — risk kam, success zyada</div>
+  <div class="biz-grid" id="franGrid"></div>
+</section>
+
+<!-- TIPS -->
+<section class="section" id="tips">
+  <div class="section-quote">"Business sikhna padta hai — failure se, experience se, aur smart logo se।"</div>
+  <div class="section-title">💡 Business Success Tips</div>
+  <div class="section-subtitle">Jo log successful businessmen hain, unse seekhe huye secrets</div>
+  <div class="tips-grid" id="successTips"></div>
+  <div style="margin-top:30px;background:rgba(255,215,0,0.06);border:1px solid rgba(255,215,0,0.3);border-radius:12px;padding:20px;">
+    <h3 style="color:var(--gold);margin-bottom:14px;">📚 Business Seekhne Ke Free Resources</h3>
+    <div style="display:grid;grid-template-columns:repeat(auto-fill,minmax(220px,1fr));gap:10px;">
+      <div style="background:rgba(255,255,255,0.04);border:1px solid var(--border);border-radius:8px;padding:12px;"><strong style="color:var(--cyan);">YouTube</strong><p style="font-size:12px;color:var(--muted);margin-top:4px;">Shark Tank India, Nikhil Kamath, Anupam Mittal ke videos</p></div>
+      <div style="background:rgba(255,255,255,0.04);border:1px solid var(--border);border-radius:8px;padding:12px;"><strong style="color:var(--cyan);">MSME Portal</strong><p style="font-size:12px;color:var(--muted);margin-top:4px;">Govt schemes, loans aur registration — msme.gov.in</p></div>
+      <div style="background:rgba(255,255,255,0.04);border:1px solid var(--border);border-radius:8px;padding:12px;"><strong style="color:var(--cyan);">Udemy / Coursera</strong><p style="font-size:12px;color:var(--muted);margin-top:4px;">Business, marketing, accounting free ya cheap courses</p></div>
+      <div style="background:rgba(255,255,255,0.04);border:1px solid var(--border);border-radius:8px;padding:12px;"><strong style="color:var(--cyan);">Books</strong><p style="font-size:12px;color:var(--muted);margin-top:4px;">Rich Dad Poor Dad, Zero to One, The Lean Startup</p></div>
+    </div>
+  </div>
+</section>
+
+</main>
+
+<div class="modal-overlay" id="modal">
+  <div class="modal-box">
+    <div class="modal-head">
+      <h2 id="modalTitle">Business Details</h2>
+      <button class="modal-close" onclick="closeModal()">✕</button>
+    </div>
+    <div class="modal-body" id="modalBody"></div>
+  </div>
+</div>
+
+<footer>
+  <div style="max-width:1100px;margin:0 auto;">
+    <h3>💰 Rohit Computer — Business Guidance Center</h3>
+    <p>Rath, Hamirpur, Uttar Pradesh — 210431</p>
+    <p>Business Guidance | GST Registration | MSME Certificate | CSC Center</p>
+    <div style="margin-top:16px;font-size:20px;color:var(--gold);">"अपना काम शुरू करो — सफलता कदम चूमेगी।"</div>
+    <a href="https://wa.me/919452305913?text=Hello%20Rohit%20Computer,%20mujhe%20business%20guidance%20chahiye" class="wa-btn" target="_blank">💬 WhatsApp pe Poochho — FREE</a>
+    <p style="margin-top:20px;font-size:11px;color:var(--muted);">© 2025 Rohit Computer. Made with ❤️ for Indian Entrepreneurs.</p>
+  </div>
+</footer>
+<a href="https://wa.me/919452305913" class="wa-fab" target="_blank">💬</a>
+
+<script>
+const quotes = [
+  '"The best time to start a business was yesterday. The next best time is NOW."',
+  '"नौकरी करो boss के लिए, business करो अपने लिए।"',
+  '"Risk lena seekho — comfort zone mein sapne nahi milte."',
+  '"छोटी शुरुआत से बड़ा मुकाम मिलता है।"',
+  '"You don\'t need to be great to start, but you need to start to be great."',
+  '"Apna kaam shuru karo — duniya tumhe rokne ki koshish karegi, mat ruko।"',
+  '"Every big company was once a small startup. Dream big."',
+  '"Mehnat se koi bhi sapna poora ho sakta hai — bas shuru karo।"',
+];
+
+const BIZ_DB = {
+  low: [
+    { id:"tiffin", emoji:"🍱", name:"Tiffin / Home Food Service", cat:"Food Business", tone:"#f97316",
+      invest:"₹5,000 – ₹20,000", profit:"₹15,000 – ₹60,000/month", risk:25, effort:"Medium",
+      license:"FSSAI Registration (Free/₹100)", time:"Start in 1 week",
+      skills:["Cooking","Packaging","Time Management","Basic accounts"],
+      steps:["Ghar se 10-15 customers ke tiffin se shuru karo","Swiggy/Zomato Genie ya local delivery se expand karo","Poori/paratha/dal-rice daily menu simple rakho","Hygiene aur timely delivery = loyal customers","Profit se utensils aur packaging upgrade karo"],
+      tip:"Office areas ya working women ke colony mein sabse zyada demand hoti hai."
+    },
+    { id:"canva_design", emoji:"🎨", name:"Design Business (Canva)", cat:"Digital Service", tone:"#ec4899",
+      invest:"₹0 – ₹2,000 (laptop/mobile)", profit:"₹10,000 – ₹80,000/month", risk:10, effort:"Low",
+      license:"None required", time:"Start today",
+      skills:["Canva","Creativity","Basic photoshop","Client communication"],
+      steps:["Canva.com free account banao — basic posters/logos banana seekho","Portfolio: 20 sample designs banao (social media post, banner, logo)","WhatsApp groups mein services offer karo — free sample do","Local shops, schools, events ke liye posters banao","Per design ₹200-2000 charge karo"],
+      tip:"Ek din mein 10 designs bana sakte ho — monthly 50-100 clients easy hai."
+    },
+    { id:"coaching", emoji:"📚", name:"Tuition / Coaching Classes", cat:"Education", tone:"#8b5cf6",
+      invest:"₹0 – ₹10,000", profit:"₹10,000 – ₹1,00,000/month", risk:15, effort:"Medium",
+      license:"Optional: Registration", time:"Start this week",
+      skills:["Subject knowledge","Communication","Patience","Teaching"],
+      steps:["Apne strong subject identify karo (Maths, Science, English, etc.)","Ghar pe 5-10 students se start karo","Fees: ₹500-2000/student/month","Results acche aaye toh word-of-mouth se growth automatic","Online zoom classes se aur students lo — city boundary nahi rahegi"],
+      tip:"Ek subject mein expert ban jao — 20 students × ₹1500 = ₹30K/month ghar baithe."
+    },
+    { id:"mobile_repair", emoji:"📱", name:"Mobile Repair Shop", cat:"Technical Service", tone:"#0ea5e9",
+      invest:"₹5,000 – ₹25,000", profit:"₹20,000 – ₹70,000/month", risk:20, effort:"Medium",
+      license:"Shop Act license", time:"2 weeks (after training)",
+      skills:["Mobile hardware","Software troubleshooting","Soldering basics","Customer service"],
+      steps:["YouTube se free mobile repair training karo (1-2 months)","Basic tools kharido: screwdrivers, spudger, heat gun","Ghar se ya chhoti dukan se shuru karo","Screen replacement, charging port, battery — common repairs seekho","Trust build hone ke baad bulk repair contracts lo (offices, schools)"],
+      tip:"Mobile repair mein margin 200-400% hota hai — screen repair mein ₹100-500 profit per phone."
+    },
+    { id:"delivery", emoji:"🛵", name:"Delivery Service / Rider", cat:"Logistics", tone:"#f59e0b",
+      invest:"₹0 (bike already hai toh)", profit:"₹15,000 – ₹40,000/month", risk:10, effort:"High",
+      license:"Driving license + bike", time:"Start tomorrow",
+      skills:["Driving","Navigation","Time management","Customer handling"],
+      steps:["Swiggy / Zomato / Blinkit / Amazon Flex delivery partner bano","App download karo aur registration complete karo","Peak hours (12-2pm, 7-9pm) mein zyada orders milte hain","Multiple apps pe register karo — income badhegi","Electric vehicle lene se running cost kam hogi"],
+      tip:"Part-time delivery se ₹500-1000/day earn kar sakte ho — full time ₹25-40K/month."
+    },
+    { id:"stitching", emoji:"🧵", name:"Stitching / Tailoring", cat:"Fashion", tone:"#10b981",
+      invest:"₹5,000 – ₹15,000 (machine)", profit:"₹15,000 – ₹50,000/month", risk:15, effort:"Medium",
+      license:"None required", time:"2 weeks (after basic training)",
+      skills:["Sewing machine","Cutting","Measurement","Fashion basics"],
+      steps:["Sewing machine kharido ya rent pe lo","Basic stitching course karo (local ya YouTube)","Local residents, schools ke uniform orders lo","Festival season mein bachon ke kapde — high demand","Boutique ya designer stitching seekhne se income badegi"],
+      tip:"Blouse, salwar kameez stitching mein ₹200-500 per piece milta hai — 10 pieces/day = good income."
+    },
+  ],
+  medium: [
+    { id:"cloud_kitchen", emoji:"🍛", name:"Cloud Kitchen / Restaurant", cat:"Food Business", tone:"#f97316",
+      invest:"₹1,00,000 – ₹5,00,000", profit:"₹40,000 – ₹2,00,000/month", risk:45, effort:"High",
+      license:"FSSAI + GST + Shop Act", time:"2-3 months setup",
+      skills:["Cooking","Kitchen management","Inventory","Online marketing","Delivery coordination"],
+      steps:["Ek kitchen setup karo — commercial stove, fridge, packaging","Swiggy + Zomato pe restaurant register karo","1-2 cuisine choose karo (biryani, thali, Chinese — popular choices)","Peak time pe quality + speed maintain karo","Customer ratings manage karo — 4.5+ rating zaroori"],
+      tip:"Swiggy/Zomato pe 4.5+ rating maintain karo — orders automatically badhte hain."
+    },
+    { id:"csc_center", emoji:"🏪", name:"CSC / Jan Seva Kendra", cat:"Government Services", tone:"#00D9FF",
+      invest:"₹25,000 – ₹60,000", profit:"₹15,000 – ₹50,000/month", risk:15, effort:"Medium",
+      license:"CSC Registration (Govt)", time:"1 month setup",
+      skills:["Computer basics","Govt form filling","Banking","Communication","Printing"],
+      steps:["CSC registration karo — digitalseva.cscindia.gov.in pe apply karo","Computer, printer, scanner, internet setup karo","Pan card, Aadhar, scholarship, insurance, banking services do","Monthly commission automatically milti hai transactions pe","Village/town mein monopoly hoti hai — competition kam"],
+      tip:"CSC center gaon mein kholne se 20-50 lakh logo ki service — govt bhi promote karti hai."
+    },
+    { id:"xerox_print", emoji:"🖨️", name:"Printing & Xerox Shop", cat:"Service Business", tone:"#8b5cf6",
+      invest:"₹30,000 – ₹80,000", profit:"₹15,000 – ₹40,000/month", risk:20, effort:"Low",
+      license:"Shop Act + GST", time:"1-2 weeks",
+      skills:["Printer operation","Basic computer","Customer service","Stock management"],
+      steps:["School ya office ke paas dukan lelo — location sabse important hai","B&W xerox machine + color printer kharido","Lamination, scanning, binding, passport photo add karo","Govt form filling service bhi do — extra income","Regular customers se monthly contracts possible"],
+      tip:"School ke samne dukan = steady income. Board exams ke time mein income double hoti hai."
+    },
+    { id:"medical_store", emoji:"💊", name:"Medical / Pharmacy Store", cat:"Healthcare", tone:"#e11d48",
+      invest:"₹50,000 – ₹3,00,000", profit:"₹30,000 – ₹1,00,000/month", risk:20, effort:"Low",
+      license:"Drug License + GST", time:"1-2 months",
+      skills:["Pharmacology basics","Inventory management","Customer care","Prescription reading"],
+      steps:["Drug license ke liye D.Pharm ya B.Pharm qualified person required","Shop location: near hospital, clinic, or residential area","Supplier relationship: STOCKIST se wholesale mein medicine lo","Doctor ke paas jao aur referral relationship banao","Generic medicines bhi rakho — margin zyada hoti hai"],
+      tip:"Medical store mein 20-40% margin hoti hai — monthly lakhs ka turnover possible."
+    },
+    { id:"gym_fitness", emoji:"🏋️", name:"Gym / Fitness Center", cat:"Health & Wellness", tone:"#10b981",
+      invest:"₹50,000 – ₹3,00,000", profit:"₹30,000 – ₹1,50,000/month", risk:35, effort:"Medium",
+      license:"Shop Act + local NOC", time:"2-3 months",
+      skills:["Fitness knowledge","Training","Equipment maintenance","Marketing","Member management"],
+      steps:["Location: residential area ya market near school/college","Basic equipment: treadmill, weights, bench press, pull-up bar","Personal trainer hire karo ya khud certified trainer bano","Monthly membership ₹500-1500 range rakho","Ladies batch, morning/evening batch separate karo"],
+      tip:"50 members × ₹1000/month = ₹50K — gym ki running cost bahut kam hoti hai."
+    },
+  ],
+  high: [
+    { id:"school", emoji:"🏫", name:"Private School / Coaching Institute", cat:"Education", tone:"#f59e0b",
+      invest:"₹5,00,000 – ₹50,00,000", profit:"₹1,00,000 – ₹20,00,000+/month", risk:30, effort:"High",
+      license:"Education Dept registration + NOC", time:"6-12 months",
+      skills:["Education management","Staff management","Curriculum planning","Marketing","Finance"],
+      steps:["Location: residential area mein spacious building","Education department se affiliation lo","Qualified teachers hire karo — at least 1 B.Ed qualified per 30 students","Infrastructure: classrooms, playground, library, washrooms","Digital classes aur smart boards add karo — parents ko attract karo"],
+      tip:"Good reputation wali school mein waitlist hoti hai — 10 saal mein crores ki property banti hai."
+    },
+    { id:"hotel_resort", emoji:"🏨", name:"Hotel / Guest House / Resort", cat:"Hospitality", tone:"#0ea5e9",
+      invest:"₹10,00,000 – 1 Crore+", profit:"₹50,000 – ₹10,00,000/month", risk:40, effort:"High",
+      license:"FSSAI + Fire NOC + Tourism License + GSTIN", time:"6-18 months",
+      skills:["Hospitality","Staff management","Marketing","Booking systems","Maintenance"],
+      steps:["Location: highway, tourist area, ya town center near bus/train station","OYO Rooms, MakeMyTrip pe list karo — online booking start hogi","Cleanliness aur customer service = 5 star reviews","Wedding, conference booking se extra income","Restaurant add karo — separate profit center"],
+      tip:"OYO franchise se brand trust milti hai — agreement carefully padhna."
+    },
+    { id:"petrol_pump", emoji:"⛽", name:"Petrol Pump / Fuel Station", cat:"Energy", tone:"#FFD700",
+      invest:"₹25,00,000 – ₹1,00,00,000+", profit:"₹50,000 – ₹5,00,000/month", risk:25, effort:"Low",
+      license:"IOC/BPCL/HPCL dealership + Petroleum license", time:"1-2 years",
+      skills:["Business management","Staff management","Safety compliance","Accounts"],
+      steps:["Highway ya town mein suitable land identify karo (min 800 sq m)","IOC/BPCL/HPCL dealership ke liye apply karo","Land aur setup cost zyada hai — bank loan lena padega","Company training milti hai — operations simple hain","Lubricant, tyre, food court add karke extra income"],
+      tip:"Petrol pump ek license raj hai — milne ke baad 30+ saal ki guaranteed income."
+    },
+    { id:"manufacturing", emoji:"🏭", name:"Small Scale Manufacturing", cat:"Manufacturing", tone:"#8b5cf6",
+      invest:"₹2,00,000 – ₹20,00,000", profit:"₹50,000 – ₹5,00,000/month", risk:40, effort:"High",
+      license:"MSME + GST + Factory License", time:"3-6 months",
+      skills:["Production planning","Quality control","Supply chain","Marketing","Staff management"],
+      steps:["Product decide karo: agarbatti, candles, papad, soap, masala, furniture, etc.","MSME registration karo — govt subsidies milti hain","Machinery aur raw material suppliers identify karo","Local wholesale, online (Amazon), aur export markets target karo","BIS certification se product quality improve hoti hai"],
+      tip:"Agarbatti aur masala making mein ₹2 lakh se business start ho jata hai — export demand bhi hai."
+    },
+  ],
+  online: [
+    { id:"freelancing", emoji:"💻", name:"Freelancing (Design/Dev/Writing)", cat:"Online Service", tone:"#a855f7",
+      invest:"₹0 – ₹5,000 (internet + laptop)", profit:"₹10,000 – ₹5,00,000+/month", risk:5, effort:"Medium",
+      license:"None (GST if income > ₹20L)", time:"1-3 months (skill build karo)",
+      skills:["Any digital skill","English communication","Time management","Client handling"],
+      steps:["Ek skill choose karo — web dev, design, content writing, video editing","Fiverr, Upwork, Freelancer pe profile banao","5 sample projects ka portfolio banao","First clients se cheap rate pe karo — reviews chahiye","Slowly rate badhao as experience grows"],
+      tip:"Fiverr pe ₹500 gig se start karo — 1 saal mein ₹1 lakh/month possible hai."
+    },
+    { id:"youtube", emoji:"🎬", name:"YouTube Channel / Content Creation", cat:"Online Business", tone:"#e11d48",
+      invest:"₹0 – ₹20,000 (equipment)", profit:"₹0 – Unlimited/month", risk:20, effort:"High",
+      license:"None", time:"6-12 months (monetize tak)",
+      skills:["Video making","Editing","Script writing","SEO","Consistency"],
+      steps:["Niche choose karo: cooking, education, comedy, tech, spiritual — specific raho","Mobile camera se start karo — equipment baad mein","Consistent upload: week mein 2 videos minimum","Thumbnail aur title attractive rakho — CTR matter karta hai","1000 subscribers + 4000 watch hours = monetization"],
+      tip:"Hindi mein YouTube pe bahut kam competition hai — specific niche mein aaoge toh jaldi grow karoge."
+    },
+    { id:"ecommerce", emoji:"🛒", name:"Online Selling (Amazon/Flipkart)", cat:"E-Commerce", tone:"#f97316",
+      invest:"₹20,000 – ₹2,00,000 (inventory)", profit:"₹20,000 – ₹5,00,000/month", risk:30, effort:"Medium",
+      license:"GST + Bank Account", time:"2-4 weeks setup",
+      skills:["Product sourcing","Photography","Listing optimization","Customer service","Inventory"],
+      steps:["Product choose karo — high demand, low competition (Jungle Scout tool use karo)","Manufacturer ya wholesale market se stock lo","Amazon Seller account banao — ₹499/month fee","Professional product photos lo","Reviews manage karo — 4.5+ rating necessary for growth"],
+      tip:"Private label product — apna brand logo lagao manufacturer ke product pe — high margin milti hai."
+    },
+    { id:"digital_agency", emoji:"📱", name:"Digital Marketing Agency", cat:"Online Service", tone:"#00D9FF",
+      invest:"₹0 – ₹10,000", profit:"₹30,000 – ₹5,00,000/month", risk:15, effort:"High",
+      license:"GST (if income > 20L)", time:"1-3 months (first client tak)",
+      skills:["Facebook/Google Ads","SEO","Social media","Content","Analytics","Client management"],
+      steps:["Digital marketing skills Google ka free course se seekho","Ek case study banao — kisi local business ka free mein social media handle karo","Proof of results = clients attract hote hain","Monthly retainer model: ₹5000-50000/client","3-4 clients se agency officially start ho jaata hai"],
+      tip:"Local restaurants, salons, clinics ko ₹3000-5000/month mein social media manage karo — easy clients."
+    },
+  ],
+  rural: [
+    { id:"dairy", emoji:"🐄", name:"Dairy Farm / Milk Business", cat:"Agriculture", tone:"#10b981",
+      invest:"₹50,000 – ₹5,00,000", profit:"₹20,000 – ₹2,00,000/month", risk:25, effort:"High",
+      license:"FSSAI + Animal husbandry dept", time:"2-3 months setup",
+      skills:["Animal care","Milking","Quality check","Distribution","Veterinary basics"],
+      steps:["2-5 cows/buffaloes se start karo — govt subsidy available hai NABARD se","Local milk collection route banao — ghar ghar delivery","Ghee, paneer, curd ka value-added product banao","Cooperative ya private dairy ke saath tie-up karo","PMEGP ya Mudra loan se financing possible"],
+      tip:"NABARD 25-35% subsidy deta hai dairy setup ke liye — govt scheme zaroor check karo."
+    },
+    { id:"kirana", emoji:"🏬", name:"Kirana / General Store", cat:"Retail", tone:"#f59e0b",
+      invest:"₹50,000 – ₹2,00,000", profit:"₹15,000 – ₹60,000/month", risk:20, effort:"Medium",
+      license:"Shop Act + GST", time:"2-4 weeks",
+      skills:["Inventory management","Customer service","Basic accounts","Stocking"],
+      steps:["Location: main market ya busy chowk","Wholesale market se stock lo — margin 10-30% per item","Credit facility carefully do — track karo","Seasonal items add karo: festival, school season","UPI, PhonePe, online payment accept karo — modern customer"],
+      tip:"Ration aur daily items mein daily turnover guaranteed — location hi sab kuch hai."
+    },
+    { id:"agri_equip", emoji:"🚜", name:"Agricultural Equipment Rental", cat:"Agriculture", tone:"#16a34a",
+      invest:"₹1,00,000 – ₹10,00,000", profit:"₹30,000 – ₹3,00,000/month (seasonal)", risk:25, effort:"Low",
+      license:"None major", time:"1-2 months",
+      skills:["Equipment operation","Maintenance","Scheduling","Basic mechanics"],
+      steps:["Tractor ya thresher kharido — loan se bhi ho sakta hai","Local farmers ko per hour ya per acre rate pe rent do","Maintenance zaroori — roz check karo","Season mein 24/7 demand — pre-booking system rakho","Multiple equipment se income diversify hogi"],
+      tip:"Ek tractor se saal mein ₹3-5 lakh kama sakte ho — EMI se bhi affordable."
+    },
+    { id:"beauty_parlour", emoji:"💄", name:"Beauty Parlour / Salon", cat:"Service", tone:"#ec4899",
+      invest:"₹30,000 – ₹1,50,000", profit:"₹15,000 – ₹80,000/month", risk:15, effort:"Medium",
+      license:"Shop Act", time:"2-4 weeks (after training)",
+      skills:["Makeup","Haircare","Threading","Mehendi","Customer service"],
+      steps:["Beauty course karo — 3-6 months basic training","Ghar se ya chhoti dukan se start karo","Bridal makeup, festival season mein high demand","WhatsApp se booking lo — easy management","Products VLCC, Shahnaz jaise brands ke lo — quality important"],
+      tip:"Shaadi season mein ek din ka ₹5000-15000 bridal makeup from home possible hai."
+    },
+  ],
+  franchise: [
+    { id:"amul_parlour", emoji:"🧴", name:"Amul Parlour / Ice Cream", cat:"Food Franchise", tone:"#f97316",
+      invest:"₹1,00,000 – ₹5,00,000", profit:"₹25,000 – ₹1,00,000/month", risk:10, effort:"Low",
+      license:"Franchise agreement + Food license", time:"1-2 months",
+      skills:["Basic retail","Customer service","Stock management"],
+      steps:["Amul ki official website pe application karo","₹2 lakh security deposit + shop setup cost","Amul milk, butter, cheese, ice cream — all products","Training aur display material company se milega","Good location = steady daily income"],
+      tip:"Amul brand ki trust already hai — zero marketing investment chahiye aapko."
+    },
+    { id:"jio_dealer", emoji:"📡", name:"Jio / Airtel Franchise / Dealer", cat:"Telecom", tone:"#00D9FF",
+      invest:"₹30,000 – ₹1,50,000", profit:"₹15,000 – ₹60,000/month", risk:10, effort:"Low",
+      license:"Telecom dealership agreement", time:"2-4 weeks",
+      skills:["Customer service","Basic computer","Stock management"],
+      steps:["Jio ya Airtel dealer portal pe application karo","Security deposit + stock investment","SIM card, recharge, fiber broadband activations karo","Commission per activation milta hai","Multiple telecom company ka dealer bano — income badhe"],
+      tip:"Fiber broadband activation pe ₹500-1000 per connection milta hai — high margin."
+    },
+    { id:"school_franchise", emoji:"🏫", name:"Kidzee / Eurekakids Franchise", cat:"Education", tone:"#8b5cf6",
+      invest:"₹5,00,000 – ₹15,00,000", profit:"₹50,000 – ₹3,00,000/month", risk:15, effort:"Medium",
+      license:"Franchise agreement + Education dept", time:"3-6 months",
+      skills:["Education","Child handling","Staff management","Marketing"],
+      steps:["Kidzee/Eurekakids/ORCHIDS website pe franchise apply karo","Space: minimum 2000 sq ft space chahiye","Company training + curriculum + materials provide karta hai","Local marketing: pamphlets, school mein demos","Brand recognition = faster admission"],
+      tip:"Preschool mein ₹1500-4000/month per child fee — 50 children = ₹1.5-2L monthly revenue."
+    },
+  ]
+};
+
+const successTipsData = [
+  { title:"Customer is King", desc:"Customer ki zaroorat samjho — unhe solve karo, woh tumhara business grow karenge. Free marketing = word of mouth." },
+  { title:"Cash Flow Track Karo", desc:"Profit dikhe ya na dikhe — cash flow positive rakhna zaroori hai. Har rupee ka hisaab rakho." },
+  { title:"Pehle Test, Phir Invest", desc:"Puri savings mat lagao pehle baar mein. ₹10K se test karo — result dekho, phir badhao." },
+  { title:"Digital Presence Zaroor", desc:"WhatsApp Business, Instagram, Google My Business — sabse pehle free pe online aaao." },
+  { title:"Govt Schemes Use Karo", desc:"PMEGP, Mudra Loan, MSME subsidy — crores ki help govt se milti hai — sirf apply karo." },
+  { title:"Network Build Karo", desc:"Local businessmen se milao, suppliers se rishta rakho, customers ko remember karo — relationships = growth." },
+  { title:"Quality Kabhi Compromise Mat Karo", desc:"Cheap material se cheap product = reputation kharab. Quality maintain karo — premium charge kar sakte ho." },
+  { title:"Competitors Se Seekho", desc:"Competition dekho — kya accha kar rahe hain, kya nahi kar rahe — wahan opportunity hoti hai." },
+  { title:"Staff Ko Treat Karo Employee Ki Tarah", desc:"Achhe staff ko salary time pe do aur respect do — woh hi tumhara business chalate hain." },
+  { title:"Har Saal Plan Review Karo", desc:"January mein business plan review karo — kya kaam kiya, kya nahi kiya, agla saal ka goal set karo." },
+];
+
+let currentLang = localStorage.getItem('rclang_b') || 'en';
+let quoteIdx = 0;
+const allBiz = [...BIZ_DB.low,...BIZ_DB.medium,...BIZ_DB.high,...BIZ_DB.online,...BIZ_DB.rural,...BIZ_DB.franchise];
+
+function renderBizGrid(containerId, data) {
+  const el = document.getElementById(containerId);
+  if (!el) return;
+  el.innerHTML = data.map(b => `
+    <div class="biz-card" style="--tone:${b.tone}">
+      <span class="emoji">${b.emoji}</span>
+      <h3>${b.name}</h3>
+      <div class="bcat">${b.cat}</div>
+      <div class="badge-row">
+        <span class="badge green">💰 ${b.profit}</span>
+        <span class="badge gold">⏱️ ${b.time}</span>
+      </div>
+      <div class="info-2">
+        <div class="info-box"><span>Investment</span><strong>${b.invest}</strong></div>
+        <div class="info-box"><span>Effort</span><strong>${b.effort}</strong></div>
+      </div>
+      <div class="risk-row">
+        <label>Risk Level: ${b.risk}%</label>
+        <div class="risk-bar"><div class="risk-fill" style="width:${b.risk}%;background:${b.risk<30?'var(--green)':b.risk<60?'var(--gold)':'var(--red)'}"></div></div>
+      </div>
+      <button class="details-btn" onclick="openModal('${b.id}')">📖 Full Guide & Steps</button>
+    </div>
+  `).join('');
+}
+
+function openModal(id) {
+  const b = allBiz.find(x=>x.id===id);
+  if (!b) return;
+  document.getElementById('modalTitle').textContent = b.emoji + ' ' + b.name;
+  document.getElementById('modalBody').innerHTML = `
+    <div class="detail-grid">
+      <div class="detail-box"><span>Investment</span><strong>${b.invest}</strong></div>
+      <div class="detail-box"><span>Monthly Profit</span><strong style="color:var(--green)">${b.profit}</strong></div>
+      <div class="detail-box"><span>Effort Level</span><strong>${b.effort}</strong></div>
+      <div class="detail-box"><span>License Needed</span><strong>${b.license}</strong></div>
+    </div>
+    <div class="modal-section">
+      <h4>🛠️ Skills Required</h4>
+      <div>${b.skills.map(s=>`<span class="skill-tag">${s}</span>`).join('')}</div>
+    </div>
+    <div class="modal-section">
+      <h4>🗺️ Step-by-Step Starting Guide</h4>
+      ${b.steps.map((s,i)=>`<div class="roadmap-step"><div class="step-num">${i+1}</div><div class="step-text">${s}</div></div>`).join('')}
+    </div>
+    <div style="background:rgba(255,215,0,0.08);border:1px solid rgba(255,215,0,0.3);border-radius:8px;padding:12px;margin-top:10px;">
+      <span style="color:var(--gold);font-weight:700;">💡 Pro Tip: </span><span style="font-size:13px;">${b.tip}</span>
+    </div>
+    <div style="margin-top:16px;text-align:center;">
+      <a href="https://wa.me/919452305913?text=Hello%20Rohit%20Computer,%20mujhe%20${encodeURIComponent(b.name)}%20business%20ke%20baare%20mein%20guidance%20chahiye" target="_blank" style="display:inline-flex;align-items:center;gap:8px;background:#25D366;color:white;padding:12px 24px;border-radius:30px;font-weight:700;font-size:14px;text-decoration:none;">💬 WhatsApp pe Expert Se Poochho — FREE</a>
+    </div>
+  `;
+  document.getElementById('modal').classList.add('open');
+}
+
+function closeModal() { document.getElementById('modal').classList.remove('open'); }
+
+function renderSuccessTips() {
+  const el = document.getElementById('successTips');
+  if (!el) return;
+  el.innerHTML = successTipsData.map((t,i)=>`
+    <div class="tip-card">
+      <div style="width:32px;height:32px;background:var(--green);color:#071510;border-radius:50%;display:grid;place-items:center;font-weight:800;font-size:14px;margin-bottom:10px;">${i+1}</div>
+      <h4>${t.title}</h4><p>${t.desc}</p>
+    </div>
+  `).join('');
+}
+
+function showSection(id) {
+  document.querySelectorAll('.section').forEach(s=>s.classList.remove('active'));
+  document.querySelectorAll('nav button').forEach(b=>b.classList.remove('active'));
+  document.getElementById(id)?.classList.add('active');
+  const navMap=['home','low','medium','high','online','rural','franchise','tips'];
+  document.querySelectorAll('nav button')[navMap.indexOf(id)]?.classList.add('active');
+  window.scrollTo({top:0,behavior:'smooth'});
+}
+
+function toggleLang() {
+  currentLang = currentLang==='en'?'hi':'en';
+  localStorage.setItem('rclang_b', currentLang);
+  document.getElementById('langBtn').textContent = currentLang==='en'?'🌐 हिंदी':'🌐 English';
+}
+
+function rotateQuote() {
+  quoteIdx=(quoteIdx+1)%quotes.length;
+  const el=document.getElementById('heroQuote');
+  const strip=document.getElementById('motiveStrip');
+  if(el){el.style.opacity=0;setTimeout(()=>{el.textContent=quotes[quoteIdx];el.style.opacity=1;},300);}
+  if(strip) strip.textContent='✨ '+quotes[(quoteIdx+2)%quotes.length]+' ✨';
+}
+
+renderBizGrid('lowGrid',BIZ_DB.low);
+renderBizGrid('medGrid',BIZ_DB.medium);
+renderBizGrid('highGrid',BIZ_DB.high);
+renderBizGrid('onlineGrid',BIZ_DB.online);
+renderBizGrid('ruralGrid',BIZ_DB.rural);
+renderBizGrid('franGrid',BIZ_DB.franchise);
+renderSuccessTips();
+setInterval(rotateQuote,4000);
+document.getElementById('modal').addEventListener('click',e=>{if(e.target.id==='modal')closeModal();});
+</script>
+</body>
+</html>
