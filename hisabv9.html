@@ -555,7 +555,7 @@ img{max-width:100%;height:auto}
 body.embed{overflow:hidden}
 body.embed #app{
   position:relative!important;
-  height:var(--embed-h,820px);
+  height:var(--embed-h,100dvh);
   overflow:hidden!important;
   max-width:100%!important;
   min-height:0!important;
@@ -563,7 +563,7 @@ body.embed #app{
 body.embed .main{
   flex:1!important;
   min-height:0!important;
-  max-height:calc(var(--embed-h,820px) - var(--header-h) - var(--nav-h))!important;
+  max-height:calc(var(--embed-h,100dvh) - var(--header-h) - var(--nav-h))!important;
   overflow-y:auto!important;
   -webkit-overflow-scrolling:touch!important;
   padding-bottom:calc(var(--nav-h) + 8px)!important;
@@ -578,18 +578,9 @@ body.embed .bnav{
 }
 body.embed #modal{position:absolute!important}
 body.embed .moverlay{position:absolute!important;overflow-y:auto}
-body.embed .msheet{max-height:calc(var(--embed-h,820px) - 20px)!important}
+body.embed .msheet{max-height:calc(var(--embed-h,100dvh) - 20px)!important}
 body.embed #toast{position:absolute!important}
 body.embed #loginOverlay{position:absolute!important}
-/* auto-h mode: let content determine height, parent iframe resizes via postMessage */
-body.embed.auto-h{overflow:visible!important}
-body.embed.auto-h #app{height:auto!important;overflow:visible!important;min-height:400px!important}
-body.embed.auto-h .main{max-height:none!important;overflow-y:visible!important;padding-bottom:72px!important}
-body.embed.auto-h .bnav{position:fixed!important;bottom:0!important;left:0!important;right:0!important;width:100%!important}
-body.embed.auto-h .moverlay{position:fixed!important}
-body.embed.auto-h #modal{position:fixed!important}
-body.embed.auto-h #toast{position:fixed!important}
-body.embed.auto-h #loginOverlay{position:fixed!important}
 /* disable sidebar on embed — always show bottom nav */
 body.embed .bnav{flex-direction:row!important;flex-wrap:nowrap!important;height:auto!important;width:100%!important;padding:6px 0 calc(6px + env(safe-area-inset-bottom))!important;border-right:none!important;border-top:1px solid var(--border)!important;top:auto!important}
 body.embed .nbtn{flex-direction:column!important;min-height:48px!important;justify-content:center!important;padding:6px 4px!important;font-size:10px!important;gap:2px!important;width:auto!important;flex:1!important;border-radius:0!important;margin:0!important}
@@ -680,8 +671,8 @@ body.embed .owner-2col,body.embed .staff-2col{display:block!important}
 @media(min-width:900px){
   body.embed .owner-2col{display:grid!important;grid-template-columns:minmax(0,3fr) minmax(0,2fr);gap:22px;align-items:start}
   body.embed .staff-2col{display:grid!important;grid-template-columns:1fr 1fr;gap:16px;align-items:start}
-  body.embed .owner-entry-panel{position:sticky;top:8px;max-height:calc(var(--embed-h,100vh) - 160px);overflow-y:auto;background:#f8fafc;border-radius:var(--r-lg);border:1px solid var(--border);padding:18px;box-shadow:0 2px 8px rgba(0,0,0,.04)}
-  body.embed .staff-right{position:sticky;top:8px;max-height:calc(var(--embed-h,100vh) - 160px);overflow-y:auto;background:#f8fafc;border-radius:var(--r-lg);border:1px solid var(--border);padding:18px;box-shadow:0 2px 8px rgba(0,0,0,.04)}
+  body.embed .owner-entry-panel{position:sticky;top:8px;max-height:calc(var(--embed-h,100dvh) - 160px);overflow-y:auto;background:#f8fafc;border-radius:var(--r-lg);border:1px solid var(--border);padding:18px;box-shadow:0 2px 8px rgba(0,0,0,.04)}
+  body.embed .staff-right{position:sticky;top:8px;max-height:calc(var(--embed-h,100dvh) - 160px);overflow-y:auto;background:#f8fafc;border-radius:var(--r-lg);border:1px solid var(--border);padding:18px;box-shadow:0 2px 8px rgba(0,0,0,.04)}
 }
 /* Prevent desktop sidebar elements leaking into embed nav */
 body.embed .snav-brand,body.embed .snav-user{display:none!important}
@@ -3791,17 +3782,6 @@ const EOD = {
 };
 
 /* Re-render current view without resetting Home._vday */
-/* Post scroll height to parent so Hostinger iframe auto-resizes (auto-h mode only) */
-function _postEmbedH(){
-  if(!document.body.classList.contains('auto-h'))return;
-  requestAnimationFrame(()=>{
-    try{
-      const h=Math.max(document.body.scrollHeight,document.documentElement.scrollHeight,400);
-      parent.postMessage({hisabHeight:h},'*');
-    }catch{}
-  });
-}
-
 function refresh(){
   if(Router.cur==='home'){
     Auth.isOwner()?Home.renderOwner(Home._vday||0):Home.renderStaff();
@@ -3811,7 +3791,6 @@ function refresh(){
     Reports.render();
   }
   Router._nav();
-  _postEmbedH();
 }
 
 /* ── APP ── */
@@ -3864,7 +3843,6 @@ const App = {
       },{passive:true});
     }
     Router.go('home');
-    _postEmbedH();
   },
   staffAttend(){this._attendance()},
   settings(){
@@ -4357,12 +4335,10 @@ async function _boot(){
   if(inFrame()||params.has('embed')){
     document.body.classList.add('embed');
     if(params.get('h')){
-      // Explicit height passed via ?h=NNN — use fixed-height mode
+      // Explicit height passed via ?h=NNN — override the 100dvh default
       document.documentElement.style.setProperty('--embed-h',params.get('h')+'px');
-    } else {
-      // Auto-height mode: content drives iframe size via postMessage
-      document.body.classList.add('auto-h');
     }
+    // No ?h= param → default 100dvh fills the iframe naturally
   }
   // ── Run data migrations (safe, non-destructive) ──
   await Migration.run();
