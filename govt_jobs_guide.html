@@ -1,0 +1,752 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Sarkari Naukri Guide | Rohit Computer</title>
+<link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;600;700;800&family=Noto+Sans+Devanagari:wght@400;600;700&display=swap" rel="stylesheet">
+<style>
+:root {
+  --bg: #0A2540;
+  --bg2: #0D2E4F;
+  --card: #112A47;
+  --cyan: #00D9FF;
+  --gold: #FFD700;
+  --green: #00E676;
+  --red: #FF5252;
+  --text: #F0F4FF;
+  --muted: #8BAED0;
+  --border: rgba(0,217,255,0.2);
+  --radius: 12px;
+}
+* { margin:0; padding:0; box-sizing:border-box; }
+html { scroll-behavior:smooth; }
+body { font-family:'Poppins',sans-serif; background:var(--bg); color:var(--text); }
+.hindi { font-family:'Noto Sans Devanagari',sans-serif; }
+
+/* HEADER */
+header {
+  position:sticky; top:0; z-index:100;
+  background:rgba(10,37,64,0.97);
+  border-bottom:1px solid var(--border);
+  backdrop-filter:blur(10px);
+  padding:12px 20px;
+}
+.header-inner { max-width:1100px; margin:0 auto; display:flex; align-items:center; justify-content:space-between; gap:10px; flex-wrap:wrap; }
+.logo { display:flex; align-items:center; gap:10px; }
+.logo-icon { width:44px; height:44px; background:linear-gradient(135deg,#FFD700,#FF8C00); border-radius:10px; display:grid; place-items:center; font-size:22px; }
+.logo h1 { font-size:18px; font-weight:800; color:var(--cyan); }
+.logo p { font-size:11px; color:var(--muted); }
+.lang-btn { background:var(--cyan); color:#0A2540; border:none; padding:8px 16px; border-radius:20px; font-weight:700; font-size:13px; cursor:pointer; transition:0.2s; }
+.lang-btn:hover { background:var(--gold); }
+
+/* NAV */
+nav { background:var(--bg2); border-bottom:1px solid var(--border); overflow-x:auto; }
+nav .nav-inner { max-width:1100px; margin:0 auto; display:flex; gap:4px; padding:8px 16px; }
+nav button { flex:0 0 auto; background:transparent; border:none; color:var(--muted); padding:8px 14px; border-radius:20px; font-size:13px; font-weight:600; cursor:pointer; white-space:nowrap; transition:0.2s; font-family:'Poppins',sans-serif; }
+nav button:hover, nav button.active { background:var(--cyan); color:#0A2540; }
+
+/* HERO */
+.hero {
+  background:linear-gradient(135deg,#071020,#0D2E4F,#071020);
+  padding:50px 20px 40px;
+  text-align:center;
+  position:relative;
+  overflow:hidden;
+}
+.hero::before {
+  content:''; position:absolute; top:-50%; left:-50%;
+  width:200%; height:200%;
+  background:radial-gradient(circle at 30% 50%,rgba(0,217,255,0.08) 0%,transparent 50%),
+             radial-gradient(circle at 70% 30%,rgba(255,215,0,0.06) 0%,transparent 50%);
+  animation:bgmove 8s ease-in-out infinite alternate;
+}
+@keyframes bgmove { from{transform:translate(0,0);} to{transform:translate(20px,20px);} }
+.hero-content { position:relative; z-index:1; }
+.hero h1 { font-size:clamp(26px,5vw,52px); font-weight:800; color:var(--cyan); line-height:1.1; margin-bottom:10px; }
+.hero h1 span { color:var(--gold); }
+.hero p { font-size:16px; color:var(--muted); margin-bottom:20px; }
+.quote-box {
+  display:inline-block;
+  background:rgba(0,217,255,0.08);
+  border:1px solid var(--border);
+  border-radius:30px;
+  padding:10px 24px;
+  font-size:14px;
+  color:var(--cyan);
+  margin-bottom:24px;
+  max-width:600px;
+}
+.stats-row { display:flex; justify-content:center; gap:20px; flex-wrap:wrap; margin-top:24px; }
+.stat-box { background:rgba(255,255,255,0.05); border:1px solid var(--border); border-radius:12px; padding:14px 24px; text-align:center; min-width:120px; }
+.stat-box strong { display:block; font-size:28px; font-weight:800; color:var(--gold); }
+.stat-box span { font-size:12px; color:var(--muted); }
+
+/* MOTIVATION STRIP */
+.motive-strip {
+  background:linear-gradient(90deg,rgba(0,217,255,0.1),rgba(255,215,0,0.1));
+  border-top:1px solid var(--border);
+  border-bottom:1px solid var(--border);
+  padding:10px 20px;
+  text-align:center;
+  font-size:14px;
+  color:var(--gold);
+  font-weight:600;
+}
+
+/* SECTIONS */
+main { max-width:1100px; margin:0 auto; padding:30px 16px 60px; }
+.section { display:none; }
+.section.active { display:block; animation:fadein 0.3s ease; }
+@keyframes fadein { from{opacity:0;transform:translateY(8px);} to{opacity:1;transform:none;} }
+
+.section-title {
+  font-size:28px; font-weight:800; color:var(--cyan);
+  margin-bottom:6px;
+}
+.section-subtitle { color:var(--muted); font-size:14px; margin-bottom:24px; }
+.section-quote {
+  background:rgba(255,215,0,0.08);
+  border-left:4px solid var(--gold);
+  padding:10px 16px;
+  border-radius:0 8px 8px 0;
+  font-size:13px;
+  color:var(--gold);
+  margin-bottom:24px;
+  font-style:italic;
+}
+
+/* CATEGORY TABS */
+.cat-tabs { display:flex; gap:8px; flex-wrap:wrap; margin-bottom:20px; }
+.cat-tab { background:var(--card); border:1px solid var(--border); color:var(--muted); padding:8px 16px; border-radius:20px; font-size:13px; font-weight:600; cursor:pointer; transition:0.2s; font-family:'Poppins',sans-serif; }
+.cat-tab:hover, .cat-tab.active { background:var(--cyan); color:#0A2540; border-color:var(--cyan); }
+
+/* JOB CARDS GRID */
+.jobs-grid { display:grid; grid-template-columns:repeat(auto-fill,minmax(300px,1fr)); gap:16px; }
+.job-card {
+  background:var(--card);
+  border:1px solid var(--border);
+  border-radius:var(--radius);
+  padding:20px;
+  transition:0.25s;
+  position:relative;
+  overflow:hidden;
+}
+.job-card::before {
+  content:''; position:absolute; left:0; top:0; bottom:0;
+  width:4px; background:var(--cyan);
+}
+.job-card:hover { transform:translateY(-3px); box-shadow:0 8px 30px rgba(0,217,255,0.15); border-color:rgba(0,217,255,0.5); }
+.job-card .emoji { font-size:36px; margin-bottom:10px; display:block; }
+.job-card h3 { font-size:17px; font-weight:700; color:var(--text); margin-bottom:4px; }
+.job-card .dept { font-size:12px; color:var(--cyan); font-weight:600; margin-bottom:10px; }
+.badge-row { display:flex; flex-wrap:wrap; gap:6px; margin-bottom:12px; }
+.badge {
+  padding:4px 10px; border-radius:20px; font-size:11px; font-weight:700;
+}
+.badge.green { background:rgba(0,230,118,0.15); color:var(--green); border:1px solid rgba(0,230,118,0.3); }
+.badge.gold { background:rgba(255,215,0,0.12); color:var(--gold); border:1px solid rgba(255,215,0,0.3); }
+.badge.cyan { background:rgba(0,217,255,0.12); color:var(--cyan); border:1px solid var(--border); }
+.badge.red { background:rgba(255,82,82,0.12); color:var(--red); border:1px solid rgba(255,82,82,0.3); }
+.info-row { display:grid; grid-template-columns:1fr 1fr; gap:8px; margin-bottom:12px; }
+.info-box { background:rgba(255,255,255,0.04); border-radius:8px; padding:8px; }
+.info-box span { display:block; font-size:10px; color:var(--muted); text-transform:uppercase; font-weight:700; margin-bottom:2px; }
+.info-box strong { font-size:13px; color:var(--text); }
+.details-btn {
+  width:100%; padding:10px; background:transparent; border:1px solid var(--cyan);
+  color:var(--cyan); border-radius:8px; font-weight:700; font-size:13px;
+  cursor:pointer; transition:0.2s; font-family:'Poppins',sans-serif;
+}
+.details-btn:hover { background:var(--cyan); color:#0A2540; }
+
+/* EXAM TABLE */
+.table-wrap { overflow-x:auto; border-radius:var(--radius); border:1px solid var(--border); }
+table { width:100%; border-collapse:collapse; min-width:600px; }
+th { background:rgba(0,217,255,0.1); color:var(--cyan); padding:12px 14px; text-align:left; font-size:12px; text-transform:uppercase; letter-spacing:0.5px; border-bottom:1px solid var(--border); }
+td { padding:12px 14px; border-bottom:1px solid rgba(255,255,255,0.05); font-size:13px; color:var(--text); vertical-align:top; }
+tr:last-child td { border-bottom:none; }
+tr:hover td { background:rgba(0,217,255,0.04); }
+
+/* TIPS GRID */
+.tips-grid { display:grid; grid-template-columns:repeat(auto-fill,minmax(260px,1fr)); gap:14px; }
+.tip-card { background:var(--card); border:1px solid var(--border); border-radius:var(--radius); padding:18px; }
+.tip-card .tip-num { width:32px; height:32px; background:var(--cyan); color:#0A2540; border-radius:50%; display:grid; place-items:center; font-weight:800; font-size:14px; margin-bottom:10px; }
+.tip-card h4 { font-size:15px; font-weight:700; margin-bottom:6px; }
+.tip-card p { font-size:13px; color:var(--muted); line-height:1.6; }
+
+/* MODAL */
+.modal-overlay {
+  display:none; position:fixed; inset:0;
+  background:rgba(0,0,0,0.75); z-index:200;
+  align-items:center; justify-content:center;
+  padding:16px; backdrop-filter:blur(6px);
+}
+.modal-overlay.open { display:flex; }
+.modal-box {
+  background:var(--bg2); border:1px solid var(--border);
+  border-radius:16px; width:min(700px,100%);
+  max-height:88vh; overflow-y:auto;
+  box-shadow:0 20px 60px rgba(0,0,0,0.5);
+}
+.modal-head {
+  position:sticky; top:0; background:var(--bg2);
+  border-bottom:1px solid var(--border);
+  padding:16px 20px; display:flex; justify-content:space-between; align-items:flex-start; gap:10px;
+}
+.modal-head h2 { font-size:22px; font-weight:800; color:var(--cyan); }
+.modal-close { background:transparent; border:1px solid var(--border); color:var(--text); width:32px; height:32px; border-radius:8px; cursor:pointer; font-size:16px; flex-shrink:0; }
+.modal-body { padding:20px; }
+.modal-section { margin-bottom:20px; }
+.modal-section h4 { color:var(--cyan); font-size:14px; font-weight:700; margin-bottom:10px; text-transform:uppercase; letter-spacing:0.5px; }
+.roadmap-step { display:flex; gap:12px; align-items:flex-start; margin-bottom:10px; padding:10px; background:rgba(255,255,255,0.03); border-radius:8px; border:1px solid var(--border); }
+.step-num { width:28px; height:28px; background:var(--cyan); color:#0A2540; border-radius:50%; display:grid; place-items:center; font-weight:800; font-size:12px; flex-shrink:0; }
+.step-text { font-size:13px; color:var(--text); line-height:1.5; padding-top:4px; }
+.skill-tag { display:inline-block; background:rgba(0,217,255,0.1); border:1px solid var(--border); color:var(--cyan); padding:4px 10px; border-radius:20px; font-size:12px; font-weight:600; margin:3px; }
+.salary-row { display:flex; justify-content:space-between; align-items:center; padding:8px 12px; background:rgba(255,255,255,0.03); border-radius:8px; margin-bottom:6px; }
+.salary-label { font-size:13px; color:var(--muted); }
+.salary-val { font-size:14px; font-weight:700; color:var(--green); }
+
+/* FOOTER */
+footer {
+  background:#051020; border-top:1px solid var(--border);
+  padding:30px 20px; text-align:center;
+}
+.footer-inner { max-width:1100px; margin:0 auto; }
+footer h3 { color:var(--cyan); font-size:20px; margin-bottom:8px; }
+footer p { color:var(--muted); font-size:13px; margin-bottom:4px; }
+.wa-btn {
+  display:inline-flex; align-items:center; gap:8px;
+  background:#25D366; color:white; padding:12px 24px;
+  border-radius:30px; font-weight:700; font-size:14px;
+  text-decoration:none; margin-top:16px; transition:0.2s;
+}
+.wa-btn:hover { background:#1ab955; transform:scale(1.05); }
+
+/* WHATSAPP FAB */
+.wa-fab {
+  position:fixed; bottom:20px; right:20px; z-index:150;
+  width:54px; height:54px; background:#25D366; border-radius:50%;
+  display:grid; place-items:center; font-size:24px;
+  text-decoration:none; box-shadow:0 4px 20px rgba(37,211,102,0.4);
+  transition:0.2s;
+}
+.wa-fab:hover { transform:scale(1.1); }
+
+@media(max-width:600px) {
+  .header-inner { flex-direction:column; align-items:flex-start; gap:8px; }
+  .info-row { grid-template-columns:1fr; }
+  .jobs-grid { grid-template-columns:1fr; }
+}
+@media print {
+  header, nav, .motive-strip, .wa-fab, footer { display:none; }
+  .section { display:block !important; }
+  body { background:white; color:black; }
+}
+</style>
+</head>
+<body>
+
+<!-- HEADER -->
+<header>
+  <div class="header-inner">
+    <div class="logo">
+      <div class="logo-icon">🏛️</div>
+      <div>
+        <h1>Rohit Computer</h1>
+        <p data-t="tagline">Sarkari Naukri Complete Guide</p>
+      </div>
+    </div>
+    <div style="display:flex;gap:10px;align-items:center;flex-wrap:wrap;">
+      <a href="https://wa.me/919452305913" style="color:#25D366;font-size:13px;font-weight:700;text-decoration:none;">📞 9452305913</a>
+      <button class="lang-btn" onclick="toggleLang()" id="langBtn">🌐 हिंदी</button>
+    </div>
+  </div>
+</header>
+
+<!-- NAV -->
+<nav>
+  <div class="nav-inner">
+    <button class="active" onclick="showSection('home')">🏠 <span data-t="nav_home">Home</span></button>
+    <button onclick="showSection('after10')">📝 <span data-t="nav_10">After 10th</span></button>
+    <button onclick="showSection('after12')">🎓 <span data-t="nav_12">After 12th</span></button>
+    <button onclick="showSection('graduate')">👨‍🎓 <span data-t="nav_grad">Graduate</span></button>
+    <button onclick="showSection('defence')">⚔️ <span data-t="nav_def">Defence</span></button>
+    <button onclick="showSection('teaching')">👨‍🏫 <span data-t="nav_teach">Teaching</span></button>
+    <button onclick="showSection('tips')">💡 <span data-t="nav_tips">Exam Tips</span></button>
+  </div>
+</nav>
+
+<!-- HERO -->
+<div class="hero">
+  <div class="hero-content">
+    <h1 data-t="hero_title">🏛️ Sarkari Naukri <span>Complete Guide</span></h1>
+    <p data-t="hero_sub">10th se Graduation tak — sabke liye government jobs ki puri jankari</p>
+    <div class="quote-box" id="heroQuote">"A government job is not just a job — it's a lifelong security."</div>
+    <div class="stats-row">
+      <div class="stat-box"><strong>50+</strong><span data-t="stat1">Govt Exams</span></div>
+      <div class="stat-box"><strong>10th+</strong><span data-t="stat2">Min Eligibility</span></div>
+      <div class="stat-box"><strong>₹18K+</strong><span data-t="stat3">Starting Salary</span></div>
+      <div class="stat-box"><strong>Free</strong><span data-t="stat4">This Guide</span></div>
+    </div>
+  </div>
+</div>
+<div class="motive-strip" id="motiveStrip">✨ "Success is not final, failure is not fatal — keep trying." ✨</div>
+
+<!-- MAIN -->
+<main>
+
+<!-- HOME SECTION -->
+<section class="section active" id="home">
+  <div class="section-quote" id="homeQuote">"सपने देखने वालों की नींद में भी सफलता होती है।"</div>
+  <div class="section-title" data-t="home_title">Sarkari Naukri Kya Hoti Hai?</div>
+  <div class="section-subtitle" data-t="home_sub">Government jobs give you stability, pension, respect, and work-life balance.</div>
+
+  <div class="tips-grid" style="margin-bottom:30px;">
+    <div class="tip-card">
+      <div class="tip-num">🛡️</div>
+      <h4 data-t="adv1_title">Job Security</h4>
+      <p data-t="adv1_desc">Once you get a govt job, you have permanent employment. No fear of layoffs.</p>
+    </div>
+    <div class="tip-card">
+      <div class="tip-num">💰</div>
+      <h4 data-t="adv2_title">7th Pay Commission Salary</h4>
+      <p data-t="adv2_desc">Regular salary hike, DA, HRA, medical allowance — total package bahut achha hota hai.</p>
+    </div>
+    <div class="tip-card">
+      <div class="tip-num">🏖️</div>
+      <h4 data-t="adv3_title">Leave & Pension</h4>
+      <p data-t="adv3_desc">Paid holidays, maternity/paternity leave, retirement pension — lifelong benefits.</p>
+    </div>
+    <div class="tip-card">
+      <div class="tip-num">📍</div>
+      <h4 data-t="adv4_title">Respect in Society</h4>
+      <p data-t="adv4_desc">Sarkari naukri wale ko samaj mein izzat milti hai — family bhi khush rehti hai.</p>
+    </div>
+    <div class="tip-card">
+      <div class="tip-num">🏥</div>
+      <h4 data-t="adv5_title">Medical Benefits</h4>
+      <p data-t="adv5_desc">CGHS, ESIC jaise medical facilities government employees ko free milti hain.</p>
+    </div>
+    <div class="tip-card">
+      <div class="tip-num">📈</div>
+      <h4 data-t="adv6_title">Promotion & Growth</h4>
+      <p data-t="adv6_desc">Regular promotions aur in-service training se career grow karta hai.</p>
+    </div>
+  </div>
+
+  <div style="background:rgba(0,217,255,0.06);border:1px solid var(--border);border-radius:12px;padding:20px;margin-bottom:24px;">
+    <h3 style="color:var(--gold);margin-bottom:14px;" data-t="howto_title">📋 Sarkari Job Kaise Milti Hai?</h3>
+    <div class="roadmap-step"><div class="step-num">1</div><div class="step-text" data-t="howto1">Choose your eligibility level (10th / 12th / Graduate)</div></div>
+    <div class="roadmap-step"><div class="step-num">2</div><div class="step-text" data-t="howto2">Find exams suitable for you (SSC, Railway, Bank, Defence, etc.)</div></div>
+    <div class="roadmap-step"><div class="step-num">3</div><div class="step-text" data-t="howto3">Understand syllabus and start preparation</div></div>
+    <div class="roadmap-step"><div class="step-num">4</div><div class="step-text" data-t="howto4">Practice mock tests daily — speed and accuracy important hai</div></div>
+    <div class="roadmap-step"><div class="step-num">5</div><div class="step-text" data-t="howto5">Apply online when notification comes — sarkari websites check karte raho</div></div>
+    <div class="roadmap-step"><div class="step-num">6</div><div class="step-text" data-t="howto6">Clear written exam, physical test (if any), document verification</div></div>
+  </div>
+
+  <div style="text-align:center;">
+    <button onclick="showSection('after10')" style="background:var(--cyan);color:#0A2540;border:none;padding:14px 30px;border-radius:30px;font-weight:800;font-size:16px;cursor:pointer;margin:6px;">📝 After 10th Jobs</button>
+    <button onclick="showSection('after12')" style="background:var(--gold);color:#0A2540;border:none;padding:14px 30px;border-radius:30px;font-weight:800;font-size:16px;cursor:pointer;margin:6px;">🎓 After 12th Jobs</button>
+    <button onclick="showSection('graduate')" style="background:var(--green);color:#0A2540;border:none;padding:14px 30px;border-radius:30px;font-weight:800;font-size:16px;cursor:pointer;margin:6px;">👨‍🎓 Graduate Jobs</button>
+  </div>
+</section>
+
+<!-- AFTER 10TH -->
+<section class="section" id="after10">
+  <div class="section-quote">"10th ke baad bhi bahut raaste khulte hain — darna mat, aage badho."</div>
+  <div class="section-title" data-t="s10_title">📝 After 10th — Govt Jobs</div>
+  <div class="section-subtitle" data-t="s10_sub">10th pass students ke liye government exam options</div>
+  <div class="jobs-grid" id="grid10"></div>
+</section>
+
+<!-- AFTER 12TH -->
+<section class="section" id="after12">
+  <div class="section-quote">"12th ke baad ek sahi exam badal sakta hai poori zindagi."</div>
+  <div class="section-title" data-t="s12_title">🎓 After 12th — Govt Jobs</div>
+  <div class="section-subtitle" data-t="s12_sub">12th pass students ke liye government exam options</div>
+  <div class="jobs-grid" id="grid12"></div>
+</section>
+
+<!-- GRADUATE -->
+<section class="section" id="graduate">
+  <div class="section-quote">"Graduation ke baad sky is the limit — IAS, Bank PO, sab possible hai."</div>
+  <div class="section-title" data-t="sgrad_title">👨‍🎓 Graduate Level — Govt Jobs</div>
+  <div class="section-subtitle" data-t="sgrad_sub">Graduation ke baad best government job options</div>
+  <div class="jobs-grid" id="gridGrad"></div>
+</section>
+
+<!-- DEFENCE -->
+<section class="section" id="defence">
+  <div class="section-quote">"Desh ki seva se bada koi dharam nahi." — Defence Jobs</div>
+  <div class="section-title" data-t="sdef_title">⚔️ Defence Jobs</div>
+  <div class="section-subtitle" data-t="sdef_sub">Army, Navy, Air Force, Police — sabki complete information</div>
+  <div class="jobs-grid" id="gridDef"></div>
+</section>
+
+<!-- TEACHING -->
+<section class="section" id="teaching">
+  <div class="section-quote">"Ek teacher hazaron logo ki zindagi badal sakta hai."</div>
+  <div class="section-title" data-t="steach_title">👨‍🏫 Teaching Jobs</div>
+  <div class="section-subtitle" data-t="steach_sub">Primary Teacher se Professor tak — sab options</div>
+  <div class="jobs-grid" id="gridTeach"></div>
+</section>
+
+<!-- EXAM TIPS -->
+<section class="section" id="tips">
+  <div class="section-quote">"Preparation + Consistency = Success. Koi shortcut nahi hai."</div>
+  <div class="section-title" data-t="stips_title">💡 Exam Tips & Strategy</div>
+  <div class="section-subtitle" data-t="stips_sub">Govt exam clear karne ke proven tips</div>
+
+  <div class="tips-grid" id="tipsGrid"></div>
+
+  <div style="margin-top:30px;background:rgba(255,215,0,0.06);border:1px solid rgba(255,215,0,0.3);border-radius:12px;padding:20px;">
+    <h3 style="color:var(--gold);margin-bottom:14px;" data-t="free_res">📚 Free Study Resources</h3>
+    <div class="table-wrap">
+      <table>
+        <thead><tr><th data-t="res_name">Resource</th><th data-t="res_use">Useful For</th><th data-t="res_link">Access</th></tr></thead>
+        <tbody>
+          <tr><td>NCERT Books (6th-12th)</td><td data-t="r1">GK, History, Geography, Science</td><td><span class="badge cyan">ncert.nic.in</span></td></tr>
+          <tr><td>Khan Academy</td><td data-t="r2">Maths, Science, English</td><td><span class="badge cyan">khanacademy.org</span></td></tr>
+          <tr><td>Unacademy / YouTube</td><td data-t="r3">All govt exams — free lectures</td><td><span class="badge cyan">YouTube</span></td></tr>
+          <tr><td>Testbook</td><td data-t="r4">Mock tests, previous year papers</td><td><span class="badge cyan">testbook.com</span></td></tr>
+          <tr><td>GradeUp / BYJU's Exam Prep</td><td data-t="r5">SSC, Bank, Railway prep</td><td><span class="badge cyan">App/Website</span></td></tr>
+        </tbody>
+      </table>
+    </div>
+  </div>
+</section>
+
+</main>
+
+<!-- MODAL -->
+<div class="modal-overlay" id="modal">
+  <div class="modal-box">
+    <div class="modal-head">
+      <h2 id="modalTitle">Job Details</h2>
+      <button class="modal-close" onclick="closeModal()">✕</button>
+    </div>
+    <div class="modal-body" id="modalBody"></div>
+  </div>
+</div>
+
+<!-- FOOTER -->
+<footer>
+  <div class="footer-inner">
+    <h3>🏛️ Rohit Computer — Career Guidance Center</h3>
+    <p>Rath, Hamirpur, Uttar Pradesh — 210431</p>
+    <p>Career Guidance Free | Computer Education | CSC Center</p>
+    <div style="margin-top:16px;font-size:22px;color:var(--gold);">
+      "मंजिल उन्हीं को मिलती है जो चलते रहते हैं।"
+    </div>
+    <a href="https://wa.me/919452305913?text=Hello%20Rohit%20Computer,%20mujhe%20sarkari%20naukri%20ki%20jankari%20chahiye" class="wa-btn" target="_blank">💬 WhatsApp pe Poochho — FREE</a>
+    <p style="margin-top:20px;font-size:11px;color:var(--muted);">© 2025 Rohit Computer. Made with ❤️ for Indian Students.</p>
+  </div>
+</footer>
+
+<a href="https://wa.me/919452305913" class="wa-fab" target="_blank" title="WhatsApp">💬</a>
+
+<script>
+// ==================== LANGUAGE DATA ====================
+const LANG = {
+  en: {
+    tagline:"Sarkari Naukri Complete Guide", hero_title:"🏛️ Sarkari Naukri Complete Guide",
+    hero_sub:"10th se Graduation tak — sabke liye government jobs ki puri jankari",
+    stat1:"Govt Exams", stat2:"Min Eligibility", stat3:"Starting Salary", stat4:"This Guide",
+    nav_home:"Home", nav_10:"After 10th", nav_12:"After 12th", nav_grad:"Graduate",
+    nav_def:"Defence", nav_teach:"Teaching", nav_tips:"Exam Tips",
+    home_title:"What is Sarkari Naukri?", home_sub:"Government jobs give you stability, pension, respect, and work-life balance.",
+    adv1_title:"Job Security", adv1_desc:"Once you get a govt job, you have permanent employment. No fear of layoffs.",
+    adv2_title:"7th Pay Commission Salary", adv2_desc:"Regular salary hike, DA, HRA, medical allowance — total package is great.",
+    adv3_title:"Leave & Pension", adv3_desc:"Paid holidays, maternity/paternity leave, retirement pension — lifelong benefits.",
+    adv4_title:"Respect in Society", adv4_desc:"A government employee is respected in society — family is also proud.",
+    adv5_title:"Medical Benefits", adv5_desc:"CGHS, ESIC health facilities are provided free to government employees.",
+    adv6_title:"Promotion & Growth", adv6_desc:"Regular promotions and in-service training help career grow.",
+    howto_title:"📋 How to Get a Govt Job?",
+    howto1:"Choose your eligibility level (10th / 12th / Graduate)",
+    howto2:"Find exams suitable for you (SSC, Railway, Bank, Defence, etc.)",
+    howto3:"Understand syllabus and start preparation",
+    howto4:"Practice mock tests daily — speed and accuracy is important",
+    howto5:"Apply online when notification comes — keep checking official websites",
+    howto6:"Clear written exam, physical test (if any), document verification",
+    s10_title:"📝 After 10th — Govt Jobs", s10_sub:"Government exam options for 10th pass students",
+    s12_title:"🎓 After 12th — Govt Jobs", s12_sub:"Government exam options for 12th pass students",
+    sgrad_title:"👨‍🎓 Graduate Level — Govt Jobs", sgrad_sub:"Best government job options after graduation",
+    sdef_title:"⚔️ Defence Jobs", sdef_sub:"Army, Navy, Air Force, Police — complete information",
+    steach_title:"👨‍🏫 Teaching Jobs", steach_sub:"Primary Teacher to Professor — all options",
+    stips_title:"💡 Exam Tips & Strategy", stips_sub:"Proven tips to clear govt exams",
+    free_res:"📚 Free Study Resources", res_name:"Resource", res_use:"Useful For", res_link:"Access",
+    r1:"GK, History, Geography, Science", r2:"Maths, Science, English",
+    r3:"All govt exams — free lectures", r4:"Mock tests, previous year papers", r5:"SSC, Bank, Railway prep"
+  },
+  hi: {
+    tagline:"सरकारी नौकरी पूरी गाइड", hero_title:"🏛️ सरकारी नौकरी <span>पूरी गाइड</span>",
+    hero_sub:"10वीं से ग्रेजुएशन तक — सभी के लिए सरकारी नौकरी की पूरी जानकारी",
+    stat1:"सरकारी परीक्षाएं", stat2:"न्यूनतम योग्यता", stat3:"शुरुआती वेतन", stat4:"यह गाइड",
+    nav_home:"होम", nav_10:"10वीं बाद", nav_12:"12वीं बाद", nav_grad:"ग्रेजुएट",
+    nav_def:"सेना", nav_teach:"शिक्षण", nav_tips:"परीक्षा टिप्स",
+    home_title:"सरकारी नौकरी क्या होती है?", home_sub:"सरकारी नौकरी से मिलती है स्थिरता, पेंशन, इज्जत और अच्छी जिंदगी।",
+    adv1_title:"नौकरी सुरक्षा", adv1_desc:"एक बार सरकारी नौकरी मिल जाए तो पक्की नौकरी — छंटनी का डर नहीं।",
+    adv2_title:"7वें वेतन आयोग की सैलरी", adv2_desc:"नियमित वेतन वृद्धि, DA, HRA, मेडिकल भत्ता — पैकेज बहुत अच्छा।",
+    adv3_title:"छुट्टी और पेंशन", adv3_desc:"सवैतनिक अवकाश, मातृत्व अवकाश, सेवानिवृत्ति पेंशन — जीवनभर लाभ।",
+    adv4_title:"समाज में इज्जत", adv4_desc:"सरकारी कर्मचारी को समाज में इज्जत मिलती है — परिवार भी गर्व महसूस करता है।",
+    adv5_title:"मेडिकल सुविधाएं", adv5_desc:"CGHS, ESIC जैसी स्वास्थ्य सुविधाएं सरकारी कर्मचारियों को मुफ्त मिलती हैं।",
+    adv6_title:"पदोन्नति और विकास", adv6_desc:"नियमित पदोन्नति और सेवाकालीन प्रशिक्षण से करियर आगे बढ़ता है।",
+    howto_title:"📋 सरकारी नौकरी कैसे मिलती है?",
+    howto1:"अपनी योग्यता का स्तर चुनें (10वीं / 12वीं / ग्रेजुएट)",
+    howto2:"अपने लिए उपयुक्त परीक्षाएं खोजें (SSC, रेलवे, बैंक, सेना आदि)",
+    howto3:"पाठ्यक्रम समझें और तैयारी शुरू करें",
+    howto4:"रोज मॉक टेस्ट दें — गति और सटीकता जरूरी है",
+    howto5:"अधिसूचना आने पर ऑनलाइन आवेदन करें — सरकारी वेबसाइट देखते रहें",
+    howto6:"लिखित परीक्षा, शारीरिक परीक्षा (यदि हो), दस्तावेज सत्यापन पास करें",
+    s10_title:"📝 10वीं बाद — सरकारी नौकरी", s10_sub:"10वीं पास छात्रों के लिए सरकारी परीक्षा के विकल्प",
+    s12_title:"🎓 12वीं बाद — सरकारी नौकरी", s12_sub:"12वीं पास छात्रों के लिए सरकारी परीक्षा के विकल्प",
+    sgrad_title:"👨‍🎓 ग्रेजुएट स्तर — सरकारी नौकरी", sgrad_sub:"ग्रेजुएशन के बाद सर्वश्रेष्ठ सरकारी नौकरी के विकल्प",
+    sdef_title:"⚔️ सेना की नौकरी", sdef_sub:"थल सेना, नौसेना, वायु सेना, पुलिस — पूरी जानकारी",
+    steach_title:"👨‍🏫 शिक्षण नौकरी", steach_sub:"प्राइमरी टीचर से प्रोफेसर तक — सभी विकल्प",
+    stips_title:"💡 परीक्षा टिप्स और रणनीति", stips_sub:"सरकारी परीक्षा पास करने के सिद्ध टिप्स",
+    free_res:"📚 मुफ्त अध्ययन सामग्री", res_name:"संसाधन", res_use:"उपयोगी", res_link:"कहां मिलेगा",
+    r1:"सामान्य ज्ञान, इतिहास, भूगोल, विज्ञान", r2:"गणित, विज्ञान, अंग्रेजी",
+    r3:"सभी सरकारी परीक्षाएं — मुफ्त लेक्चर", r4:"मॉक टेस्ट, पिछले वर्ष के प्रश्नपत्र", r5:"SSC, बैंक, रेलवे तैयारी"
+  }
+};
+
+// ==================== DATA ====================
+const jobs10 = [
+  { id:"rrb_d", emoji:"🚂", name:"Railway Group D", dept:"Indian Railway", salary:"₹18,000–35,000/mo", duration:"6 months prep", exam:"CBT + PET", elig:"10th Pass", vacancies:"~1 Lakh+", trend:"hot",
+    skills:["General Science","Maths","Reasoning","GK"],
+    roadmap:["10th pass karo min 33% marks se","Railway Group D notification dekho (RRB website)","CBT (Computer Based Test) ki taiyari karo","Maths, GK, Reasoning, Science padho","Mock tests daily practice karo","PET (Physical Efficiency Test) ke liye fitness banao"],
+    fresher:"₹18,000", mid:"₹25,000", senior:"₹35,000+" },
+  { id:"ssc_mts", emoji:"📋", name:"SSC MTS", dept:"Staff Selection Commission", salary:"₹18,000–56,600/mo", duration:"6 months prep", exam:"Paper I + II", elig:"10th Pass", vacancies:"~8000+", trend:"hot",
+    skills:["Reasoning","Maths","English","GK"],
+    roadmap:["SSC MTS ki official notification check karo","Syllabus download karo (ssc.nic.in)","4 subjects ki taiyari karo: Maths, GK, Reasoning, English","Testbook ya Adda247 se free mocks do","Paper I clear karo, Paper II (descriptive) ke liye essay practice karo","Document verification ke liye papers ready rakho"],
+    fresher:"₹18,000", mid:"₹28,000", senior:"₹56,600" },
+  { id:"police_const", emoji:"👮", name:"Police Constable (UP)", dept:"UP Police", salary:"₹21,700–69,100/mo", duration:"4-6 months prep", exam:"Written + Physical", elig:"10th/12th (state-wise)", vacancies:"~50,000+", trend:"hot",
+    skills:["GK","Reasoning","Hindi","Physical Fitness"],
+    roadmap:["UP Police Constable notification dekho","Written exam: GK, Reasoning, Hindi, Maths padho","Physical test: 25 min mein 4.8km run (male)","Medical fitness maintain karo","Document verification ke liye 10th, 12th marksheets ready rakho","Age limit: 18-22 years (relaxation for reserved categories)"],
+    fresher:"₹21,700", mid:"₹35,000", senior:"₹55,000+" },
+  { id:"anganwadi", emoji:"👶", name:"Anganwadi Worker/Helper", dept:"State Govt / ICDS", salary:"₹3,000–12,000/month (honorarium)", duration:"1 month prep", exam:"Merit Based", elig:"10th Pass (Women)", vacancies:"Variable by district", trend:"stable",
+    skills:["Child care","Basic education","Community work"],
+    roadmap:["Apne district ke ICDS office mein vacancy dekho","10th marksheet aur documents ready rakho","Interview ya merit list mein select hona hai","Anganwadi center chalana aur record maintain karna padta hai","Monthly honorarium milta hai + government schemes ka labh"],
+    fresher:"₹3,000", mid:"₹6,000", senior:"₹12,000" },
+];
+
+const jobs12 = [
+  { id:"ssc_chsl", emoji:"📊", name:"SSC CHSL", dept:"Staff Selection Commission", salary:"₹19,900–63,200/mo", duration:"8 months prep", exam:"Tier I + II + Skill", elig:"12th Pass", vacancies:"~6000+", trend:"hot",
+    skills:["Maths","English","Reasoning","GK","Typing"],
+    roadmap:["SSC CHSL notification track karo ssc.nic.in pe","Tier I: Quantitative Aptitude, English, Reasoning, GK","Tier II: English Language & Comprehension + Maths","Skill Test: Typing 35 wpm (English) ya 30 wpm (Hindi)","Daily 2 mock tests practice karo","Good score ke liye speed + accuracy dono zaroori"],
+    fresher:"₹19,900", mid:"₹35,000", senior:"₹63,200" },
+  { id:"nda", emoji:"✈️", name:"NDA (National Defence Academy)", dept:"UPSC / Indian Armed Forces", salary:"₹56,100+/mo after training", duration:"1 year prep", exam:"Written + SSB Interview", elig:"12th PCM (Navy/AF), 12th any (Army)", vacancies:"~400 per year", trend:"stable",
+    skills:["Mathematics","English","GK","Physical Fitness","Leadership"],
+    roadmap:["12th mein PCM rakho (Navy/Air Force ke liye)","NDA exam UPSC conduct karta hai — twice a year","Paper I: Maths (300 marks), Paper II: GAT (600 marks)","SSB Interview: 5 days, psychology + physical + interview","Medical fitness standard very high hoti hai","Rashtriya Indian Military College (RIMC) se bhi try kar sakte ho"],
+    fresher:"₹56,100", mid:"₹80,000", senior:"₹1,50,000+" },
+  { id:"agniveer", emoji:"🎖️", name:"Agniveer (Army/Navy/AF)", dept:"Indian Armed Forces", salary:"₹30,000–40,000/mo", duration:"3-6 months prep", exam:"Written + Physical + Medical", elig:"10th/12th (varies)", vacancies:"~45,000 per year", trend:"hot",
+    skills:["Physical Fitness","GK","Science","Maths"],
+    roadmap:["Joinindianarmy.nic.in ya Navy/AF website pe notification dekho","Written exam: Online CBT — GK, Maths, Science, English","Physical test: 1.6 km run, pull-ups, balance","Medical: eyesight, height, weight standards follow karo","4 saal ki sewa ke baad 25% ko permanent service mein rakha jayega","Agniveer Corpus Fund + DGNSS certificate milega"],
+    fresher:"₹30,000", mid:"₹36,000", senior:"₹40,000+" },
+  { id:"lekhpal", emoji:"📜", name:"UP Lekhpal (Revenue)", dept:"UP Revenue Board", salary:"₹20,000–60,000/mo", duration:"6 months prep", exam:"Written Exam", elig:"12th Pass + Computer Certificate", vacancies:"~8000+ (UP)", trend:"hot",
+    skills:["Hindi","Maths","GK (UP specific)","Computer Basics"],
+    roadmap:["UP Lekhpal notification dekho upsssc.gov.in pe","Syllabus: Hindi, Maths, GK, Village Development","UP specific current affairs aur history padho","Daily newspaper UP ke news ke liye padhna",  "Computer certificate (O Level / CCC) zaroor banao","District-wise merit list hoti hai — high score lao"],
+    fresher:"₹20,000", mid:"₹35,000", senior:"₹55,000+" },
+];
+
+const jobsGrad = [
+  { id:"ias", emoji:"🏆", name:"IAS / IPS / IFS (UPSC CSE)", dept:"Government of India", salary:"₹56,100–2,50,000/mo", duration:"2-3 years prep", exam:"Prelims + Mains + Interview", elig:"Any Graduate", vacancies:"~1000 per year", trend:"stable",
+    skills:["General Studies","Essay Writing","Optional Subject","Current Affairs","Hindi/English"],
+    roadmap:["Graduation ke saath preparation start karo","Prelims: 2 papers — GS Paper I + CSAT","Mains: 9 papers — GS I-IV + Essay + Optional + Indian Lang + English","Personality Test (Interview): 275 marks","Optional subject carefully choose karo","Daily 8-10 hours study + notes making + answer writing"],
+    fresher:"₹56,100", mid:"₹1,00,000", senior:"₹2,50,000" },
+  { id:"bank_po", emoji:"🏦", name:"Bank PO (IBPS / SBI)", dept:"Public Sector Banks", salary:"₹36,000–63,000/mo", duration:"6-8 months prep", exam:"Prelims + Mains + Interview", elig:"Any Graduate", vacancies:"~5000+ per year", trend:"hot",
+    skills:["Quantitative Aptitude","Reasoning","English","Banking Awareness","Computer"],
+    roadmap:["IBPS ya SBI PO notification track karo","Prelims: 100 marks — Reasoning, Quant, English (1 hour)","Mains: 200 + 50 descriptive marks — 4 sections + essay","Interview: Banking knowledge, GD/PI prepare karo","Banker awareness ke liye Oliveboard ya BankExamsToday use karo","Daily mock tests essential hai"],
+    fresher:"₹36,000", mid:"₹50,000", senior:"₹63,000+" },
+  { id:"ssc_cgl", emoji:"🔍", name:"SSC CGL", dept:"Staff Selection Commission", salary:"₹35,400–1,12,400/mo", duration:"8-10 months prep", exam:"Tier I + II + III", elig:"Any Graduate", vacancies:"~9000+ per year", trend:"hot",
+    skills:["Maths","English","Reasoning","GK","Computer"],
+    roadmap:["SSC CGL ke different posts samjho — Inspector, Auditor, DEO, etc.","Tier I: 4 sections, 100 marks, 1 hour","Tier II: Paper I (Maths+Reasoning) + Paper II (English)","Tier III: Descriptive paper (100 marks, 1 hour)","Data Entry / Skill test for specific posts","Previous year papers 5 saal ke solve karo"],
+    fresher:"₹35,400", mid:"₹55,000", senior:"₹1,00,000+" },
+  { id:"pcs", emoji:"🏛️", name:"State PCS (UP PCS)", dept:"State Government", salary:"₹40,000–1,50,000/mo", duration:"2 years prep", exam:"Prelims + Mains + Interview", elig:"Any Graduate", vacancies:"~300-500 per year", trend:"stable",
+    skills:["General Studies","UP Specific GK","Essay","Optional Subject"],
+    roadmap:["UPPSC.UP.NIC.IN pe notification dekho","Prelims: Paper I (GS) + Paper II (CSAT) — 400 marks","Mains: 8 papers — GS I-IV, Essay, Optional, HIndi, Essay","Interview: 100 marks personality test","UP specific GK — UPPSC books buy karo","SDM, DSP, BDO jaise posts milti hain"],
+    fresher:"₹40,000", mid:"₹80,000", senior:"₹1,50,000" },
+];
+
+const jobsDef = [
+  { id:"army_officer", emoji:"🎖️", name:"Army Officer (CDS)", dept:"Indian Army", salary:"₹56,100–2,50,000/mo", duration:"1 year prep", exam:"CDS Written + SSB", elig:"Graduate (any stream)", vacancies:"~300+ per year", trend:"stable",
+    skills:["English","Maths","GK","Leadership","Physical Fitness"],
+    roadmap:["CDS exam UPSC conduct karta hai — year mein 2 baar","IMA (Infantry), Naval Academy, Air Force Academy ka option","Written exam: English, GK, Maths — 3 hours","SSB Interview: 5 days — screening, psychology, group tasks, interview","Medical board: strict standards","OTA Chennai mein bhi join kar sakte ho (graduate women bhi)"],
+    fresher:"₹56,100", mid:"₹1,00,000", senior:"₹2,00,000+" },
+  { id:"constable_gd", emoji:"👮", name:"Constable GD (CRPF/BSF/CISF)", dept:"Central Armed Police Forces", salary:"₹21,700–69,100/mo", duration:"4-6 months prep", exam:"CBT + PET + PST + Medical", elig:"10th/12th Pass", vacancies:"~80,000+ (combined)", trend:"hot",
+    skills:["Physical Fitness","GK","Maths","English/Hindi"],
+    roadmap:["SSC GD Constable notification dekho ssc.nic.in pe","CBT: GK, Reasoning, Maths, English — 80 marks","PET: Male — 5km/24min, Female — 1.6km/8.5min","PST: Height (Male 170cm, Female 157cm) + Chest","Medical examination","Final merit list based on CBT score"],
+    fresher:"₹21,700", mid:"₹40,000", senior:"₹55,000+" },
+  { id:"air_force", emoji:"✈️", name:"Airman / AFCAT", dept:"Indian Air Force", salary:"₹26,900–2,50,000/mo", duration:"6 months - 1 year prep", exam:"AFCAT/Written + AFSB", elig:"12th PCM / Graduate", vacancies:"~3500+ per year", trend:"stable",
+    skills:["Physics","Maths","English","Reasoning","Physical Fitness"],
+    roadmap:["Agniveer Vayu (12th PCM) ya AFCAT (Graduate) choose karo","AFCAT: English, Reasoning, Maths, GK — 100 questions","AFSB (Air Force Selection Board): 4-5 days","Medical: Vision standards very important","Pilot ke liye Math/Physics mein 60%+ zaroori","careerindianairforce.cdac.in se apply karo"],
+    fresher:"₹26,900", mid:"₹80,000", senior:"₹2,00,000+" },
+];
+
+const jobsTeach = [
+  { id:"primary_teacher", emoji:"📚", name:"Primary Teacher (TET)", dept:"State Education Dept", salary:"₹25,000–60,000/mo", duration:"1 year prep", exam:"TET / CTET + Merit", elig:"12th + D.El.Ed/B.Ed", vacancies:"State-wise (large)", trend:"stable",
+    skills:["Subject Knowledge","Pedagogy","Child Psychology","Hindi/English"],
+    roadmap:["12th ke baad D.El.Ed (2 years) ya B.Ed karo","CTET / State TET exam qualify karo","State TET certificate 7 years valid hota hai","Vacancy aane par apply karo — merit list se selection","Primary school mein Class 1-5 ya 6-8 padha sakte ho","KVS/NVS mein bhi apply kar sakte ho"],
+    fresher:"₹25,000", mid:"₹40,000", senior:"₹60,000" },
+  { id:"kvs_tgt", emoji:"🏫", name:"KVS / NVS TGT / PGT", dept:"Kendriya Vidyalaya / Navodaya", salary:"₹35,400–82,500/mo", duration:"6-8 months prep", exam:"Written + Demo + Interview", elig:"B.Ed + Subject Degree", vacancies:"~5000+ per year", trend:"stable",
+    skills:["Subject specialization","Teaching Skills","English","Child Psychology"],
+    roadmap:["KVS ya NVS vacancy notification dekho","TGT: Graduate + B.Ed, PGT: Postgraduate + B.Ed","Written exam: subject knowledge + teaching aptitude","Teaching demonstration: 10 minute ka demo lesson","Interview: subject + personality","KVS salary + perks central govt ke hisab se hota hai"],
+    fresher:"₹35,400", mid:"₹55,000", senior:"₹82,500" },
+  { id:"ugc_net", emoji:"🎓", name:"UGC NET — Assistant Professor", dept:"Universities & Colleges", salary:"₹57,700–1,82,400/mo", duration:"6-12 months prep", exam:"UGC NET (Paper I + II)", elig:"PG 55% + NET Qualify", vacancies:"Through college vacancies", trend:"stable",
+    skills:["Research Aptitude","Subject Expertise","Teaching","English"],
+    roadmap:["Post graduation minimum 55% marks se karo","UGC NET: Paper I (Teaching aptitude, Research) + Paper II (Your subject)","NET clear karo — JRF bhi milta hai zyada marks se","College/University mein Assistant Professor apply karo","PhD karne se promotion fast hoti hai","State SET bhi valid hota hai for state college posts"],
+    fresher:"₹57,700", mid:"₹80,000", senior:"₹1,50,000+" },
+];
+
+const examTips = [
+  { title:"Make a Study Schedule", desc:"Har din ka time table banao — kab kya padhna hai fixed rakho. Consistency wins." },
+  { title:"Daily Mock Tests", desc:"Sirf padhna kaafi nahi — daily ek mock test do. Speed aur accuracy dono sudhregi." },
+  { title:"Previous Year Papers", desc:"Last 5 saal ke question papers solve karo. Pattern aur important topics samajh aayenge." },
+  { title:"Short Notes Banao", desc:"Padhte waqt short notes banao — revision ke time bahut kaam aata hai." },
+  { title:"Weak Topics pe Focus", desc:"Jo topic weak hai, use zyada time do. Strength to already hai." },
+  { title:"Physical Health Maintain Karo", desc:"Roz 30 min exercise karo — healthy body se mind sharp rehta hai." },
+  { title:"Social Media Limit Karo", desc:"Study time mein phone band rakho. Distraction sabse bada dushman hai." },
+  { title:"Current Affairs Daily", desc:"Ek newspaper ya app se daily 30 min current affairs padho — exam mein zaroori hai." },
+  { title:"Group Study karo (Weekly)", desc:"Weekly ek baar 2-3 doston ke saath group study karo — discussion se yaad rehta hai." },
+  { title:"Positive Raho", desc:"Reject hone par bhi mat ruko — baar baar try karo. Success milegi zaroor." },
+];
+
+// ==================== QUOTES ====================
+const quotes = [
+  '"Success is not final, failure is not fatal — keep trying."',
+  '"सरकारी नौकरी का रास्ता कठिन है, पर मंज़िल शानदार है।"',
+  '"Hard work beats talent when talent doesn\'t work hard."',
+  '"मेहनत इतनी खामोशी से करो कि सफलता शोर मचा दे।"',
+  '"Every expert was once a beginner. Start today."',
+  '"सपने देखो, मेहनत करो, सफलता मिलेगी।"',
+  '"Believe you can and you\'re halfway there."',
+  '"खुद पर यकीन रखो — दुनिया का रुख बदल जाएगा।"',
+];
+let quoteIndex = 0;
+
+// ==================== STATE ====================
+let currentLang = localStorage.getItem('rclang') || 'en';
+
+// ==================== RENDER FUNCTIONS ====================
+function renderJobCards(containerId, jobs) {
+  const el = document.getElementById(containerId);
+  if (!el) return;
+  el.innerHTML = jobs.map(j => `
+    <div class="job-card">
+      <span class="emoji">${j.emoji}</span>
+      <h3>${j.name}</h3>
+      <div class="dept">${j.dept}</div>
+      <div class="badge-row">
+        <span class="badge ${j.trend==='hot'?'red':'green'}">${j.trend==='hot'?'🔥 High Demand':'✅ Stable'}</span>
+        <span class="badge cyan">📋 ${j.exam}</span>
+        <span class="badge gold">🎓 ${j.elig}</span>
+      </div>
+      <div class="info-row">
+        <div class="info-box"><span>Salary</span><strong>${j.salary}</strong></div>
+        <div class="info-box"><span>Prep Time</span><strong>${j.duration}</strong></div>
+      </div>
+      <button class="details-btn" onclick="openModal('${j.id}')">📖 Full Details & Roadmap</button>
+    </div>
+  `).join('');
+}
+
+function openModal(id) {
+  const all = [...jobs10,...jobs12,...jobsGrad,...jobsDef,...jobsTeach];
+  const j = all.find(x => x.id === id);
+  if (!j) return;
+  document.getElementById('modalTitle').textContent = j.emoji + ' ' + j.name;
+  document.getElementById('modalBody').innerHTML = `
+    <div style="margin-bottom:16px;">
+      <div class="badge-row" style="margin-bottom:10px;">
+        <span class="badge cyan">🎓 ${j.elig}</span>
+        <span class="badge gold">📋 ${j.exam}</span>
+        <span class="badge green">📊 ${j.vacancies} Vacancies</span>
+      </div>
+    </div>
+    <div class="modal-section">
+      <h4>💰 Salary Range</h4>
+      <div class="salary-row"><span class="salary-label">Fresher / Entry Level</span><span class="salary-val">${j.fresher}/month</span></div>
+      <div class="salary-row"><span class="salary-label">Mid Level (3-5 years)</span><span class="salary-val">${j.mid}/month</span></div>
+      <div class="salary-row"><span class="salary-label">Senior Level</span><span class="salary-val">${j.senior}+/month</span></div>
+    </div>
+    <div class="modal-section">
+      <h4>🛠️ Required Skills</h4>
+      <div>${j.skills.map(s=>`<span class="skill-tag">${s}</span>`).join('')}</div>
+    </div>
+    <div class="modal-section">
+      <h4>🗺️ Step-by-Step Roadmap</h4>
+      ${j.roadmap.map((s,i)=>`<div class="roadmap-step"><div class="step-num">${i+1}</div><div class="step-text">${s}</div></div>`).join('')}
+    </div>
+  `;
+  document.getElementById('modal').classList.add('open');
+}
+
+function closeModal() {
+  document.getElementById('modal').classList.remove('open');
+}
+
+function renderTips() {
+  const el = document.getElementById('tipsGrid');
+  if (!el) return;
+  el.innerHTML = examTips.map((t,i) => `
+    <div class="tip-card">
+      <div class="tip-num">${i+1}</div>
+      <h4>${t.title}</h4>
+      <p>${t.desc}</p>
+    </div>
+  `).join('');
+}
+
+// ==================== NAV ====================
+function showSection(id) {
+  document.querySelectorAll('.section').forEach(s => s.classList.remove('active'));
+  document.querySelectorAll('nav button').forEach(b => b.classList.remove('active'));
+  document.getElementById(id)?.classList.add('active');
+  const idx = ['home','after10','after12','graduate','defence','teaching','tips'].indexOf(id);
+  document.querySelectorAll('nav button')[idx]?.classList.add('active');
+  window.scrollTo({top:0,behavior:'smooth'});
+}
+
+// ==================== LANGUAGE ====================
+function toggleLang() {
+  currentLang = currentLang === 'en' ? 'hi' : 'en';
+  localStorage.setItem('rclang', currentLang);
+  document.getElementById('langBtn').textContent = currentLang === 'en' ? '🌐 हिंदी' : '🌐 English';
+  applyLang();
+}
+
+function applyLang() {
+  const L = LANG[currentLang];
+  document.querySelectorAll('[data-t]').forEach(el => {
+    const key = el.getAttribute('data-t');
+    if (L[key] !== undefined) el.innerHTML = L[key];
+  });
+}
+
+// ==================== QUOTES ROTATION ====================
+function rotateQuote() {
+  quoteIndex = (quoteIndex + 1) % quotes.length;
+  const el = document.getElementById('heroQuote');
+  const strip = document.getElementById('motiveStrip');
+  if (el) { el.style.opacity = 0; setTimeout(() => { el.textContent = quotes[quoteIndex]; el.style.opacity = 1; }, 300); }
+  if (strip) strip.textContent = '✨ ' + quotes[(quoteIndex + 2) % quotes.length] + ' ✨';
+}
+document.getElementById('heroQuote').style.transition = '0.3s';
+
+// ==================== INIT ====================
+renderJobCards('grid10', jobs10);
+renderJobCards('grid12', jobs12);
+renderJobCards('gridGrad', jobsGrad);
+renderJobCards('gridDef', jobsDef);
+renderJobCards('gridTeach', jobsTeach);
+renderTips();
+applyLang();
+setInterval(rotateQuote, 4000);
+
+// Close modal on outside click
+document.getElementById('modal').addEventListener('click', e => {
+  if (e.target.id === 'modal') closeModal();
+});
+</script>
+</body>
+</html>
