@@ -1,0 +1,219 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Course to Career (Dark) — Rohit Computer</title>
+<link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;600;700;800;900&display=swap" rel="stylesheet">
+<style>
+*{margin:0;padding:0;box-sizing:border-box}
+:root{
+  --bg:#0A1628;--panel:#0d1f35;--gold:#FFD700;--cyan:#00D9FF;
+  --white:#fff;--muted:#a0aec0;
+  --row1:#1a3a5c;--row2:#1a4a2e;--row3:#2a1a4a;--row4:#3a2a10;
+  --row5:#1a3a4a;--row6:#2a3a1a;--row7:#4a1a1a;
+}
+body{background:var(--bg);color:var(--white);font-family:'Poppins',sans-serif;min-height:100vh;display:flex;flex-direction:column}
+.print-bar{background:#061020;padding:8px 16px;display:flex;align-items:center;justify-content:space-between;border-bottom:2px solid var(--gold)}
+.brand-mini{font-weight:800;font-size:.95rem;color:var(--gold)}
+.print-btns{display:flex;gap:8px}
+.print-btns button{padding:5px 13px;border:none;border-radius:20px;font-family:'Poppins',sans-serif;font-weight:700;font-size:.72rem;cursor:pointer;transition:transform .2s}
+.print-btns button:hover{transform:scale(1.05)}
+.btn-a4{background:#444;color:#fff}.btn-a3{background:#2563eb;color:#fff}
+.btn-a2{background:var(--gold);color:#000}.btn-a1{background:#dc2626;color:#fff}
+header{background:linear-gradient(135deg,#061020,#0d2137,#061020);padding:16px 30px;text-align:center;border-bottom:3px solid var(--gold)}
+header h1{font-size:1.9rem;font-weight:900;color:var(--gold);text-transform:uppercase;letter-spacing:3px}
+header p{color:var(--cyan);font-size:.9rem;font-weight:600;margin-top:3px}
+main{flex:1;padding:20px}
+.table-wrap{overflow-x:auto}
+table{width:100%;border-collapse:collapse;table-layout:fixed}
+thead th{background:#061020;color:var(--gold);font-weight:800;font-size:.85rem;text-transform:uppercase;letter-spacing:1px;padding:12px 10px;border:1px solid rgba(255,255,255,.1);text-align:center}
+thead th:first-child{width:13%}
+tbody tr td{padding:10px;border:1px solid rgba(255,255,255,.08);vertical-align:top;font-size:.72rem}
+tbody tr:nth-child(1) td{background:var(--row1)}
+tbody tr:nth-child(2) td{background:var(--row2)}
+tbody tr:nth-child(3) td{background:var(--row3)}
+tbody tr:nth-child(4) td{background:var(--row4)}
+tbody tr:nth-child(5) td{background:var(--row5)}
+tbody tr:nth-child(6) td{background:var(--row6)}
+tbody tr:nth-child(7) td{background:var(--row7)}
+.course-cell{font-weight:800;font-size:.95rem;color:var(--gold);text-align:center;vertical-align:middle!important}
+.course-cell small{display:block;color:var(--cyan);font-weight:600;font-size:.65rem;margin-top:2px}
+.tag{display:inline-block;padding:2px 7px;border-radius:10px;margin:2px 2px 2px 0;font-size:.63rem;font-weight:600;background:rgba(255,255,255,.1);border:1px solid rgba(255,255,255,.2)}
+.job{border-color:#00D9FF;color:#00D9FF}
+.govt{border-color:#4ade80;color:#4ade80}
+.study{border-color:#FFD700;color:#FFD700}
+.other{border-color:#f472b6;color:#f472b6}
+footer{background:#061020;border-top:3px solid var(--gold);padding:12px 30px;display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:10px}
+.rc-logo{background:var(--gold);color:#000;font-weight:900;font-size:1rem;padding:7px 14px;border-radius:7px}
+.fi{text-align:center;color:var(--muted);font-size:.75rem}
+.fi strong{color:var(--cyan);display:block;font-size:.9rem}
+.fc{text-align:right;font-size:.78rem}
+.fc div{color:var(--white);margin-bottom:3px}
+.fc span{color:var(--gold);font-weight:700}
+.qr{width:55px;height:55px;border:2px solid var(--gold);border-radius:6px;display:flex;align-items:center;justify-content:center;font-size:.45rem;color:var(--gold);text-align:center}
+@media print{
+  @page{size:A3 landscape;margin:5mm}
+  body{-webkit-print-color-adjust:exact;print-color-adjust:exact}
+  .print-bar{display:none}
+}
+</style>
+</head>
+<body>
+<div class="print-bar">
+  <div class="brand-mini">🎓 ROHIT COMPUTER — COURSE TO CAREER GUIDE</div>
+  <div class="print-btns">
+    <button class="btn-a4" onclick="printSize('A4 landscape')">Print A4</button>
+    <button class="btn-a3" onclick="printSize('A3 landscape')">Print A3</button>
+    <button class="btn-a2" onclick="printSize('A2 landscape')">🏆 A2 (Sell)</button>
+    <button class="btn-a1" onclick="printSize('A1 landscape')">🖼 A1 (Wall)</button>
+  </div>
+</div>
+<header>
+  <h1>📚 Course to Career — Complete Guide</h1>
+  <p>Apne Course ke Baad Kya Karein? | Job | Govt Exam | Higher Study | Other Options</p>
+</header>
+<main>
+  <div class="table-wrap">
+  <table>
+    <thead>
+      <tr>
+        <th>Course / Degree</th>
+        <th>💼 Job Options</th>
+        <th>🏛 Govt Jobs / Exams</th>
+        <th>📚 Higher Study</th>
+        <th>🌟 Other Options</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td class="course-cell">BA<small>Arts Graduate</small></td>
+        <td>
+          <span class="tag job">Teacher (Private)</span><span class="tag job">Content Writer</span><span class="tag job">HR Executive</span><span class="tag job">BPO / Call Centre</span><span class="tag job">Social Worker</span><span class="tag job">Tourism Guide</span>
+        </td>
+        <td>
+          <span class="tag govt">UPSC IAS/PCS</span><span class="tag govt">SSC CGL/CHSL</span><span class="tag govt">Police (SI/Constable)</span><span class="tag govt">Lekhpal</span><span class="tag govt">Ration Inspector</span><span class="tag govt">VDO</span>
+        </td>
+        <td>
+          <span class="tag study">MA (Any Subject)</span><span class="tag study">B.Ed → Teaching</span><span class="tag study">LLB (3 years)</span><span class="tag study">MBA</span><span class="tag study">UPSC Full-time Prep</span>
+        </td>
+        <td>
+          <span class="tag other">Freelance Writing</span><span class="tag other">YouTube Channel</span><span class="tag other">NGO Work</span><span class="tag other">Political Career</span>
+        </td>
+      </tr>
+      <tr>
+        <td class="course-cell">BCom<small>Commerce</small></td>
+        <td>
+          <span class="tag job">Accountant</span><span class="tag job">Bank Teller</span><span class="tag job">Tax Consultant</span><span class="tag job">Finance Executive</span><span class="tag job">Insurance Agent</span>
+        </td>
+        <td>
+          <span class="tag govt">Bank PO / Clerk (IBPS)</span><span class="tag govt">SSC CGL (Tax Asst)</span><span class="tag govt">Income Tax Officer</span><span class="tag govt">Customs Inspector</span><span class="tag govt">RBI Grade B</span>
+        </td>
+        <td>
+          <span class="tag study">CA / CMA / CS</span><span class="tag study">MBA Finance</span><span class="tag study">MCom</span><span class="tag study">CPA / ACCA (Abroad)</span>
+        </td>
+        <td>
+          <span class="tag other">Stock Market Trading</span><span class="tag other">CA Articleship</span><span class="tag other">Mutual Fund Advisor</span><span class="tag other">Tax Filing Business</span>
+        </td>
+      </tr>
+      <tr>
+        <td class="course-cell">BSc<small>Science</small></td>
+        <td>
+          <span class="tag job">Lab Technician</span><span class="tag job">Research Assistant</span><span class="tag job">Quality Analyst</span><span class="tag job">Science Teacher</span><span class="tag job">Data Analyst</span>
+        </td>
+        <td>
+          <span class="tag govt">CSIR Scientist</span><span class="tag govt">DRDO</span><span class="tag govt">Forest Officer</span><span class="tag govt">Agriculture Officer</span><span class="tag govt">TGT Science</span>
+        </td>
+        <td>
+          <span class="tag study">MSc → PhD</span><span class="tag study">B.Ed (Science)</span><span class="tag study">M.Tech (via GATE)</span><span class="tag study">Data Science Course</span>
+        </td>
+        <td>
+          <span class="tag other">Coaching Institute</span><span class="tag other">Science YouTuber</span><span class="tag other">Medical Equipment Sales</span>
+        </td>
+      </tr>
+      <tr>
+        <td class="course-cell">BCA<small>Computer Apps</small></td>
+        <td>
+          <span class="tag job">Web Developer</span><span class="tag job">App Developer</span><span class="tag job">IT Support</span><span class="tag job">Network Admin</span><span class="tag job">Data Entry</span>
+        </td>
+        <td>
+          <span class="tag govt">NIC IT Officer</span><span class="tag govt">Bank IT Officer</span><span class="tag govt">SSC CHSL</span><span class="tag govt">Cyber Cell</span><span class="tag govt">BSNL JTO</span>
+        </td>
+        <td>
+          <span class="tag study">MCA (3 yr)</span><span class="tag study">M.Tech CS</span><span class="tag study">MBA IT</span><span class="tag study">AWS/Google Certifications</span>
+        </td>
+        <td>
+          <span class="tag other">Freelance Dev</span><span class="tag other">Startup Founder</span><span class="tag other">Gaming / App Publish</span><span class="tag other">Cybersecurity</span>
+        </td>
+      </tr>
+      <tr>
+        <td class="course-cell">B.Tech<small>Engineering</small></td>
+        <td>
+          <span class="tag job">Software Engineer</span><span class="tag job">Civil Engineer</span><span class="tag job">Mechanical Eng</span><span class="tag job">Electrical Eng</span><span class="tag job">Data Scientist</span>
+        </td>
+        <td>
+          <span class="tag govt">GATE → PSUs (ONGC, BHEL)</span><span class="tag govt">ISRO Scientist</span><span class="tag govt">Railway AE/JE</span><span class="tag govt">DRDO</span><span class="tag govt">Defence (CDS/NDA)</span>
+        </td>
+        <td>
+          <span class="tag study">M.Tech (IIT/NIT)</span><span class="tag study">MBA (IIM)</span><span class="tag study">MS Abroad (USA/Germany)</span><span class="tag study">PhD Research</span>
+        </td>
+        <td>
+          <span class="tag other">Tech Startup</span><span class="tag other">Patent Filing</span><span class="tag other">Consulting</span><span class="tag other">EdTech Teaching</span>
+        </td>
+      </tr>
+      <tr>
+        <td class="course-cell">Nursing<small>ANM/GNM/BSc</small></td>
+        <td>
+          <span class="tag job">Staff Nurse</span><span class="tag job">ICU Nurse</span><span class="tag job">Community Health</span><span class="tag job">School Nurse</span><span class="tag job">OT Technician</span>
+        </td>
+        <td>
+          <span class="tag govt">AIIMS Staff Nurse</span><span class="tag govt">Railway Nurse</span><span class="tag govt">Army Nurse Corps</span><span class="tag govt">ESIC Nurse</span><span class="tag govt">State Health Dept</span>
+        </td>
+        <td>
+          <span class="tag study">BSc Nursing (Post-basic)</span><span class="tag study">MSc Nursing</span><span class="tag study">Midwifery</span><span class="tag study">Public Health</span>
+        </td>
+        <td>
+          <span class="tag other">Abroad Nursing (IELTS)</span><span class="tag other">Home Nursing Service</span><span class="tag other">Health Counseling</span>
+        </td>
+      </tr>
+      <tr>
+        <td class="course-cell">ITI<small>Vocational</small></td>
+        <td>
+          <span class="tag job">Electrician</span><span class="tag job">Fitter</span><span class="tag job">Welder</span><span class="tag job">AC Mechanic</span><span class="tag job">Mobile Repair</span>
+        </td>
+        <td>
+          <span class="tag govt">Railway Apprentice</span><span class="tag govt">ONGC/HPCL</span><span class="tag govt">BEL/BHEL Trainee</span><span class="tag govt">Army Tradesman</span>
+        </td>
+        <td>
+          <span class="tag study">Diploma Engg (Lateral)</span><span class="tag study">Advanced ITI</span><span class="tag study">B.Tech Lateral Entry</span>
+        </td>
+        <td>
+          <span class="tag other">Own Repair Workshop</span><span class="tag other">Contractor Work</span><span class="tag other">Abroad Skilled Worker</span><span class="tag other">Franchise</span>
+        </td>
+      </tr>
+    </tbody>
+  </table>
+  </div>
+</main>
+<footer>
+  <div class="rc-logo">RC</div>
+  <div class="fi">
+    <strong>Rohit Computer — Career Guidance Center</strong>
+    राठ, हमीरपुर, उत्तर प्रदेश — 210431 | Free Career Counseling Available
+  </div>
+  <div class="fc">
+    <div>🌐 <span>rohitcomputer.com</span></div>
+    <div>📞 <span>9452305913</span></div>
+  </div>
+  <div class="qr">QR<br>Code</div>
+</footer>
+<script>
+function printSize(size){
+  const old=document.getElementById('po');if(old)old.remove();
+  const s=document.createElement('style');s.id='po';
+  s.textContent=`@media print{@page{size:${size};margin:5mm}}`;
+  document.head.appendChild(s);setTimeout(()=>window.print(),100);
+}
+</script>
+</body>
+</html>

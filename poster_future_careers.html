@@ -1,0 +1,226 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Future Ready Careers — Rohit Computer</title>
+<link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;600;700;800;900&display=swap" rel="stylesheet">
+<style>
+*{margin:0;padding:0;box-sizing:border-box}
+:root{
+  --bg:#0A1628;--gold:#FFD700;--cyan:#00D9FF;--white:#fff;--muted:#a0aec0;
+  --b1:#0f2d4a;--b2:#0f3320;--b3:#2d1f0f;--b4:#1f0f2d;
+  --b5:#0f2d2d;--b6:#1f2d0f;--b7:#2d1f1f;--b8:#1a1a3a;
+  --n1:#60A5FA;--n2:#34D399;--n3:#FBBF24;--n4:#A78BFA;
+  --n5:#22D3EE;--n6:#86EFAC;--n7:#FC8181;--n8:#F0ABFC;
+}
+body{background:var(--bg);color:var(--white);font-family:'Poppins',sans-serif;min-height:100vh;display:flex;flex-direction:column}
+.print-bar{background:#061020;padding:8px 16px;display:flex;align-items:center;justify-content:space-between;border-bottom:2px solid var(--gold)}
+.brand-mini{font-weight:800;font-size:.95rem;color:var(--gold)}
+.print-btns{display:flex;gap:8px}
+.print-btns button{padding:5px 13px;border:none;border-radius:20px;font-family:'Poppins',sans-serif;font-weight:700;font-size:.72rem;cursor:pointer;transition:transform .2s}
+.print-btns button:hover{transform:scale(1.05)}
+.btn-a4{background:#444;color:#fff}.btn-a3{background:#2563eb;color:#fff}
+.btn-a2{background:var(--gold);color:#000}.btn-a1{background:#dc2626;color:#fff}
+header{background:linear-gradient(135deg,#061020,#0d2137,#061020);padding:16px 30px;text-align:center;border-bottom:3px solid var(--gold)}
+header h1{font-size:1.9rem;font-weight:900;color:var(--gold);text-transform:uppercase;letter-spacing:3px}
+header p{color:var(--cyan);font-size:.9rem;font-weight:600;margin-top:3px}
+header .sub{color:var(--muted);font-size:.75rem;margin-top:2px}
+main{flex:1;padding:18px;display:flex;flex-direction:column;gap:16px}
+.grid{display:grid;grid-template-columns:repeat(4,1fr);gap:12px}
+.box{border-radius:12px;padding:12px;border:1px solid rgba(255,255,255,.08);position:relative;overflow:hidden}
+.box::before{content:'';position:absolute;top:0;left:0;right:0;height:3px}
+.box:nth-child(1){background:var(--b1)}.box:nth-child(1)::before{background:var(--n1)}
+.box:nth-child(2){background:var(--b2)}.box:nth-child(2)::before{background:var(--n2)}
+.box:nth-child(3){background:var(--b3)}.box:nth-child(3)::before{background:var(--n3)}
+.box:nth-child(4){background:var(--b4)}.box:nth-child(4)::before{background:var(--n4)}
+.box:nth-child(5){background:var(--b5)}.box:nth-child(5)::before{background:var(--n5)}
+.box:nth-child(6){background:var(--b6)}.box:nth-child(6)::before{background:var(--n6)}
+.box:nth-child(7){background:var(--b7)}.box:nth-child(7)::before{background:var(--n7)}
+.box:nth-child(8){background:var(--b8)}.box:nth-child(8)::before{background:var(--n8)}
+.cat-header{display:flex;align-items:center;gap:8px;margin-bottom:8px;padding-bottom:6px;border-bottom:1px solid rgba(255,255,255,.1)}
+.cat-emoji{font-size:1.4rem}
+.cat-title{font-weight:800;font-size:.9rem;color:var(--gold)}
+.career-item{display:flex;align-items:center;justify-content:space-between;padding:4px 0;border-bottom:1px solid rgba(255,255,255,.05)}
+.career-item:last-child{border-bottom:none}
+.career-name{font-size:.67rem;font-weight:600;color:var(--white)}
+.career-meta{display:flex;align-items:center;gap:5px}
+.salary{font-size:.58rem;color:var(--cyan);font-weight:700;white-space:nowrap}
+.demand{font-size:.52rem;padding:1px 5px;border-radius:8px;font-weight:700}
+.demand.high{background:#166534;color:#86efac}
+.demand.very-high{background:#1e3a5f;color:#93c5fd}
+.demand.rising{background:#713f12;color:#fde68a}
+/* Future Tech strip */
+.future-strip{background:#0d1f35;border-radius:12px;padding:14px;border:1px solid rgba(255,255,255,.1)}
+.strip-title{color:var(--gold);font-weight:800;font-size:.85rem;text-transform:uppercase;letter-spacing:2px;margin-bottom:10px;text-align:center}
+.tech-grid{display:grid;grid-template-columns:repeat(5,1fr);gap:10px}
+.tech-card{background:rgba(255,255,255,.05);border-radius:8px;padding:10px;text-align:center;border:1px solid rgba(255,255,255,.08)}
+.tech-icon{font-size:1.5rem;margin-bottom:4px}
+.tech-name{font-weight:800;font-size:.7rem;color:var(--cyan);margin-bottom:3px}
+.tech-info{font-size:.6rem;color:var(--muted);line-height:1.4}
+.tech-salary{font-size:.62rem;color:var(--gold);font-weight:700;margin-top:3px}
+footer{background:#061020;border-top:3px solid var(--gold);padding:12px 30px;display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:10px}
+.rc-logo{background:var(--gold);color:#000;font-weight:900;font-size:1rem;padding:7px 14px;border-radius:7px}
+.fi{text-align:center;color:var(--muted);font-size:.75rem}
+.fi strong{color:var(--cyan);display:block;font-size:.9rem}
+.fc{text-align:right;font-size:.78rem}
+.fc div{color:var(--white);margin-bottom:3px}
+.fc span{color:var(--gold);font-weight:700}
+.qr{width:55px;height:55px;border:2px solid var(--gold);border-radius:6px;display:flex;align-items:center;justify-content:center;font-size:.45rem;color:var(--gold);text-align:center}
+@media print{
+  @page{size:A3 landscape;margin:5mm}
+  body{-webkit-print-color-adjust:exact;print-color-adjust:exact}
+  .print-bar{display:none}
+}
+</style>
+</head>
+<body>
+<div class="print-bar">
+  <div class="brand-mini">🚀 ROHIT COMPUTER — FUTURE READY CAREERS</div>
+  <div class="print-btns">
+    <button class="btn-a4" onclick="printSize('A4 landscape')">Print A4</button>
+    <button class="btn-a3" onclick="printSize('A3 landscape')">Print A3</button>
+    <button class="btn-a2" onclick="printSize('A2 landscape')">🏆 A2 (Sell)</button>
+    <button class="btn-a1" onclick="printSize('A1 landscape')">🖼 A1 (Wall)</button>
+  </div>
+</div>
+<header>
+  <h1>🚀 Future Ready Careers 2025-2035</h1>
+  <p>India ke Top Demand Careers | Salary | Growth | How to Start</p>
+  <div class="sub">Rohit Computer Career Guidance — राठ, हमीरपुर, UP</div>
+</header>
+<main>
+  <div class="grid">
+    <!-- Box 1: AI & Technology -->
+    <div class="box">
+      <div class="cat-header"><div class="cat-emoji">🤖</div><div class="cat-title">AI & Technology</div></div>
+      <div class="career-item"><span class="career-name">AI/ML Engineer</span><div class="career-meta"><span class="salary">15-80L</span><span class="demand very-high">🔥 Very High</span></div></div>
+      <div class="career-item"><span class="career-name">Data Scientist</span><div class="career-meta"><span class="salary">10-60L</span><span class="demand very-high">🔥 Very High</span></div></div>
+      <div class="career-item"><span class="career-name">Cybersecurity Analyst</span><div class="career-meta"><span class="salary">8-50L</span><span class="demand high">📈 High</span></div></div>
+      <div class="career-item"><span class="career-name">Cloud Architect</span><div class="career-meta"><span class="salary">15-70L</span><span class="demand very-high">🔥 Very High</span></div></div>
+      <div class="career-item"><span class="career-name">Full Stack Developer</span><div class="career-meta"><span class="salary">6-40L</span><span class="demand high">📈 High</span></div></div>
+    </div>
+    <!-- Box 2: Healthcare -->
+    <div class="box">
+      <div class="cat-header"><div class="cat-emoji">🏥</div><div class="cat-title">Healthcare & Medical</div></div>
+      <div class="career-item"><span class="career-name">MBBS Doctor</span><div class="career-meta"><span class="salary">12-1Cr+</span><span class="demand very-high">🔥 Always High</span></div></div>
+      <div class="career-item"><span class="career-name">Physiotherapist</span><div class="career-meta"><span class="salary">4-20L</span><span class="demand rising">⬆ Rising</span></div></div>
+      <div class="career-item"><span class="career-name">Pharmacist</span><div class="career-meta"><span class="salary">3-15L</span><span class="demand high">📈 High</span></div></div>
+      <div class="career-item"><span class="career-name">Medical Lab Tech</span><div class="career-meta"><span class="salary">3-12L</span><span class="demand high">📈 High</span></div></div>
+      <div class="career-item"><span class="career-name">Telemedicine Doctor</span><div class="career-meta"><span class="salary">10-50L</span><span class="demand rising">⬆ Rising</span></div></div>
+    </div>
+    <!-- Box 3: Finance -->
+    <div class="box">
+      <div class="cat-header"><div class="cat-emoji">💰</div><div class="cat-title">Finance & Banking</div></div>
+      <div class="career-item"><span class="career-name">Chartered Accountant</span><div class="career-meta"><span class="salary">8-1Cr+</span><span class="demand high">📈 High</span></div></div>
+      <div class="career-item"><span class="career-name">Investment Banker</span><div class="career-meta"><span class="salary">15-5Cr+</span><span class="demand high">📈 High</span></div></div>
+      <div class="career-item"><span class="career-name">FinTech Analyst</span><div class="career-meta"><span class="salary">8-40L</span><span class="demand rising">⬆ Rising</span></div></div>
+      <div class="career-item"><span class="career-name">Stock Market Advisor</span><div class="career-meta"><span class="salary">5-50L</span><span class="demand rising">⬆ Rising</span></div></div>
+      <div class="career-item"><span class="career-name">Bank PO / Manager</span><div class="career-meta"><span class="salary">7-25L</span><span class="demand high">📈 Stable</span></div></div>
+    </div>
+    <!-- Box 4: Creative -->
+    <div class="box">
+      <div class="cat-header"><div class="cat-emoji">🎨</div><div class="cat-title">Creative & Digital</div></div>
+      <div class="career-item"><span class="career-name">UX/UI Designer</span><div class="career-meta"><span class="salary">6-40L</span><span class="demand very-high">🔥 Very High</span></div></div>
+      <div class="career-item"><span class="career-name">Content Creator/YouTuber</span><div class="career-meta"><span class="salary">2-50L+</span><span class="demand rising">⬆ Rising</span></div></div>
+      <div class="career-item"><span class="career-name">Digital Marketer</span><div class="career-meta"><span class="salary">4-25L</span><span class="demand high">📈 High</span></div></div>
+      <div class="career-item"><span class="career-name">Video Editor / VFX</span><div class="career-meta"><span class="salary">3-30L</span><span class="demand rising">⬆ Rising</span></div></div>
+      <div class="career-item"><span class="career-name">Graphic Designer</span><div class="career-meta"><span class="salary">3-20L</span><span class="demand high">📈 Steady</span></div></div>
+    </div>
+    <!-- Box 5: Government -->
+    <div class="box">
+      <div class="cat-header"><div class="cat-emoji">🏛</div><div class="cat-title">Government Service</div></div>
+      <div class="career-item"><span class="career-name">IAS / IPS / IFS</span><div class="career-meta"><span class="salary">56K-2.5L/mo</span><span class="demand high">🏆 Prestige</span></div></div>
+      <div class="career-item"><span class="career-name">Bank PO (IBPS/SBI)</span><div class="career-meta"><span class="salary">8-20L</span><span class="demand high">📈 Stable</span></div></div>
+      <div class="career-item"><span class="career-name">Defence (Army/Navy/Air)</span><div class="career-meta"><span class="salary">7-25L</span><span class="demand high">🛡 Always Open</span></div></div>
+      <div class="career-item"><span class="career-name">Railway Officer (RRB)</span><div class="career-meta"><span class="salary">5-20L</span><span class="demand high">📈 Stable</span></div></div>
+      <div class="career-item"><span class="career-name">SSC CGL (Inspector)</span><div class="career-meta"><span class="salary">7-18L</span><span class="demand high">📈 Stable</span></div></div>
+    </div>
+    <!-- Box 6: Agriculture -->
+    <div class="box">
+      <div class="cat-header"><div class="cat-emoji">🌾</div><div class="cat-title">Agriculture & Rural</div></div>
+      <div class="career-item"><span class="career-name">Agri Entrepreneur</span><div class="career-meta"><span class="salary">3-50L</span><span class="demand rising">⬆ Rising</span></div></div>
+      <div class="career-item"><span class="career-name">Agriculture Officer</span><div class="career-meta"><span class="salary">6-18L</span><span class="demand high">📈 Govt Job</span></div></div>
+      <div class="career-item"><span class="career-name">Horticulture Expert</span><div class="career-meta"><span class="salary">4-15L</span><span class="demand rising">⬆ Rising</span></div></div>
+      <div class="career-item"><span class="career-name">Organic Farmer + Export</span><div class="career-meta"><span class="salary">5-30L</span><span class="demand rising">⬆ Rising</span></div></div>
+      <div class="career-item"><span class="career-name">Dairy / Poultry Business</span><div class="career-meta"><span class="salary">3-20L</span><span class="demand high">📈 Stable</span></div></div>
+    </div>
+    <!-- Box 7: Skilled Trades -->
+    <div class="box">
+      <div class="cat-header"><div class="cat-emoji">🔧</div><div class="cat-title">Skilled Trades & ITI</div></div>
+      <div class="career-item"><span class="career-name">Electrician / Solar Tech</span><div class="career-meta"><span class="salary">3-15L</span><span class="demand very-high">🔥 Very High</span></div></div>
+      <div class="career-item"><span class="career-name">AC/Refrigeration Tech</span><div class="career-meta"><span class="salary">3-12L</span><span class="demand high">📈 High</span></div></div>
+      <div class="career-item"><span class="career-name">Mobile Repair Expert</span><div class="career-meta"><span class="salary">2-10L</span><span class="demand high">📈 Steady</span></div></div>
+      <div class="career-item"><span class="career-name">Drone Pilot / Operator</span><div class="career-meta"><span class="salary">4-20L</span><span class="demand rising">⬆ Rising</span></div></div>
+      <div class="career-item"><span class="career-name">EV Technician</span><div class="career-meta"><span class="salary">4-18L</span><span class="demand very-high">🔥 Future</span></div></div>
+    </div>
+    <!-- Box 8: Emerging Future -->
+    <div class="box">
+      <div class="cat-header"><div class="cat-emoji">🌐</div><div class="cat-title">Emerging Future Careers</div></div>
+      <div class="career-item"><span class="career-name">Prompt Engineer (AI)</span><div class="career-meta"><span class="salary">8-60L</span><span class="demand very-high">🔥 Newest</span></div></div>
+      <div class="career-item"><span class="career-name">Space Technology</span><div class="career-meta"><span class="salary">10-80L</span><span class="demand rising">⬆ Growing</span></div></div>
+      <div class="career-item"><span class="career-name">Blockchain Developer</span><div class="career-meta"><span class="salary">10-70L</span><span class="demand rising">⬆ Rising</span></div></div>
+      <div class="career-item"><span class="career-name">Green Energy Engineer</span><div class="career-meta"><span class="salary">6-35L</span><span class="demand very-high">🔥 Future</span></div></div>
+      <div class="career-item"><span class="career-name">AR/VR Developer</span><div class="career-meta"><span class="salary">8-50L</span><span class="demand rising">⬆ Rising</span></div></div>
+    </div>
+  </div>
+
+  <!-- Future Technology Strip -->
+  <div class="future-strip">
+    <div class="strip-title">⚡ Technology Trends Shaping India's Future (2025-2035)</div>
+    <div class="tech-grid">
+      <div class="tech-card">
+        <div class="tech-icon">🤖</div>
+        <div class="tech-name">Artificial Intelligence</div>
+        <div class="tech-info">Every industry will use AI. Python + ML + Data — seekho abhi.</div>
+        <div class="tech-salary">5-100L+ jobs available</div>
+      </div>
+      <div class="tech-card">
+        <div class="tech-icon">⚡</div>
+        <div class="tech-name">Electric Vehicles (EV)</div>
+        <div class="tech-info">Tata, Mahindra, Ola — India EV capital bnega. Tech + Service jobs.</div>
+        <div class="tech-salary">3-25L EV Technician</div>
+      </div>
+      <div class="tech-card">
+        <div class="tech-icon">🛰</div>
+        <div class="tech-name">Space Technology</div>
+        <div class="tech-info">ISRO + Private space startups. Engg + Physics grads ke liye golden era.</div>
+        <div class="tech-salary">10-80L ISRO/SpaceTech</div>
+      </div>
+      <div class="tech-card">
+        <div class="tech-icon">☀️</div>
+        <div class="tech-name">Green / Solar Energy</div>
+        <div class="tech-info">Solar installation, wind, hydropower — India ka clean energy mission.</div>
+        <div class="tech-salary">4-30L Solar Engineer</div>
+      </div>
+      <div class="tech-card">
+        <div class="tech-icon">🔗</div>
+        <div class="tech-name">Blockchain & Web3</div>
+        <div class="tech-info">Finance + supply chain + gaming mein blockchain revolution.</div>
+        <div class="tech-salary">10-70L Blockchain Dev</div>
+      </div>
+    </div>
+  </div>
+</main>
+<footer>
+  <div class="rc-logo">RC</div>
+  <div class="fi">
+    <strong>Rohit Computer — Career Guidance Center</strong>
+    राठ, हमीरपुर, उत्तर प्रदेश — 210431 | Free Career Counseling Available
+  </div>
+  <div class="fc">
+    <div>🌐 <span>rohitcomputer.com</span></div>
+    <div>📞 <span>9452305913</span></div>
+  </div>
+  <div class="qr">QR<br>Code</div>
+</footer>
+<script>
+function printSize(size){
+  const old=document.getElementById('po');if(old)old.remove();
+  const s=document.createElement('style');s.id='po';
+  s.textContent=`@media print{@page{size:${size};margin:5mm}}`;
+  document.head.appendChild(s);setTimeout(()=>window.print(),100);
+}
+</script>
+</body>
+</html>

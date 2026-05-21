@@ -1,0 +1,367 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Future Careers Chart — Rohit Computer</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;600;700;800;900&family=Noto+Sans+Devanagari:wght@400;600;700&display=swap" rel="stylesheet">
+<style>
+*{margin:0;padding:0;box-sizing:border-box}
+:root{
+  --bg:#0A1628;--gold:#FFD700;--cyan:#00D9FF;--white:#fff;--muted:#a0aec0;
+}
+body{background:var(--bg);color:var(--white);font-family:'Poppins','Noto Sans Devanagari',sans-serif;min-height:100vh;display:flex;flex-direction:column}
+.print-bar{background:#061020;padding:8px 16px;display:flex;align-items:center;justify-content:space-between;border-bottom:2px solid var(--gold)}
+.brand-mini{font-weight:800;font-size:.95rem;color:var(--gold)}
+.print-btns{display:flex;gap:8px}
+.print-btns button{padding:5px 13px;border:none;border-radius:20px;font-family:'Poppins',sans-serif;font-weight:700;font-size:.72rem;cursor:pointer;transition:transform .2s}
+.print-btns button:hover{transform:scale(1.05)}
+.btn-a4{background:#444;color:#fff}.btn-a3{background:#2563eb;color:#fff}
+.btn-a2{background:var(--gold);color:#000}.btn-a1{background:#dc2626;color:#fff}
+header{background:linear-gradient(135deg,#061020,#0d2137,#061020);padding:18px 30px;text-align:center;border-bottom:3px solid var(--gold)}
+header h1{font-size:2rem;font-weight:900;color:var(--gold);text-transform:uppercase;letter-spacing:2px;line-height:1.2}
+header .hi{font-family:'Noto Sans Devanagari',sans-serif;font-size:1.1rem;color:var(--cyan);font-weight:700;margin-top:4px}
+header .sub{color:var(--muted);font-size:.75rem;margin-top:2px}
+main{flex:1;padding:16px;display:grid;grid-template-columns:repeat(3,1fr);gap:12px}
+.box{border-radius:10px;padding:12px;display:flex;flex-direction:column;gap:6px;border:1px solid rgba(255,255,255,.08);position:relative;overflow:hidden}
+.box::before{content:'';position:absolute;top:0;left:0;bottom:0;width:3px}
+/* 15 color variants */
+.box:nth-child(1){background:#0f2d4a}.box:nth-child(1)::before{background:#60A5FA}
+.box:nth-child(2){background:#0f3320}.box:nth-child(2)::before{background:#34D399}
+.box:nth-child(3){background:#2d1a0f}.box:nth-child(3)::before{background:#FBBF24}
+.box:nth-child(4){background:#1f0f2d}.box:nth-child(4)::before{background:#A78BFA}
+.box:nth-child(5){background:#0f2d2d}.box:nth-child(5)::before{background:#22D3EE}
+.box:nth-child(6){background:#2d1f0f}.box:nth-child(6)::before{background:#FCD34D}
+.box:nth-child(7){background:#2d0f1a}.box:nth-child(7)::before{background:#F472B6}
+.box:nth-child(8){background:#0f1f2d}.box:nth-child(8)::before{background:#38BDF8}
+.box:nth-child(9){background:#1a2d0f}.box:nth-child(9)::before{background:#86EFAC}
+.box:nth-child(10){background:#2d1f1a}.box:nth-child(10)::before{background:#FCA5A5}
+.box:nth-child(11){background:#1a0f2d}.box:nth-child(11)::before{background:#C4B5FD}
+.box:nth-child(12){background:#0f2a1a}.box:nth-child(12)::before{background:#6EE7B7}
+.box:nth-child(13){background:#2d1a1a}.box:nth-child(13)::before{background:#FED7AA}
+.box:nth-child(14){background:#0f1a2d}.box:nth-child(14)::before{background:#BAE6FD}
+.box:nth-child(15){background:#1a2d1a}.box:nth-child(15)::before{background:#D9F99D}
+.box-top{display:flex;align-items:flex-start;gap:8px}
+.num{min-width:28px;height:28px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-weight:900;font-size:.75rem;font-family:'Poppins',sans-serif;flex-shrink:0}
+.box:nth-child(1) .num{background:#60A5FA;color:#000}
+.box:nth-child(2) .num{background:#34D399;color:#000}
+.box:nth-child(3) .num{background:#FBBF24;color:#000}
+.box:nth-child(4) .num{background:#A78BFA;color:#000}
+.box:nth-child(5) .num{background:#22D3EE;color:#000}
+.box:nth-child(6) .num{background:#FCD34D;color:#000}
+.box:nth-child(7) .num{background:#F472B6;color:#000}
+.box:nth-child(8) .num{background:#38BDF8;color:#000}
+.box:nth-child(9) .num{background:#86EFAC;color:#000}
+.box:nth-child(10) .num{background:#FCA5A5;color:#000}
+.box:nth-child(11) .num{background:#C4B5FD;color:#000}
+.box:nth-child(12) .num{background:#6EE7B7;color:#000}
+.box:nth-child(13) .num{background:#FED7AA;color:#000}
+.box:nth-child(14) .num{background:#BAE6FD;color:#000}
+.box:nth-child(15) .num{background:#D9F99D;color:#000}
+.title-block .en{font-weight:800;font-size:.85rem;color:var(--gold);line-height:1.2}
+.title-block .hi{font-family:'Noto Sans Devanagari',sans-serif;font-size:.72rem;color:var(--cyan);font-weight:600;margin-top:1px}
+.salary-row{display:flex;align-items:center;gap:6px}
+.salary-label{font-size:.58rem;color:var(--muted);font-weight:600}
+.salary-val{font-size:.7rem;color:#4ade80;font-weight:800}
+.divider{height:1px;background:rgba(255,255,255,.08)}
+.info-label{font-size:.58rem;font-weight:700;text-transform:uppercase;letter-spacing:.3px;color:var(--muted);margin-bottom:2px}
+.skills-list{display:flex;flex-wrap:wrap;gap:3px}
+.skill{display:inline-block;font-size:.58rem;padding:1px 6px;border-radius:8px;background:rgba(255,255,255,.08);border:1px solid rgba(255,255,255,.12);color:var(--white)}
+.steps{font-size:.6rem;color:var(--muted);line-height:1.6}
+.steps span{color:var(--white);font-weight:600}
+footer{background:#061020;border-top:3px solid var(--gold);padding:12px 30px;display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:10px}
+.rc-logo{background:var(--gold);color:#000;font-weight:900;font-size:1rem;padding:7px 14px;border-radius:7px}
+.fi{text-align:center;color:var(--muted);font-size:.75rem}
+.fi strong{color:var(--cyan);display:block;font-size:.9rem}
+.fc{text-align:right;font-size:.78rem}
+.fc div{color:var(--white);margin-bottom:3px}
+.fc span{color:var(--gold);font-weight:700}
+.qr{width:55px;height:55px;border:2px solid var(--gold);border-radius:6px;display:flex;align-items:center;justify-content:center;font-size:.45rem;color:var(--gold);text-align:center}
+@media print{
+  @page{size:A2 portrait;margin:5mm}
+  body{-webkit-print-color-adjust:exact;print-color-adjust:exact}
+  .print-bar{display:none}
+}
+</style>
+</head>
+<body>
+<div class="print-bar">
+  <div class="brand-mini">🌟 ROHIT COMPUTER — FUTURE CAREERS CHART (15 Careers)</div>
+  <div class="print-btns">
+    <button class="btn-a4" onclick="printSize('A4 portrait')">Print A4</button>
+    <button class="btn-a3" onclick="printSize('A3 portrait')">Print A3</button>
+    <button class="btn-a2" onclick="printSize('A2 portrait')">🏆 A2 (Sell)</button>
+    <button class="btn-a1" onclick="printSize('A1 portrait')">🖼 A1 (Wall)</button>
+  </div>
+</div>
+<header>
+  <h1>🌟 Future Careers — Complete Guide</h1>
+  <div class="hi">भविष्य के 15 सबसे अच्छे करियर | Salary | Skills | कैसे शुरू करें</div>
+  <div class="sub">Rohit Computer Career Guidance — राठ, हमीरपुर, UP | rohitcomputer.com | 9452305913</div>
+</header>
+<main>
+
+  <!-- 1 -->
+  <div class="box">
+    <div class="box-top">
+      <div class="num">1</div>
+      <div class="title-block"><div class="en">🤖 AI / ML Engineer</div><div class="hi">आर्टिफिशियल इंटेलिजेंस इंजीनियर</div></div>
+    </div>
+    <div class="salary-row"><span class="salary-label">Salary:</span><span class="salary-val">₹15L – ₹80L+ (Fresher to Senior)</span></div>
+    <div class="divider"></div>
+    <div class="info-label">Skills Needed / ज़रूरी स्किल्स</div>
+    <div class="skills-list">
+      <span class="skill">Python</span><span class="skill">TensorFlow</span><span class="skill">PyTorch</span><span class="skill">Statistics</span><span class="skill">SQL</span><span class="skill">Deep Learning</span>
+    </div>
+    <div class="info-label">How to Start / कैसे शुरू करें</div>
+    <div class="steps"><span>Step 1:</span> Python + Math basics → <span>Step 2:</span> ML course (Coursera) → <span>Step 3:</span> Kaggle practice → <span>Step 4:</span> Portfolio + Job apply</div>
+  </div>
+
+  <!-- 2 -->
+  <div class="box">
+    <div class="box-top">
+      <div class="num">2</div>
+      <div class="title-block"><div class="en">💻 Full Stack Developer</div><div class="hi">फुल स्टैक वेब डेवलपर</div></div>
+    </div>
+    <div class="salary-row"><span class="salary-label">Salary:</span><span class="salary-val">₹6L – ₹40L (Fresher to Senior)</span></div>
+    <div class="divider"></div>
+    <div class="info-label">Skills Needed</div>
+    <div class="skills-list">
+      <span class="skill">HTML/CSS</span><span class="skill">JavaScript</span><span class="skill">React</span><span class="skill">Node.js</span><span class="skill">MongoDB</span><span class="skill">Git</span>
+    </div>
+    <div class="info-label">How to Start</div>
+    <div class="steps"><span>Step 1:</span> HTML+CSS+JS siikho → <span>Step 2:</span> React/Node master karo → <span>Step 3:</span> 3 projects banao GitHub pe → <span>Step 4:</span> Job ya freelance</div>
+  </div>
+
+  <!-- 3 -->
+  <div class="box">
+    <div class="box-top">
+      <div class="num">3</div>
+      <div class="title-block"><div class="en">🔒 Cybersecurity Analyst</div><div class="hi">साइबर सिक्योरिटी विशेषज्ञ</div></div>
+    </div>
+    <div class="salary-row"><span class="salary-label">Salary:</span><span class="salary-val">₹8L – ₹50L+ (High demand)</span></div>
+    <div class="divider"></div>
+    <div class="info-label">Skills Needed</div>
+    <div class="skills-list">
+      <span class="skill">Networking</span><span class="skill">Linux</span><span class="skill">Ethical Hacking</span><span class="skill">SIEM Tools</span><span class="skill">CEH Cert</span>
+    </div>
+    <div class="info-label">How to Start</div>
+    <div class="steps"><span>Step 1:</span> Networking basics (CompTIA N+) → <span>Step 2:</span> Linux master karo → <span>Step 3:</span> CEH / CISSP certification → <span>Step 4:</span> Bug bounty + Job</div>
+  </div>
+
+  <!-- 4 -->
+  <div class="box">
+    <div class="box-top">
+      <div class="num">4</div>
+      <div class="title-block"><div class="en">📊 Data Scientist</div><div class="hi">डेटा साइंटिस्ट</div></div>
+    </div>
+    <div class="salary-row"><span class="salary-label">Salary:</span><span class="salary-val">₹10L – ₹60L (Booming field)</span></div>
+    <div class="divider"></div>
+    <div class="info-label">Skills Needed</div>
+    <div class="skills-list">
+      <span class="skill">Python/R</span><span class="skill">Pandas</span><span class="skill">ML</span><span class="skill">Tableau</span><span class="skill">SQL</span><span class="skill">Statistics</span>
+    </div>
+    <div class="info-label">How to Start</div>
+    <div class="steps"><span>Step 1:</span> Python + Statistics → <span>Step 2:</span> Kaggle competitions → <span>Step 3:</span> Real dataset projects → <span>Step 4:</span> Portfolio + Jobs</div>
+  </div>
+
+  <!-- 5 -->
+  <div class="box">
+    <div class="box-top">
+      <div class="num">5</div>
+      <div class="title-block"><div class="en">☁️ Cloud Architect</div><div class="hi">क्लाउड आर्किटेक्ट</div></div>
+    </div>
+    <div class="salary-row"><span class="salary-label">Salary:</span><span class="salary-val">₹15L – ₹70L+ (Highest IT salary)</span></div>
+    <div class="divider"></div>
+    <div class="info-label">Skills Needed</div>
+    <div class="skills-list">
+      <span class="skill">AWS/GCP/Azure</span><span class="skill">DevOps</span><span class="skill">Kubernetes</span><span class="skill">Terraform</span><span class="skill">Networking</span>
+    </div>
+    <div class="info-label">How to Start</div>
+    <div class="steps"><span>Step 1:</span> Linux + Networking → <span>Step 2:</span> AWS Solutions Architect cert → <span>Step 3:</span> Projects deploy karo → <span>Step 4:</span> Cloud jobs apply</div>
+  </div>
+
+  <!-- 6 -->
+  <div class="box">
+    <div class="box-top">
+      <div class="num">6</div>
+      <div class="title-block"><div class="en">🏥 MBBS Doctor</div><div class="hi">डॉक्टर (MBBS/MD)</div></div>
+    </div>
+    <div class="salary-row"><span class="salary-label">Salary:</span><span class="salary-val">₹12L – ₹1Cr+ (Specialist)</span></div>
+    <div class="divider"></div>
+    <div class="info-label">Skills Needed</div>
+    <div class="skills-list">
+      <span class="skill">Biology/Chemistry</span><span class="skill">Clinical Skills</span><span class="skill">Patient Care</span><span class="skill">Diagnosis</span><span class="skill">Research</span>
+    </div>
+    <div class="info-label">How to Start</div>
+    <div class="steps"><span>Step 1:</span> 12th PCB 70%+ → <span>Step 2:</span> NEET UG crack karo → <span>Step 3:</span> MBBS 5.5 years → <span>Step 4:</span> NEET PG → Specialization</div>
+  </div>
+
+  <!-- 7 -->
+  <div class="box">
+    <div class="box-top">
+      <div class="num">7</div>
+      <div class="title-block"><div class="en">💰 Chartered Accountant</div><div class="hi">चार्टर्ड अकाउंटेंट (CA)</div></div>
+    </div>
+    <div class="salary-row"><span class="salary-label">Salary:</span><span class="salary-val">₹8L – ₹1Cr+ (Big4 firms)</span></div>
+    <div class="divider"></div>
+    <div class="info-label">Skills Needed</div>
+    <div class="skills-list">
+      <span class="skill">Accounting</span><span class="skill">Taxation (GST)</span><span class="skill">Auditing</span><span class="skill">Tally/Excel</span><span class="skill">Law</span>
+    </div>
+    <div class="info-label">How to Start</div>
+    <div class="steps"><span>Step 1:</span> CA Foundation (12th ke baad) → <span>Step 2:</span> CA Inter clear karo → <span>Step 3:</span> 3 yr Articleship → <span>Step 4:</span> CA Final → ICAI member</div>
+  </div>
+
+  <!-- 8 -->
+  <div class="box">
+    <div class="box-top">
+      <div class="num">8</div>
+      <div class="title-block"><div class="en">🎨 UX/UI Designer</div><div class="hi">यूएक्स/यूआई डिज़ाइनर</div></div>
+    </div>
+    <div class="salary-row"><span class="salary-label">Salary:</span><span class="salary-val">₹6L – ₹40L (Top companies)</span></div>
+    <div class="divider"></div>
+    <div class="info-label">Skills Needed</div>
+    <div class="skills-list">
+      <span class="skill">Figma</span><span class="skill">Adobe XD</span><span class="skill">Prototyping</span><span class="skill">Research</span><span class="skill">Typography</span>
+    </div>
+    <div class="info-label">How to Start</div>
+    <div class="steps"><span>Step 1:</span> Figma siikho (free) → <span>Step 2:</span> Google UX Certificate (Coursera) → <span>Step 3:</span> 5 case studies banao → <span>Step 4:</span> Behance portfolio + Job</div>
+  </div>
+
+  <!-- 9 -->
+  <div class="box">
+    <div class="box-top">
+      <div class="num">9</div>
+      <div class="title-block"><div class="en">📱 Digital Marketer</div><div class="hi">डिजिटल मार्केटर</div></div>
+    </div>
+    <div class="salary-row"><span class="salary-label">Salary:</span><span class="salary-val">₹4L – ₹25L (+ freelance)</span></div>
+    <div class="divider"></div>
+    <div class="info-label">Skills Needed</div>
+    <div class="skills-list">
+      <span class="skill">SEO</span><span class="skill">Google Ads</span><span class="skill">Meta Ads</span><span class="skill">Email Mktg</span><span class="skill">Analytics</span>
+    </div>
+    <div class="info-label">How to Start</div>
+    <div class="steps"><span>Step 1:</span> Google Digital Garage (free) → <span>Step 2:</span> Social media manage karo → <span>Step 3:</span> Internship lo → <span>Step 4:</span> Agency ya freelance</div>
+  </div>
+
+  <!-- 10 -->
+  <div class="box">
+    <div class="box-top">
+      <div class="num">10</div>
+      <div class="title-block"><div class="en">🏛 IAS / Civil Services</div><div class="hi">आईएएस / सिविल सेवा</div></div>
+    </div>
+    <div class="salary-row"><span class="salary-label">Salary:</span><span class="salary-val">₹56K-₹2.5L/month + perks</span></div>
+    <div class="divider"></div>
+    <div class="info-label">Skills Needed</div>
+    <div class="skills-list">
+      <span class="skill">Current Affairs</span><span class="skill">Essay Writing</span><span class="skill">Leadership</span><span class="skill">Hindi/English</span><span class="skill">Decision Making</span>
+    </div>
+    <div class="info-label">How to Start</div>
+    <div class="steps"><span>Step 1:</span> Koi bhi Graduation karo → <span>Step 2:</span> NCERT 6-12 padhho → <span>Step 3:</span> Optional subject choose karo → <span>Step 4:</span> UPSC Prelims → Mains → Interview</div>
+  </div>
+
+  <!-- 11 -->
+  <div class="box">
+    <div class="box-top">
+      <div class="num">11</div>
+      <div class="title-block"><div class="en">⚡ EV / Solar Technician</div><div class="hi">इलेक्ट्रिक वाहन / सोलर तकनीशियन</div></div>
+    </div>
+    <div class="salary-row"><span class="salary-label">Salary:</span><span class="salary-val">₹4L – ₹18L (Future booming)</span></div>
+    <div class="divider"></div>
+    <div class="info-label">Skills Needed</div>
+    <div class="skills-list">
+      <span class="skill">Electrical Basics</span><span class="skill">Battery Tech</span><span class="skill">Solar Panels</span><span class="skill">EV Wiring</span><span class="skill">ITI/Diploma</span>
+    </div>
+    <div class="info-label">How to Start</div>
+    <div class="steps"><span>Step 1:</span> ITI Electrician karo → <span>Step 2:</span> EV/Solar certification lo → <span>Step 3:</span> Tata/Ola EV training → <span>Step 4:</span> Service center ya business</div>
+  </div>
+
+  <!-- 12 -->
+  <div class="box">
+    <div class="box-top">
+      <div class="num">12</div>
+      <div class="title-block"><div class="en">🌾 Agri Entrepreneur</div><div class="hi">कृषि उद्यमी / किसान व्यवसायी</div></div>
+    </div>
+    <div class="salary-row"><span class="salary-label">Salary/Income:</span><span class="salary-val">₹3L – ₹50L+ (Own business)</span></div>
+    <div class="divider"></div>
+    <div class="info-label">Skills Needed</div>
+    <div class="skills-list">
+      <span class="skill">Agriculture Knowledge</span><span class="skill">Marketing</span><span class="skill">Technology</span><span class="skill">Business</span><span class="skill">Govt Schemes</span>
+    </div>
+    <div class="info-label">How to Start</div>
+    <div class="steps"><span>Step 1:</span> BSc Agri / Krishi Vigyan Kendra → <span>Step 2:</span> Organic / Horticulture focus → <span>Step 3:</span> PM Kisan + NABARD loan → <span>Step 4:</span> FPO join karo / Direct sell</div>
+  </div>
+
+  <!-- 13 -->
+  <div class="box">
+    <div class="box-top">
+      <div class="num">13</div>
+      <div class="title-block"><div class="en">🎬 Content Creator / YouTuber</div><div class="hi">कंटेंट क्रिएटर / यूट्यूबर</div></div>
+    </div>
+    <div class="salary-row"><span class="salary-label">Income:</span><span class="salary-val">₹2L – ₹50L+ (Depends on niche)</span></div>
+    <div class="divider"></div>
+    <div class="info-label">Skills Needed</div>
+    <div class="skills-list">
+      <span class="skill">Video Editing</span><span class="skill">Script Writing</span><span class="skill">SEO</span><span class="skill">Thumbnail Design</span><span class="skill">Camera Skills</span>
+    </div>
+    <div class="info-label">How to Start</div>
+    <div class="steps"><span>Step 1:</span> Niche choose karo (education/comedy/tech) → <span>Step 2:</span> Smartphone + free editing app → <span>Step 3:</span> Consistency — 3 videos/week → <span>Step 4:</span> 1000 sub → Monetize</div>
+  </div>
+
+  <!-- 14 -->
+  <div class="box">
+    <div class="box-top">
+      <div class="num">14</div>
+      <div class="title-block"><div class="en">🚁 Drone Pilot / Operator</div><div class="hi">ड्रोन पायलट / ऑपरेटर</div></div>
+    </div>
+    <div class="salary-row"><span class="salary-label">Salary:</span><span class="salary-val">₹4L – ₹20L (New & fast growing)</span></div>
+    <div class="divider"></div>
+    <div class="info-label">Skills Needed</div>
+    <div class="skills-list">
+      <span class="skill">DGCA License</span><span class="skill">Flight Training</span><span class="skill">GPS/Tech</span><span class="skill">Photography</span><span class="skill">Agriculture Drones</span>
+    </div>
+    <div class="info-label">How to Start</div>
+    <div class="steps"><span>Step 1:</span> DGCA Drone Pilot Certificate → <span>Step 2:</span> Drone purchase (₹50K-2L) → <span>Step 3:</span> Agriculture / Survey / Wedding drone → <span>Step 4:</span> B2B contracts lo</div>
+  </div>
+
+  <!-- 15 -->
+  <div class="box">
+    <div class="box-top">
+      <div class="num">15</div>
+      <div class="title-block"><div class="en">🏦 FinTech / Banking Professional</div><div class="hi">फिनटेक / बैंकिंग प्रोफेशनल</div></div>
+    </div>
+    <div class="salary-row"><span class="salary-label">Salary:</span><span class="salary-val">₹7L – ₹40L (Stable + growing)</span></div>
+    <div class="divider"></div>
+    <div class="info-label">Skills Needed</div>
+    <div class="skills-list">
+      <span class="skill">Finance Basics</span><span class="skill">IBPS/SBI Exam</span><span class="skill">MS Excel</span><span class="skill">Customer Service</span><span class="skill">Digital Payments</span>
+    </div>
+    <div class="info-label">How to Start</div>
+    <div class="steps"><span>Step 1:</span> BCom / BA Economics → <span>Step 2:</span> IBPS PO / SBI PO exam → <span>Step 3:</span> OR FinTech company join karo → <span>Step 4:</span> MBA Finance for senior roles</div>
+  </div>
+
+</main>
+<footer>
+  <div class="rc-logo">RC</div>
+  <div class="fi">
+    <strong>Rohit Computer — Career Guidance Center</strong>
+    राठ, हमीरपुर, उत्तर प्रदेश — 210431 | Free Career Counseling Available
+  </div>
+  <div class="fc">
+    <div>🌐 <span>rohitcomputer.com</span></div>
+    <div>📞 <span>9452305913</span></div>
+  </div>
+  <div class="qr">QR<br>Code</div>
+</footer>
+<script>
+function printSize(size){
+  const old=document.getElementById('po');if(old)old.remove();
+  const s=document.createElement('style');s.id='po';
+  s.textContent=`@media print{@page{size:${size};margin:5mm}}`;
+  document.head.appendChild(s);setTimeout(()=>window.print(),100);
+}
+</script>
+</body>
+</html>

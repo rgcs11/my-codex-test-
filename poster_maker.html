@@ -1,0 +1,394 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Poster Maker — Rohit Computer</title>
+<link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;600;700;800;900&family=Noto+Sans+Devanagari:wght@400;600;700&display=swap" rel="stylesheet">
+<style>
+*{margin:0;padding:0;box-sizing:border-box}
+:root{
+  --bg:#0A1628;--panel:#0d1f35;--gold:#FFD700;--cyan:#00D9FF;
+  --white:#fff;--muted:#a0aec0;--green:#4ade80;--red:#f87171;
+}
+body{background:var(--bg);color:var(--white);font-family:'Poppins',sans-serif;min-height:100vh}
+
+/* ── Top Bar ── */
+.topbar{background:#061020;padding:10px 20px;display:flex;align-items:center;justify-content:space-between;border-bottom:2px solid var(--gold);position:sticky;top:0;z-index:100}
+.topbar h1{font-size:1.1rem;font-weight:900;color:var(--gold)}
+.topbar span{color:var(--cyan);font-size:.8rem}
+.topbar-btns{display:flex;gap:8px}
+.topbar-btns button{padding:6px 14px;border:none;border-radius:20px;font-family:'Poppins',sans-serif;font-weight:700;font-size:.73rem;cursor:pointer;transition:.2s}
+.topbar-btns button:hover{transform:scale(1.05)}
+.btn-preview{background:var(--cyan);color:#000}
+.btn-print{background:var(--gold);color:#000}
+.btn-reset{background:#374151;color:#fff}
+
+/* ── Layout ── */
+.app{display:grid;grid-template-columns:340px 1fr;min-height:calc(100vh - 53px)}
+
+/* ── Editor Panel ── */
+.editor{background:var(--panel);padding:20px;border-right:1px solid rgba(255,255,255,.08);overflow-y:auto;max-height:calc(100vh - 53px)}
+.section-title{font-size:.65rem;font-weight:800;text-transform:uppercase;letter-spacing:1px;color:var(--gold);margin-bottom:8px;margin-top:16px;padding-bottom:4px;border-bottom:1px solid rgba(255,215,0,.2)}
+.section-title:first-child{margin-top:0}
+label{display:block;font-size:.7rem;color:var(--muted);font-weight:600;margin-bottom:4px;margin-top:10px}
+label:first-of-type{margin-top:0}
+input[type=text],textarea,select{width:100%;background:#0d1a2a;border:1px solid rgba(255,255,255,.12);border-radius:6px;color:var(--white);font-family:'Poppins',sans-serif;font-size:.73rem;padding:7px 10px;transition:border .2s;resize:vertical}
+input[type=text]:focus,textarea:focus,select:focus{outline:none;border-color:var(--cyan)}
+textarea{min-height:60px}
+select option{background:#0d1a2a}
+.theme-row{display:grid;grid-template-columns:repeat(3,1fr);gap:6px;margin-top:4px}
+.theme-btn{padding:6px 4px;border-radius:6px;border:2px solid transparent;cursor:pointer;font-size:.62rem;font-weight:700;transition:.2s;text-align:center}
+.theme-btn.active{border-color:var(--gold)}
+.theme-btn:hover{opacity:.9}
+.t-dark{background:#0A1628;color:#FFD700}
+.t-light{background:#f0f4f8;color:#1a1a2e}
+.t-blue{background:#1e3a8a;color:#93c5fd}
+.t-green{background:#14532d;color:#86efac}
+.t-purple{background:#4c1d95;color:#c4b5fd}
+.t-red{background:#7f1d1d;color:#fca5a5}
+.size-row{display:grid;grid-template-columns:repeat(2,1fr);gap:6px;margin-top:4px}
+.size-btn{padding:7px;border-radius:6px;border:2px solid rgba(255,255,255,.1);cursor:pointer;font-size:.63rem;font-weight:700;background:rgba(255,255,255,.05);color:var(--white);transition:.2s;text-align:center}
+.size-btn.active{border-color:var(--gold);background:rgba(255,215,0,.1);color:var(--gold)}
+.size-btn:hover{border-color:rgba(255,255,255,.3)}
+.orient-row{display:grid;grid-template-columns:1fr 1fr;gap:6px;margin-top:4px}
+.orient-btn{padding:7px;border-radius:6px;border:2px solid rgba(255,255,255,.1);cursor:pointer;font-size:.65rem;font-weight:700;background:rgba(255,255,255,.05);color:var(--white);transition:.2s;text-align:center}
+.orient-btn.active{border-color:var(--cyan);background:rgba(0,217,255,.08);color:var(--cyan)}
+.box-editor{background:rgba(0,0,0,.2);border-radius:8px;padding:12px;margin-top:8px;border:1px solid rgba(255,255,255,.06)}
+.box-num{font-size:.65rem;font-weight:800;color:var(--cyan);margin-bottom:6px}
+.quick-tip{background:rgba(0,217,255,.06);border:1px solid rgba(0,217,255,.2);border-radius:6px;padding:8px;font-size:.63rem;color:var(--cyan);line-height:1.6;margin-top:12px}
+
+/* ── Preview Panel ── */
+.preview{padding:20px;display:flex;align-items:flex-start;justify-content:center;overflow:auto}
+.poster-wrap{transform-origin:top center}
+
+/* ── Poster itself ── */
+#poster{font-family:'Poppins','Noto Sans Devanagari',sans-serif;background:#0A1628;color:#fff;width:100%;max-width:900px;border-radius:12px;overflow:hidden;box-shadow:0 20px 60px rgba(0,0,0,.5)}
+.poster-header{background:linear-gradient(135deg,#061020,#0d2137,#061020);padding:20px 30px;text-align:center;border-bottom:3px solid #FFD700}
+.poster-header h1{font-size:1.8rem;font-weight:900;color:#FFD700;text-transform:uppercase;letter-spacing:2px;line-height:1.2;word-break:break-word}
+.poster-header p{color:#00D9FF;font-size:.85rem;font-weight:600;margin-top:6px}
+.poster-grid{display:grid;padding:16px;gap:12px}
+.poster-box{border-radius:10px;padding:14px;border:1px solid rgba(255,255,255,.08);position:relative;overflow:hidden}
+.poster-box::before{content:'';position:absolute;top:0;left:0;right:0;height:3px;background:currentColor}
+.pbox-header{display:flex;align-items:center;gap:8px;margin-bottom:6px}
+.pbox-num{width:28px;height:28px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-weight:900;font-size:.75rem;flex-shrink:0;background:#FFD700;color:#000}
+.pbox-title{font-weight:800;font-size:.88rem;color:#FFD700;word-break:break-word}
+.pbox-body{font-size:.72rem;color:rgba(255,255,255,.85);line-height:1.7;white-space:pre-wrap;word-break:break-word}
+.poster-footer{background:#061020;border-top:3px solid #FFD700;padding:12px 24px;display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:8px}
+.rc-logo{background:#FFD700;color:#000;font-weight:900;font-size:.95rem;padding:6px 12px;border-radius:6px}
+.footer-mid{text-align:center;color:#a0aec0;font-size:.7rem}
+.footer-mid strong{color:#00D9FF;display:block;font-size:.85rem}
+.footer-right{text-align:right;font-size:.72rem}
+.footer-right div{color:#fff;margin-bottom:2px}
+.footer-right span{color:#FFD700;font-weight:700}
+.qr-ph{width:50px;height:50px;border:2px solid #FFD700;border-radius:5px;display:flex;align-items:center;justify-content:center;font-size:.42rem;color:#FFD700;text-align:center}
+
+/* ── Theme overrides generated by JS ── */
+
+/* ── Print ── */
+@media print{
+  body{background:#fff}
+  .topbar,.editor{display:none!important}
+  .app{grid-template-columns:1fr;display:block}
+  .preview{padding:0;display:block}
+  .poster-wrap{transform:none!important}
+  #poster{max-width:100%;box-shadow:none;border-radius:0}
+  body{-webkit-print-color-adjust:exact;print-color-adjust:exact}
+}
+</style>
+</head>
+<body>
+
+<div class="topbar">
+  <div>
+    <h1>🎨 Poster Maker — Rohit Computer</h1>
+    <span>Edit left panel → Live preview on right → Print</span>
+  </div>
+  <div class="topbar-btns">
+    <button class="btn-reset" onclick="resetAll()">↺ Reset</button>
+    <button class="btn-preview" onclick="scalePoster()">⟳ Fit Preview</button>
+    <button class="btn-print" onclick="doPrint()">🖨 Print Poster</button>
+  </div>
+</div>
+
+<div class="app">
+  <!-- Editor -->
+  <div class="editor" id="editorPanel">
+
+    <div class="section-title">1. Poster Header</div>
+    <label>Main Title (English)</label>
+    <input type="text" id="hTitle" placeholder="e.g. Career Guidance Chart 2025" oninput="sync()">
+    <label>Subtitle / Tagline</label>
+    <input type="text" id="hSub" placeholder="e.g. Stream-wise Career Options for Students" oninput="sync()">
+
+    <div class="section-title">2. Color Theme</div>
+    <div class="theme-row">
+      <div class="theme-btn t-dark active" onclick="setTheme('dark',this)">Dark Navy</div>
+      <div class="theme-btn t-light" onclick="setTheme('light',this)">White Light</div>
+      <div class="theme-btn t-blue" onclick="setTheme('blue',this)">Blue</div>
+      <div class="theme-btn t-green" onclick="setTheme('green',this)">Green</div>
+      <div class="theme-btn t-purple" onclick="setTheme('purple',this)">Purple</div>
+      <div class="theme-btn t-red" onclick="setTheme('red',this)">Red</div>
+    </div>
+
+    <div class="section-title">3. Print Size</div>
+    <div class="size-row">
+      <div class="size-btn" onclick="setSize('A4',this)">A4<br><small style="font-weight:400;opacity:.7">210×297mm</small></div>
+      <div class="size-btn active" onclick="setSize('A3',this)">A3 ★<br><small style="font-weight:400;opacity:.7">297×420mm</small></div>
+      <div class="size-btn" onclick="setSize('A2',this)">A2 💰<br><small style="font-weight:400;opacity:.7">420×594mm (Sell)</small></div>
+      <div class="size-btn" onclick="setSize('A1',this)">A1 🖼<br><small style="font-weight:400;opacity:.7">594×841mm (Wall)</small></div>
+    </div>
+    <div class="orient-row" style="margin-top:6px">
+      <div class="orient-btn active" onclick="setOrient('portrait',this)">📄 Portrait</div>
+      <div class="orient-btn" onclick="setOrient('landscape',this)">📋 Landscape</div>
+    </div>
+
+    <div class="section-title">4. Number of Boxes</div>
+    <label>How many content boxes?</label>
+    <select id="boxCount" onchange="rebuildBoxes()">
+      <option value="4">4 boxes (2×2)</option>
+      <option value="6">6 boxes (2×3 or 3×2)</option>
+      <option value="8" selected>8 boxes (2×4)</option>
+      <option value="9">9 boxes (3×3)</option>
+      <option value="12">12 boxes (3×4)</option>
+    </select>
+    <label style="margin-top:8px">Grid columns</label>
+    <select id="gridCols" onchange="sync()">
+      <option value="2" selected>2 columns</option>
+      <option value="3">3 columns</option>
+      <option value="4">4 columns</option>
+    </select>
+
+    <div class="section-title">5. Box Content</div>
+    <div id="boxEditors"></div>
+
+    <div class="section-title">6. Footer Info</div>
+    <label>Organization Name</label>
+    <input type="text" id="fName" value="Rohit Computer — Career Guidance Center" oninput="sync()">
+    <label>Address</label>
+    <input type="text" id="fAddr" value="राठ, हमीरपुर, उत्तर प्रदेश — 210431" oninput="sync()">
+    <label>Website</label>
+    <input type="text" id="fWeb" value="rohitcomputer.com" oninput="sync()">
+    <label>Phone</label>
+    <input type="text" id="fPhone" value="9452305913" oninput="sync()">
+
+    <div class="quick-tip">
+      💡 <strong>Print Tips:</strong><br>
+      • Chrome browser use karo best results ke liye<br>
+      • Print → "More settings" → uncheck "Headers and footers"<br>
+      • "Background graphics" ON rakhna — colors print honge<br>
+      • A2/A1 ke liye "Save as PDF" → professional printer pe bhejo
+    </div>
+  </div>
+
+  <!-- Preview -->
+  <div class="preview" id="previewArea">
+    <div class="poster-wrap" id="posterWrap">
+      <div id="poster">
+        <div class="poster-header">
+          <h1 id="pTitle">Career Guidance Chart 2025</h1>
+          <p id="pSub">Stream-wise Career Options for Students</p>
+        </div>
+        <div class="poster-grid" id="pGrid" style="grid-template-columns:repeat(2,1fr)"></div>
+        <div class="poster-footer">
+          <div class="rc-logo">RC</div>
+          <div class="footer-mid">
+            <strong id="pfName">Rohit Computer — Career Guidance Center</strong>
+            <span id="pfAddr">राठ, हमीरपुर, उत्तर प्रदेश — 210431</span>
+          </div>
+          <div class="footer-right">
+            <div>🌐 <span id="pfWeb">rohitcomputer.com</span></div>
+            <div>📞 <span id="pfPhone">9452305913</span></div>
+          </div>
+          <div class="qr-ph">QR<br>Code</div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<script>
+// ── State ──
+const STATE = {
+  theme: 'dark',
+  size: 'A3',
+  orient: 'portrait',
+  boxes: 8,
+  cols: 2
+};
+
+const THEMES = {
+  dark:   {bg:'#0A1628', hbg:'#061020', accent:'#FFD700', sub:'#00D9FF', boxbg:'#0f2540', text:'#fff', footbg:'#061020'},
+  light:  {bg:'#f0f4f8', hbg:'#1d4ed8', accent:'#FFD700', sub:'#dbeafe', boxbg:'#fff',    text:'#1a1a2e', footbg:'#1a1a2e'},
+  blue:   {bg:'#0c1a3a', hbg:'#0a1428', accent:'#93c5fd', sub:'#60a5fa', boxbg:'#0f2050', text:'#fff', footbg:'#070e20'},
+  green:  {bg:'#052010', hbg:'#031508', accent:'#86efac', sub:'#4ade80', boxbg:'#072a14', text:'#fff', footbg:'#031508'},
+  purple: {bg:'#1a0a3a', hbg:'#0d0520', accent:'#c4b5fd', sub:'#a78bfa', boxbg:'#20083a', text:'#fff', footbg:'#0d0520'},
+  red:    {bg:'#2a0808', hbg:'#1a0404', accent:'#fca5a5', sub:'#f87171', boxbg:'#350a0a', text:'#fff', footbg:'#1a0404'}
+};
+
+const BOX_COLORS = [
+  '#1a3a5c','#1a4a2e','#3a1a2e','#2a1a4a','#3a2a10','#1a3a4a','#2a3a1a','#4a1a1a',
+  '#1a4a4a','#3a1a4a','#2a4a1a','#4a2a1a','#1a2a4a','#4a1a3a','#2a4a4a'
+];
+const NUM_COLORS = [
+  '#60A5FA','#34D399','#FBBF24','#A78BFA','#22D3EE','#FCD34D','#F472B6','#38BDF8',
+  '#86EFAC','#FCA5A5','#C4B5FD','#6EE7B7','#FED7AA','#BAE6FD','#D9F99D'
+];
+
+const DEFAULT_BOXES = [
+  {title:'Class 9-10 Focus Areas', body:'Mathematics, Science, English\nComputer Basics seekho\nStudy Skills develop karo\nCo-curricular activities join karo'},
+  {title:'Class 11-12 Stream Choice', body:'Science (PCM): Engineering → IIT/NIT\nScience (PCB): Medical → NEET\nCommerce: CA/Banking → Finance\nArts: UPSC/Law/Journalism'},
+  {title:'After 12th Options', body:'B.Tech (JEE Main/Advanced)\nMBBS (NEET UG)\nBA/BCom/BSc (Direct admission)\nDiploma/ITI (Skill-based)\nNDA (Defence)'},
+  {title:'Government Jobs Path', body:'UPSC CSE → IAS/IPS/IFS\nSSC CGL/CHSL → Central Govt\nBank PO/Clerk → IBPS/SBI\nPolice/Railway → State Govt\nTeaching → TET/CTET'},
+  {title:'High Income Skills 2025', body:'Programming (Python/JavaScript)\nData Analysis & AI/ML\nDigital Marketing & SEO\nVideo Editing & Content\nGraphic Design & UI/UX'},
+  {title:'Future Careers (2025-35)', body:'AI Engineer: ₹15-80L\nCloud Architect: ₹15-70L\nCybersecurity: ₹8-50L\nEV Technician: ₹4-18L\nDrone Pilot: ₹4-20L'},
+  {title:'Success Formula', body:'✓ Daily 6-8 hours study\n✓ Mock tests regularly practice\n✓ Health & sleep maintain karo\n✓ Right mentor guidance lo\n✓ Never give up attitude'},
+  {title:'Important Message', body:'📌 Koi bhi career mein success milti hai:\n• Sahi Direction + Hard Work +\n• Consistency + Right Guidance se\n\nRohit Computer FREE Career\nCounseling deta hai — Aao aur\napna future plan karo! 🎯'}
+];
+
+let boxData = DEFAULT_BOXES.map(b=>({...b}));
+
+// ── Init ──
+window.onload = ()=>{
+  rebuildBoxes();
+  sync();
+  scalePoster();
+};
+window.onresize = scalePoster;
+
+// ── Theme ──
+function setTheme(name, el){
+  STATE.theme = name;
+  document.querySelectorAll('.theme-btn').forEach(b=>b.classList.remove('active'));
+  el.classList.add('active');
+  applyTheme();
+}
+function applyTheme(){
+  const t = THEMES[STATE.theme];
+  const p = document.getElementById('poster');
+  p.style.background = t.bg;
+  p.style.color = t.text;
+  document.querySelector('.poster-header').style.background = `linear-gradient(135deg,${t.hbg},${adjustBrightness(t.hbg,20)},${t.hbg})`;
+  document.querySelector('.poster-header').style.borderBottomColor = t.accent;
+  document.getElementById('pTitle').style.color = t.accent;
+  document.getElementById('pSub').style.color = t.sub;
+  document.querySelector('.poster-footer').style.background = t.footbg;
+  document.querySelector('.poster-footer').style.borderTopColor = t.accent;
+  document.querySelectorAll('.poster-box').forEach((box,i)=>{
+    box.style.background = BOX_COLORS[i%BOX_COLORS.length];
+  });
+}
+function adjustBrightness(hex,pct){
+  const r=parseInt(hex.slice(1,3),16),g=parseInt(hex.slice(3,5),16),b=parseInt(hex.slice(5,7),16);
+  const f=(v)=>Math.min(255,Math.round(v*(1+pct/100))).toString(16).padStart(2,'0');
+  return '#'+f(r)+f(g)+f(b);
+}
+
+// ── Size / Orient ──
+function setSize(s, el){
+  STATE.size=s;
+  document.querySelectorAll('.size-btn').forEach(b=>b.classList.remove('active'));
+  el.classList.add('active');
+}
+function setOrient(o, el){
+  STATE.orient=o;
+  document.querySelectorAll('.orient-btn').forEach(b=>b.classList.remove('active'));
+  el.classList.add('active');
+}
+
+// ── Box editors ──
+function rebuildBoxes(){
+  const n = parseInt(document.getElementById('boxCount').value);
+  STATE.boxes = n;
+  while(boxData.length < n) boxData.push({title:`Box ${boxData.length+1}`, body:'Content here...'});
+  const container = document.getElementById('boxEditors');
+  container.innerHTML = '';
+  for(let i=0;i<n;i++){
+    const wrap = document.createElement('div');
+    wrap.className='box-editor';
+    wrap.innerHTML=`<div class="box-num">BOX ${i+1}</div>
+      <label>Title</label>
+      <input type="text" id="bt${i}" value="${escHtml(boxData[i].title)}" oninput="boxData[${i}].title=this.value;renderBoxes()">
+      <label>Content (one item per line)</label>
+      <textarea id="bb${i}" oninput="boxData[${i}].body=this.value;renderBoxes()">${escHtml(boxData[i].body)}</textarea>`;
+    container.appendChild(wrap);
+  }
+  renderBoxes();
+}
+function escHtml(s){return s.replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;')}
+
+// ── Render poster grid ──
+function renderBoxes(){
+  const n = STATE.boxes;
+  const cols = parseInt(document.getElementById('gridCols').value);
+  const grid = document.getElementById('pGrid');
+  grid.style.gridTemplateColumns = `repeat(${cols},1fr)`;
+  grid.innerHTML='';
+  for(let i=0;i<n;i++){
+    const d = boxData[i]||{title:'',body:''};
+    const box = document.createElement('div');
+    box.className='poster-box';
+    box.style.background = BOX_COLORS[i%BOX_COLORS.length];
+    box.style.borderLeftColor = NUM_COLORS[i%NUM_COLORS.length];
+    box.style.borderLeft = `3px solid ${NUM_COLORS[i%NUM_COLORS.length]}`;
+    box.innerHTML=`<div class="pbox-header">
+      <div class="pbox-num" style="background:${NUM_COLORS[i%NUM_COLORS.length]};color:#000">${i+1}</div>
+      <div class="pbox-title">${escHtml(d.title)}</div>
+    </div>
+    <div class="pbox-body">${escHtml(d.body)}</div>`;
+    grid.appendChild(box);
+  }
+}
+
+// ── Sync all fields to poster ──
+function sync(){
+  document.getElementById('pTitle').textContent = document.getElementById('hTitle').value || 'Career Guidance Chart';
+  document.getElementById('pSub').textContent = document.getElementById('hSub').value || 'Stream-wise Career Options';
+  document.getElementById('pfName').textContent = document.getElementById('fName').value;
+  document.getElementById('pfAddr').textContent = document.getElementById('fAddr').value;
+  document.getElementById('pfWeb').textContent = document.getElementById('fWeb').value;
+  document.getElementById('pfPhone').textContent = document.getElementById('fPhone').value;
+  renderBoxes();
+  applyTheme();
+}
+
+// ── Scale preview to fit ──
+function scalePoster(){
+  const wrap = document.getElementById('posterWrap');
+  const preview = document.getElementById('previewArea');
+  const poster = document.getElementById('poster');
+  wrap.style.transform='scale(1)';
+  const avail = preview.clientWidth - 40;
+  const pw = poster.scrollWidth || 900;
+  const scale = Math.min(1, avail/pw);
+  wrap.style.transform=`scale(${scale})`;
+  wrap.style.transformOrigin='top center';
+  wrap.style.marginBottom=`${(poster.scrollHeight*(scale-1))}px`;
+}
+
+// ── Print ──
+function doPrint(){
+  const old=document.getElementById('po');if(old)old.remove();
+  const s=document.createElement('style');s.id='po';
+  s.textContent=`@media print{@page{size:${STATE.size} ${STATE.orient};margin:5mm}}`;
+  document.head.appendChild(s);
+  setTimeout(()=>window.print(),150);
+}
+
+// ── Reset ──
+function resetAll(){
+  boxData = DEFAULT_BOXES.map(b=>({...b}));
+  document.getElementById('hTitle').value='Career Guidance Chart 2025';
+  document.getElementById('hSub').value='Stream-wise Career Options for Students';
+  document.getElementById('fName').value='Rohit Computer — Career Guidance Center';
+  document.getElementById('fAddr').value='राठ, हमीरपुर, उत्तर प्रदेश — 210431';
+  document.getElementById('fWeb').value='rohitcomputer.com';
+  document.getElementById('fPhone').value='9452305913';
+  document.getElementById('boxCount').value='8';
+  document.getElementById('gridCols').value='2';
+  rebuildBoxes();
+  sync();
+}
+</script>
+</body>
+</html>

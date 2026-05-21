@@ -1,0 +1,337 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Rath Town Career Chart — Rohit Computer</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;600;700;800;900&display=swap" rel="stylesheet">
+<style>
+*{margin:0;padding:0;box-sizing:border-box}
+:root{
+  --bg:#0A1628;--header:#061020;--footer:#061020;
+  --gold:#FFD700;--cyan:#00D9FF;--white:#fff;--muted:#a0aec0;
+  --b1:#1a3a5c;--b2:#1a4a2e;--b3:#3a1a2e;--b4:#2a1a4a;
+  --b5:#3a2a10;--b6:#1a3a4a;--b7:#2a3a1a;--b8:#4a1a1a;
+  --b9:#1a4a4a;--b10:#3a1a4a;--b11:#2a4a1a;--b12:#4a2a1a;
+  --n1:#FF6B6B;--n2:#4ECDC4;--n3:#FFE66D;--n4:#A8E6CF;
+  --n5:#FF8B94;--n6:#74B9FF;--n7:#FD79A8;--n8:#55EFC4;
+  --n9:#FDCB6E;--n10:#E17055;--n11:#81ECEC;--n12:#B2BEC3;
+}
+body{background:var(--bg);color:var(--white);font-family:'Poppins',sans-serif;min-height:100vh;display:flex;flex-direction:column}
+/* Print Controls */
+.print-bar{background:var(--header);padding:8px 16px;display:flex;align-items:center;justify-content:space-between;border-bottom:2px solid var(--gold)}
+.brand-mini{font-weight:800;font-size:1rem;color:var(--gold);letter-spacing:1px}
+.print-btns{display:flex;gap:8px}
+.print-btns button{padding:6px 14px;border:none;border-radius:20px;font-family:'Poppins',sans-serif;font-weight:700;font-size:.75rem;cursor:pointer;transition:all .2s}
+.btn-a4{background:#444;color:#fff}.btn-a3{background:#2563eb;color:#fff}
+.btn-a2{background:var(--gold);color:#000}.btn-a1{background:#dc2626;color:#fff}
+.print-btns button:hover{transform:scale(1.05)}
+/* Header */
+header{background:linear-gradient(135deg,#061020 0%,#0d2137 50%,#061020 100%);padding:18px 30px;text-align:center;border-bottom:3px solid var(--gold)}
+header h1{font-size:2rem;font-weight:900;color:var(--gold);text-transform:uppercase;letter-spacing:3px;line-height:1.2}
+header p{color:var(--cyan);font-size:.95rem;font-weight:600;margin-top:4px;letter-spacing:1px}
+header .sub{color:var(--muted);font-size:.8rem;margin-top:2px}
+/* Grid */
+main{flex:1;padding:20px;display:grid;grid-template-columns:repeat(3,1fr);gap:14px}
+.box{border-radius:12px;padding:14px;display:flex;flex-direction:column;gap:8px;border:1px solid rgba(255,255,255,.08);position:relative;overflow:hidden}
+.box::before{content:'';position:absolute;top:0;left:0;right:0;height:3px}
+.box:nth-child(1){background:var(--b1)}.box:nth-child(1)::before{background:var(--n1)}
+.box:nth-child(2){background:var(--b2)}.box:nth-child(2)::before{background:var(--n2)}
+.box:nth-child(3){background:var(--b3)}.box:nth-child(3)::before{background:var(--n3)}
+.box:nth-child(4){background:var(--b4)}.box:nth-child(4)::before{background:var(--n4)}
+.box:nth-child(5){background:var(--b5)}.box:nth-child(5)::before{background:var(--n5)}
+.box:nth-child(6){background:var(--b6)}.box:nth-child(6)::before{background:var(--n6)}
+.box:nth-child(7){background:var(--b7)}.box:nth-child(7)::before{background:var(--n7)}
+.box:nth-child(8){background:var(--b8)}.box:nth-child(8)::before{background:var(--n8)}
+.box:nth-child(9){background:var(--b9)}.box:nth-child(9)::before{background:var(--n9)}
+.box:nth-child(10){background:var(--b10)}.box:nth-child(10)::before{background:var(--n10)}
+.box:nth-child(11){background:var(--b11)}.box:nth-child(11)::before{background:var(--n11)}
+.box:nth-child(12){background:var(--b12)}.box:nth-child(12)::before{background:var(--n12)}
+.box-header{display:flex;align-items:center;gap:10px;margin-bottom:4px}
+.num{width:32px;height:32px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-weight:900;font-size:.9rem;flex-shrink:0}
+.box:nth-child(1) .num{background:var(--n1);color:#000}
+.box:nth-child(2) .num{background:var(--n2);color:#000}
+.box:nth-child(3) .num{background:var(--n3);color:#000}
+.box:nth-child(4) .num{background:var(--n4);color:#000}
+.box:nth-child(5) .num{background:var(--n5);color:#000}
+.box:nth-child(6) .num{background:var(--n6);color:#000}
+.box:nth-child(7) .num{background:var(--n7);color:#000}
+.box:nth-child(8) .num{background:var(--n8);color:#000}
+.box:nth-child(9) .num{background:var(--n9);color:#000}
+.box:nth-child(10) .num{background:var(--n10);color:#fff}
+.box:nth-child(11) .num{background:var(--n11);color:#000}
+.box:nth-child(12) .num{background:var(--n12);color:#000}
+.stream-title{font-weight:800;font-size:1rem;color:var(--gold)}
+.cat-label{font-size:.65rem;font-weight:700;text-transform:uppercase;letter-spacing:.5px;opacity:.7;margin-top:4px;margin-bottom:2px}
+.items{display:flex;flex-wrap:wrap;gap:4px}
+.tag{display:inline-block;padding:2px 8px;border-radius:10px;font-size:.62rem;font-weight:600;background:rgba(255,255,255,.1);border:1px solid rgba(255,255,255,.15)}
+.tag.job{border-color:var(--cyan);color:var(--cyan)}
+.tag.govt{border-color:#4ade80;color:#4ade80}
+.tag.study{border-color:var(--gold);color:var(--gold)}
+/* Footer */
+footer{background:var(--footer);border-top:3px solid var(--gold);padding:14px 30px;display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:10px}
+.rc-logo{background:var(--gold);color:#000;font-weight:900;font-size:1.1rem;padding:8px 16px;border-radius:8px;letter-spacing:1px}
+.footer-info{text-align:center;color:var(--muted);font-size:.8rem}
+.footer-info strong{color:var(--cyan);display:block;font-size:.95rem;margin-bottom:2px}
+.footer-contact{text-align:right;font-size:.8rem}
+.footer-contact div{color:var(--white);margin-bottom:3px}
+.footer-contact span{color:var(--gold);font-weight:700}
+.qr-placeholder{width:60px;height:60px;border:2px solid var(--gold);border-radius:6px;display:flex;align-items:center;justify-content:center;font-size:.5rem;color:var(--gold);text-align:center}
+/* Print */
+@media print{
+  @page{size:A3 landscape;margin:5mm}
+  body{-webkit-print-color-adjust:exact;print-color-adjust:exact}
+  .print-bar{display:none}
+}
+</style>
+</head>
+<body>
+
+<div class="print-bar no-print">
+  <div class="brand-mini">🎓 ROHIT COMPUTER — CAREER CHART</div>
+  <div class="print-btns">
+    <button class="btn-a4" onclick="printSize('A4 landscape')">Print A4</button>
+    <button class="btn-a3" onclick="printSize('A3 landscape')">Print A3</button>
+    <button class="btn-a2" onclick="printSize('A2 landscape')">🏆 A2 (Sell)</button>
+    <button class="btn-a1" onclick="printSize('A1 landscape')">🖼 A1 (Wall)</button>
+  </div>
+</div>
+
+<header>
+  <h1>🎓 Rath Town Students Career Guidance Chart</h1>
+  <p>Stream-wise Career Options | Govt Jobs | Higher Study | Skill Courses</p>
+  <div class="sub">राठ, हमीरपुर — Rohit Computer Career Guidance Center</div>
+</header>
+
+<main>
+  <!-- Box 1: BA -->
+  <div class="box">
+    <div class="box-header"><div class="num">1</div><div class="stream-title">BA (Arts Graduate)</div></div>
+    <div class="cat-label">💼 Job Options</div>
+    <div class="items">
+      <span class="tag job">Teacher</span><span class="tag job">HR Executive</span><span class="tag job">Content Writer</span><span class="tag job">BPO/Call Centre</span><span class="tag job">Social Worker</span>
+    </div>
+    <div class="cat-label">🏛 Govt Jobs</div>
+    <div class="items">
+      <span class="tag govt">UPSC CSE (IAS)</span><span class="tag govt">PCS</span><span class="tag govt">Police</span><span class="tag govt">Lekhpal</span><span class="tag govt">Ration Inspector</span>
+    </div>
+    <div class="cat-label">📚 Higher Study</div>
+    <div class="items">
+      <span class="tag study">MA</span><span class="tag study">B.Ed</span><span class="tag study">LLB</span><span class="tag study">MBA</span><span class="tag study">UPSC Prep</span>
+    </div>
+  </div>
+
+  <!-- Box 2: BCom -->
+  <div class="box">
+    <div class="box-header"><div class="num">2</div><div class="stream-title">BCom (Commerce)</div></div>
+    <div class="cat-label">💼 Job Options</div>
+    <div class="items">
+      <span class="tag job">Accountant</span><span class="tag job">Bank Teller</span><span class="tag job">Tax Consultant</span><span class="tag job">Finance Executive</span>
+    </div>
+    <div class="cat-label">🏛 Govt Jobs</div>
+    <div class="items">
+      <span class="tag govt">Bank PO/Clerk</span><span class="tag govt">SSC CGL</span><span class="tag govt">Income Tax Officer</span><span class="tag govt">Customs Inspector</span>
+    </div>
+    <div class="cat-label">📚 Higher Study</div>
+    <div class="items">
+      <span class="tag study">CA / CMA</span><span class="tag study">MBA Finance</span><span class="tag study">MCom</span><span class="tag study">CS (Company Secretary)</span>
+    </div>
+  </div>
+
+  <!-- Box 3: BSc -->
+  <div class="box">
+    <div class="box-header"><div class="num">3</div><div class="stream-title">BSc (Science)</div></div>
+    <div class="cat-label">💼 Job Options</div>
+    <div class="items">
+      <span class="tag job">Lab Technician</span><span class="tag job">Research Assistant</span><span class="tag job">Quality Analyst</span><span class="tag job">Science Teacher</span>
+    </div>
+    <div class="cat-label">🏛 Govt Jobs</div>
+    <div class="items">
+      <span class="tag govt">CSIR/DRDO</span><span class="tag govt">TGT Science</span><span class="tag govt">Forest Officer</span><span class="tag govt">Agriculture Officer</span>
+    </div>
+    <div class="cat-label">📚 Higher Study</div>
+    <div class="items">
+      <span class="tag study">MSc</span><span class="tag study">B.Ed</span><span class="tag study">M.Tech</span><span class="tag study">GATE</span><span class="tag study">PhD Research</span>
+    </div>
+  </div>
+
+  <!-- Box 4: PCM (12th) -->
+  <div class="box">
+    <div class="box-header"><div class="num">4</div><div class="stream-title">12th PCM (Math)</div></div>
+    <div class="cat-label">💼 Job Options</div>
+    <div class="items">
+      <span class="tag job">Software Engineer</span><span class="tag job">Data Analyst</span><span class="tag job">CAD Designer</span><span class="tag job">Tutor/Coaching</span>
+    </div>
+    <div class="cat-label">🏛 Govt Jobs</div>
+    <div class="items">
+      <span class="tag govt">NDA/Army</span><span class="tag govt">ISRO/DRDO</span><span class="tag govt">Railway Engineer</span><span class="tag govt">SSC JE</span>
+    </div>
+    <div class="cat-label">📚 Higher Study</div>
+    <div class="items">
+      <span class="tag study">B.Tech (IIT/NIT)</span><span class="tag study">BCA</span><span class="tag study">BSc CS</span><span class="tag study">Polytechnic Diploma</span>
+    </div>
+  </div>
+
+  <!-- Box 5: PCB (12th) -->
+  <div class="box">
+    <div class="box-header"><div class="num">5</div><div class="stream-title">12th PCB (Biology)</div></div>
+    <div class="cat-label">💼 Job Options</div>
+    <div class="items">
+      <span class="tag job">Doctor</span><span class="tag job">Pharmacist</span><span class="tag job">Physiotherapist</span><span class="tag job">Dietitian</span>
+    </div>
+    <div class="cat-label">🏛 Govt Jobs</div>
+    <div class="items">
+      <span class="tag govt">AIIMS Doctor</span><span class="tag govt">ANM/GNM Nurse</span><span class="tag govt">Health Officer</span><span class="tag govt">CRPF Medical</span>
+    </div>
+    <div class="cat-label">📚 Higher Study</div>
+    <div class="items">
+      <span class="tag study">MBBS (NEET)</span><span class="tag study">BDS</span><span class="tag study">BAMS/BHMS</span><span class="tag study">B.Pharma</span><span class="tag study">BSc Nursing</span>
+    </div>
+  </div>
+
+  <!-- Box 6: BCA -->
+  <div class="box">
+    <div class="box-header"><div class="num">6</div><div class="stream-title">BCA (Computer Apps)</div></div>
+    <div class="cat-label">💼 Job Options</div>
+    <div class="items">
+      <span class="tag job">Web Developer</span><span class="tag job">App Developer</span><span class="tag job">IT Support</span><span class="tag job">Data Entry Expert</span>
+    </div>
+    <div class="cat-label">🏛 Govt Jobs</div>
+    <div class="items">
+      <span class="tag govt">NIC (IT Officer)</span><span class="tag govt">SSC CHSL</span><span class="tag govt">Bank IT Officer</span><span class="tag govt">Cyber Cell</span>
+    </div>
+    <div class="cat-label">📚 Higher Study</div>
+    <div class="items">
+      <span class="tag study">MCA</span><span class="tag study">M.Tech CS</span><span class="tag study">MBA IT</span><span class="tag study">Cloud Certifications</span>
+    </div>
+  </div>
+
+  <!-- Box 7: BTech/BE -->
+  <div class="box">
+    <div class="box-header"><div class="num">7</div><div class="stream-title">B.Tech / B.E.</div></div>
+    <div class="cat-label">💼 Job Options</div>
+    <div class="items">
+      <span class="tag job">Software Engineer</span><span class="tag job">Civil Engineer</span><span class="tag job">Mechanical Eng.</span><span class="tag job">VLSI Designer</span>
+    </div>
+    <div class="cat-label">🏛 Govt Jobs</div>
+    <div class="items">
+      <span class="tag govt">GATE → PSU</span><span class="tag govt">Railway JE/AE</span><span class="tag govt">DRDO Scientist</span><span class="tag govt">BEL/BHEL</span>
+    </div>
+    <div class="cat-label">📚 Higher Study</div>
+    <div class="items">
+      <span class="tag study">M.Tech (IIT)</span><span class="tag study">MBA (IIM)</span><span class="tag study">MS Abroad</span><span class="tag study">GATE Prep</span>
+    </div>
+  </div>
+
+  <!-- Box 8: Nursing -->
+  <div class="box">
+    <div class="box-header"><div class="num">8</div><div class="stream-title">Nursing (ANM/GNM/BSc)</div></div>
+    <div class="cat-label">💼 Job Options</div>
+    <div class="items">
+      <span class="tag job">Staff Nurse</span><span class="tag job">ICU Nurse</span><span class="tag job">Community Health</span><span class="tag job">OT Technician</span>
+    </div>
+    <div class="cat-label">🏛 Govt Jobs</div>
+    <div class="items">
+      <span class="tag govt">AIIMS Staff Nurse</span><span class="tag govt">Railway Nurse</span><span class="tag govt">Army Nurse Corps</span><span class="tag govt">ESIC Nurse</span>
+    </div>
+    <div class="cat-label">📚 Higher Study</div>
+    <div class="items">
+      <span class="tag study">BSc Nursing</span><span class="tag study">MSc Nursing</span><span class="tag study">Midwifery</span><span class="tag study">Public Health</span>
+    </div>
+  </div>
+
+  <!-- Box 9: ITI -->
+  <div class="box">
+    <div class="box-header"><div class="num">9</div><div class="stream-title">ITI (Industrial Training)</div></div>
+    <div class="cat-label">💼 Job Options</div>
+    <div class="items">
+      <span class="tag job">Electrician</span><span class="tag job">Fitter</span><span class="tag job">Welder</span><span class="tag job">Mechanic</span><span class="tag job">AC Technician</span>
+    </div>
+    <div class="cat-label">🏛 Govt Jobs</div>
+    <div class="items">
+      <span class="tag govt">Railway Apprentice</span><span class="tag govt">ONGC/HPCL</span><span class="tag govt">BEL/BHEL</span><span class="tag govt">Army Tradesman</span>
+    </div>
+    <div class="cat-label">📚 Higher Study</div>
+    <div class="items">
+      <span class="tag study">Diploma Engineering</span><span class="tag study">Advanced ITI</span><span class="tag study">B.Tech Lateral</span>
+    </div>
+  </div>
+
+  <!-- Box 10: Diploma -->
+  <div class="box">
+    <div class="box-header"><div class="num">10</div><div class="stream-title">Diploma (Polytechnic)</div></div>
+    <div class="cat-label">💼 Job Options</div>
+    <div class="items">
+      <span class="tag job">Junior Engineer</span><span class="tag job">Draftsman</span><span class="tag job">Site Supervisor</span><span class="tag job">Quality Inspector</span>
+    </div>
+    <div class="cat-label">🏛 Govt Jobs</div>
+    <div class="items">
+      <span class="tag govt">SSC JE</span><span class="tag govt">UP JE/AE</span><span class="tag govt">UPPCL JE</span><span class="tag govt">PWD JE</span>
+    </div>
+    <div class="cat-label">📚 Higher Study</div>
+    <div class="items">
+      <span class="tag study">B.Tech Lateral Entry</span><span class="tag study">AMIE</span><span class="tag study">Advanced Diploma</span>
+    </div>
+  </div>
+
+  <!-- Box 11: Agriculture -->
+  <div class="box">
+    <div class="box-header"><div class="num">11</div><div class="stream-title">Agriculture (BSc Agri)</div></div>
+    <div class="cat-label">💼 Job Options</div>
+    <div class="items">
+      <span class="tag job">Agri Business</span><span class="tag job">Horticulture Expert</span><span class="tag job">Seed Dealer</span><span class="tag job">Organic Farmer</span>
+    </div>
+    <div class="cat-label">🏛 Govt Jobs</div>
+    <div class="items">
+      <span class="tag govt">Lekhpal (Rural)</span><span class="tag govt">Agriculture Officer</span><span class="tag govt">VDO</span><span class="tag govt">NABARD</span>
+    </div>
+    <div class="cat-label">📚 Higher Study</div>
+    <div class="items">
+      <span class="tag study">MSc Agriculture</span><span class="tag study">MBA Agribusiness</span><span class="tag study">PhD Agri</span>
+    </div>
+  </div>
+
+  <!-- Box 12: Arts/Fine Arts/Media -->
+  <div class="box">
+    <div class="box-header"><div class="num">12</div><div class="stream-title">Arts / Media / Design</div></div>
+    <div class="cat-label">💼 Job Options</div>
+    <div class="items">
+      <span class="tag job">Graphic Designer</span><span class="tag job">Journalist</span><span class="tag job">Video Editor</span><span class="tag job">Photographer</span>
+    </div>
+    <div class="cat-label">🏛 Govt Jobs</div>
+    <div class="items">
+      <span class="tag govt">Doordarshan</span><span class="tag govt">AIR (Radio)</span><span class="tag govt">Govt PR Officer</span><span class="tag govt">Cultural Ministry</span>
+    </div>
+    <div class="cat-label">📚 Higher Study</div>
+    <div class="items">
+      <span class="tag study">BFA / MFA</span><span class="tag study">Mass Comm</span><span class="tag study">NIFT Design</span><span class="tag study">NID Animation</span>
+    </div>
+  </div>
+</main>
+
+<footer>
+  <div class="rc-logo">RC</div>
+  <div class="footer-info">
+    <strong>Rohit Computer — Career Guidance Center</strong>
+    राठ, हमीरपुर, उत्तर प्रदेश — 210431<br>
+    Helping Students Since 2010 | Free Career Counseling Available
+  </div>
+  <div class="footer-contact">
+    <div>🌐 <span>rohitcomputer.com</span></div>
+    <div>📞 <span>9452305913</span></div>
+  </div>
+  <div class="qr-placeholder">QR<br>Code</div>
+</footer>
+
+<script>
+function printSize(size){
+  const old=document.getElementById('po');if(old)old.remove();
+  const s=document.createElement('style');s.id='po';
+  s.textContent=`@media print{@page{size:${size};margin:5mm}}`;
+  document.head.appendChild(s);
+  setTimeout(()=>window.print(),100);
+}
+</script>
+</body>
+</html>
